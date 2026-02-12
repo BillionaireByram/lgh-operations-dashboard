@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Let's Geaux Hustle | Operations Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">🔥</span>
+                <h1>Let's Geaux Hustle</h1>
+            </div>
+            <div class="header-actions">
+                <span class="last-updated" id="lastUpdated">Loading...</span>
+                <button class="btn btn-primary" onclick="refreshData()">↻ Refresh</button>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs">
+            <button class="tab active" data-view="scorecard">📈 Scorecard</button>
+            <button class="tab" data-view="quarterly">📅 12Q Planner</button>
+            <button class="tab" data-view="team">👥 Team</button>
+            <button class="tab" data-view="sales">💰 Sales</button>
+        </nav>
+
+        <!-- View: Scorecard -->
+        <section id="scorecard" class="view active">
+            <div class="view-header">
+                <h2>Weekly KPI Scorecard</h2>
+                <div class="filters">
+                    <select id="weekFilter" onchange="loadScorecard()">
+                        <option value="">This Week</option>
+                    </select>
+                    <select id="deptFilter" onchange="loadScorecard()">
+                        <option value="">All Departments</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Sales">Sales</option>
+                        <option value="Routers">Routers</option>
+                        <option value="Setters">Setters</option>
+                        <option value="Closers">Closers</option>
+                        <option value="AI Team">AI Team</option>
+                        <option value="EA">EA</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- KPI Summary Cards -->
+            <div class="kpi-summary" id="kpiSummary">
+                <div class="summary-card green">
+                    <span class="summary-value" id="greenCount">0</span>
+                    <span class="summary-label">On Track</span>
+                </div>
+                <div class="summary-card yellow">
+                    <span class="summary-value" id="yellowCount">0</span>
+                    <span class="summary-label">At Risk</span>
+                </div>
+                <div class="summary-card red">
+                    <span class="summary-value" id="redCount">0</span>
+                    <span class="summary-label">Behind</span>
+                </div>
+            </div>
+
+            <!-- KPI Table -->
+            <div class="table-container">
+                <table class="data-table" id="kpiTable">
+                    <thead>
+                        <tr>
+                            <th>Department</th>
+                            <th>Metric</th>
+                            <th>Weekly</th>
+                            <th>Monthly Actual</th>
+                            <th>Monthly Target</th>
+                            <th>Status</th>
+                            <th>Owner</th>
+                        </tr>
+                    </thead>
+                    <tbody id="kpiBody">
+                        <tr><td colspan="7" class="loading">Loading KPIs...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Add KPI Button -->
+            <button class="btn btn-secondary" onclick="openModal('kpiModal')">+ Add KPI</button>
+        </section>
+
+        <!-- View: 12Q Planner -->
+        <section id="quarterly" class="view">
+            <div class="view-header">
+                <h2>12-Quarter Planner</h2>
+                <select id="yearFilter" onchange="loadQuarterly()">
+                    <option value="2026">2026</option>
+                    <option value="2027">2027</option>
+                    <option value="2028">2028</option>
+                </select>
+            </div>
+
+            <!-- Quarterly Chart -->
+            <div class="chart-container">
+                <canvas id="quarterlyChart"></canvas>
+            </div>
+
+            <!-- Quarterly Table -->
+            <div class="table-container">
+                <table class="data-table" id="quarterlyTable">
+                    <thead>
+                        <tr>
+                            <th>Quarter</th>
+                            <th>Projected Revenue</th>
+                            <th>Actual Revenue</th>
+                            <th>Projected Profit</th>
+                            <th>Actual Profit</th>
+                            <th>Margin</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="quarterlyBody">
+                        <tr><td colspan="7" class="loading">Loading quarterly data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <button class="btn btn-secondary" onclick="openModal('quarterlyModal')">+ Add Quarter</button>
+        </section>
+
+        <!-- View: Team -->
+        <section id="team" class="view">
+            <div class="view-header">
+                <h2>Team Roster</h2>
+                <div class="filters">
+                    <select id="teamDeptFilter" onchange="loadTeam()">
+                        <option value="">All Departments</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Sales">Sales</option>
+                        <option value="Routers">Routers</option>
+                        <option value="Setters">Setters</option>
+                        <option value="Closers">Closers</option>
+                        <option value="AI Team">AI Team</option>
+                        <option value="EA">EA</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Team Cards -->
+            <div class="team-grid" id="teamGrid">
+                <div class="loading">Loading team...</div>
+            </div>
+
+            <button class="btn btn-secondary" onclick="openModal('teamModal')">+ Add Team Member</button>
+        </section>
+
+        <!-- View: Sales -->
+        <section id="sales" class="view">
+            <div class="view-header">
+                <h2>Sales Call Tracker</h2>
+                <div class="filters">
+                    <select id="repFilter" onchange="loadSales()">
+                        <option value="">All Reps</option>
+                    </select>
+                    <select id="outcomeFilter" onchange="loadSales()">
+                        <option value="">All Outcomes</option>
+                        <option value="Closed">Closed</option>
+                        <option value="No Show">No Show</option>
+                        <option value="Follow-up">Follow-up</option>
+                        <option value="Lost">Lost</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Sales Summary -->
+            <div class="sales-summary" id="salesSummary">
+                <div class="summary-card">
+                    <span class="summary-value" id="totalCalls">0</span>
+                    <span class="summary-label">Total Calls</span>
+                </div>
+                <div class="summary-card green">
+                    <span class="summary-value" id="closedDeals">0</span>
+                    <span class="summary-label">Closed</span>
+                </div>
+                <div class="summary-card">
+                    <span class="summary-value" id="closeRate">0%</span>
+                    <span class="summary-label">Close Rate</span>
+                </div>
+                <div class="summary-card">
+                    <span class="summary-value" id="totalRevenue">$0</span>
+                    <span class="summary-label">Revenue</span>
+                </div>
+            </div>
+
+            <!-- Sales Table -->
+            <div class="table-container">
+                <table class="data-table" id="salesTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Rep</th>
+                            <th>Prospect</th>
+                            <th>Type</th>
+                            <th>Outcome</th>
+                            <th>Value</th>
+                            <th>Recording</th>
+                        </tr>
+                    </thead>
+                    <tbody id="salesBody">
+                        <tr><td colspan="7" class="loading">Loading sales data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <button class="btn btn-secondary" onclick="openModal('salesModal')">+ Add Call</button>
+        </section>
+
+        <!-- Modals -->
+        <!-- KPI Modal -->
+        <div id="kpiModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('kpiModal')">&times;</span>
+                <h3>Add KPI Metric</h3>
+                <form id="kpiForm" onsubmit="submitKPI(event)">
+                    <div class="form-group">
+                        <label>Week Of</label>
+                        <input type="date" name="week_of" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Department</label>
+                        <select name="department" required>
+                            <option value="Marketing">Marketing</option>
+                            <option value="Sales">Sales</option>
+                            <option value="Routers">Routers</option>
+                            <option value="Setters">Setters</option>
+                            <option value="Closers">Closers</option>
+                            <option value="AI Team">AI Team</option>
+                            <option value="EA">EA</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Metric Name</label>
+                        <input type="text" name="metric_name" placeholder="e.g., Leads Generated" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Weekly Value</label>
+                        <input type="number" step="0.01" name="weekly_value">
+                    </div>
+                    <div class="form-group">
+                        <label>Monthly Actual</label>
+                        <input type="number" step="0.01" name="monthly_actual">
+                    </div>
+                    <div class="form-group">
+                        <label>Monthly Target</label>
+                        <input type="number" step="0.01" name="monthly_target">
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select name="status">
+                            <option value="green">🟢 On Track</option>
+                            <option value="yellow">🟡 At Risk</option>
+                            <option value="red">🔴 Behind</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Owner</label>
+                        <input type="text" name="owner" placeholder="Who's responsible">
+                    </div>
+                    <div class="form-group">
+                        <label>Source</label>
+                        <input type="text" name="source" placeholder="GHL, Stripe, Manual...">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save KPI</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Quarterly Modal -->
+        <div id="quarterlyModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('quarterlyModal')">&times;</span>
+                <h3>Add Quarterly Target</h3>
+                <form id="quarterlyForm" onsubmit="submitQuarterly(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Quarter</label>
+                            <select name="quarter" required>
+                                <option value="Q1">Q1</option>
+                                <option value="Q2">Q2</option>
+                                <option value="Q3">Q3</option>
+                                <option value="Q4">Q4</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Year</label>
+                            <input type="number" name="year" value="2026" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Projected Revenue</label>
+                            <input type="number" step="0.01" name="projected_revenue">
+                        </div>
+                        <div class="form-group">
+                            <label>Projected Profit</label>
+                            <input type="number" step="0.01" name="projected_profit">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Actual Revenue</label>
+                            <input type="number" step="0.01" name="actual_revenue">
+                        </div>
+                        <div class="form-group">
+                            <label>Actual Profit</label>
+                            <input type="number" step="0.01" name="actual_profit">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <textarea name="notes" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Quarter</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Team Modal -->
+        <div id="teamModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('teamModal')">&times;</span>
+                <h3>Add Team Member</h3>
+                <form id="teamForm" onsubmit="submitTeam(event)">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Role</label>
+                        <input type="text" name="role" placeholder="e.g., Sales Rep, Router" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Department</label>
+                        <select name="department">
+                            <option value="Marketing">Marketing</option>
+                            <option value="Sales">Sales</option>
+                            <option value="Routers">Routers</option>
+                            <option value="Setters">Setters</option>
+                            <option value="Closers">Closers</option>
+                            <option value="AI Team">AI Team</option>
+                            <option value="EA">EA</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Manager</label>
+                        <input type="text" name="manager">
+                    </div>
+                    <div class="form-group">
+                        <label>Responsibilities (one per line)</label>
+                        <textarea name="responsibilities" rows="3" placeholder="Lead qualification&#10;Follow-up calls&#10;CRM updates"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Playbook Links (one per line)</label>
+                        <textarea name="playbooks" rows="2" placeholder="https://docs.google.com/..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Team Member</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Sales Modal -->
+        <div id="salesModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('salesModal')">&times;</span>
+                <h3>Add Sales Call</h3>
+                <form id="salesForm" onsubmit="submitSales(event)">
+                    <div class="form-group">
+                        <label>Call Date</label>
+                        <input type="datetime-local" name="call_date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Rep Name</label>
+                        <input type="text" name="rep_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Prospect Name</label>
+                        <input type="text" name="prospect_name">
+                    </div>
+                    <div class="form-group">
+                        <label>Call Type</label>
+                        <select name="call_type">
+                            <option value="Discovery">Discovery</option>
+                            <option value="Closer">Closer</option>
+                            <option value="Follow-up">Follow-up</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Outcome</label>
+                        <select name="outcome">
+                            <option value="Closed">Closed</option>
+                            <option value="No Show">No Show</option>
+                            <option value="Follow-up">Follow-up</option>
+                            <option value="Lost">Lost</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Deal Value ($)</label>
+                        <input type="number" step="0.01" name="deal_value">
+                    </div>
+                    <div class="form-group">
+                        <label>Recording URL</label>
+                        <input type="url" name="recording_url" placeholder="Google Drive link">
+                    </div>
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <textarea name="notes" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Call</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
