@@ -158,7 +158,58 @@
             transform: translateY(-1px);
         }
 
-        /* Date Picker */
+        /* Main Content */
+        .main-content {
+            padding: 2rem;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff 0%, #a0a0a0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Add Entry Button */
+        .add-entry-btn {
+            background: var(--accent-green);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-glass);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .add-entry-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(34, 197, 94, 0.4);
+        }
+
+        /* Date Controls */
         .date-controls {
             display: flex;
             gap: 1rem;
@@ -228,35 +279,6 @@
         .period-btn:hover:not(.active) {
             background: var(--glass-strong);
             color: var(--text-primary);
-        }
-
-        /* Main Content */
-        .main-content {
-            padding: 2rem;
-        }
-
-        .section {
-            display: none;
-        }
-
-        .section.active {
-            display: block;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-
-        .section-title {
-            font-size: 2rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #ffffff 0%, #a0a0a0 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
 
         /* KPI Grid */
@@ -380,29 +402,164 @@
             font-size: 0.875rem;
         }
 
-        /* Add Button */
-        .add-btn {
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
             background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 2px dashed var(--glass-border);
+            backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
             color: var(--text-secondary);
-            padding: 1rem 1.5rem;
-            border-radius: 16px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: var(--glass-bg);
+            color: var(--text-primary);
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: rgba(34, 197, 94, 0.5);
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+
+        .btn-secondary {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-secondary);
             font-size: 0.875rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-top: 1rem;
+            backdrop-filter: blur(10px);
         }
 
-        .add-btn:hover {
+        .btn-secondary:hover {
             background: var(--glass-strong);
-            border-color: rgba(255, 255, 255, 0.4);
             color: var(--text-primary);
-            transform: translateY(-2px);
         }
 
-        /* Weekly Overview Grid */
+        .btn-primary {
+            background: var(--accent-green);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-glass);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(34, 197, 94, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Overview Grid */
         .overview-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -454,6 +611,26 @@
             font-style: italic;
         }
 
+        .success-message {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            color: #22c55e;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .error-message {
+            background: rgba(220, 53, 69, 0.1);
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            color: #dc3545;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .date-controls {
@@ -473,6 +650,15 @@
 
             .overview-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 1.5rem;
             }
         }
     </style>
@@ -612,6 +798,9 @@
         <div id="routers" class="section">
             <div class="section-header">
                 <h2 class="section-title">Routers Daily Logs</h2>
+                <button class="add-entry-btn" onclick="openModal('routerModal')">
+                    ➕ Add Daily Log
+                </button>
             </div>
 
             <!-- Date Controls -->
@@ -673,6 +862,9 @@
         <div id="setters" class="section">
             <div class="section-header">
                 <h2 class="section-title">Setters Daily Logs</h2>
+                <button class="add-entry-btn" onclick="openModal('setterModal')">
+                    ➕ Add Daily Log
+                </button>
             </div>
 
             <!-- Date Controls -->
@@ -735,6 +927,9 @@
         <div id="closers" class="section">
             <div class="section-header">
                 <h2 class="section-title">Closers Weekly Logs</h2>
+                <button class="add-entry-btn" onclick="openModal('closerModal')">
+                    ➕ Add Weekly Log
+                </button>
             </div>
 
             <!-- Date Controls -->
@@ -796,6 +991,9 @@
         <div id="ai-team" class="section">
             <div class="section-header">
                 <h2 class="section-title">AI Team Weekly Logs</h2>
+                <button class="add-entry-btn" onclick="openModal('aiModal')">
+                    ➕ Add Weekly Log
+                </button>
             </div>
 
             <!-- Date Controls -->
@@ -856,6 +1054,9 @@
         <div id="executive" class="section">
             <div class="section-header">
                 <h2 class="section-title">Executive Assistant Logs</h2>
+                <button class="add-entry-btn" onclick="openModal('eaModal')">
+                    ➕ Add Weekly Log
+                </button>
             </div>
 
             <!-- Date Controls -->
@@ -954,6 +1155,275 @@
         </div>
     </div>
 
+    <!-- Router Modal -->
+    <div id="routerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Router Daily Log</h3>
+                <button class="close-btn" onclick="closeModal('routerModal')">&times;</button>
+            </div>
+            <div id="routerMessage"></div>
+            <form id="routerForm" onsubmit="submitRouterLog(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Date</label>
+                        <input type="date" id="routerDate" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Team Member</label>
+                        <input type="text" id="routerName" class="form-input" required placeholder="Enter your name">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Clock In</label>
+                        <input type="time" id="routerClockIn" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Clock Out</label>
+                        <input type="time" id="routerClockOut" class="form-input" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Calls Made</label>
+                        <input type="number" id="routerCalls" class="form-input" required min="0" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Conversations</label>
+                        <input type="number" id="routerConversations" class="form-input" required min="0" placeholder="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">CRM Accuracy (%)</label>
+                    <input type="number" id="routerAccuracy" class="form-input" required min="0" max="100" placeholder="100">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea id="routerNotes" class="form-textarea" placeholder="Daily notes and observations..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('routerModal')">Cancel</button>
+                    <button type="submit" class="btn-primary" id="routerSubmitBtn">Submit Log</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Setter Modal -->
+    <div id="setterModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Setter Daily Log</h3>
+                <button class="close-btn" onclick="closeModal('setterModal')">&times;</button>
+            </div>
+            <div id="setterMessage"></div>
+            <form id="setterForm" onsubmit="submitSetterLog(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Date</label>
+                        <input type="date" id="setterDate" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Team Member</label>
+                        <input type="text" id="setterName" class="form-input" required placeholder="Enter your name">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Clock In</label>
+                        <input type="time" id="setterClockIn" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Clock Out</label>
+                        <input type="time" id="setterClockOut" class="form-input" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Leads Contacted</label>
+                        <input type="number" id="setterContacted" class="form-input" required min="0" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Calls Booked</label>
+                        <input type="number" id="setterBooked" class="form-input" required min="0" placeholder="0">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Calls Showed</label>
+                        <input type="number" id="setterShowed" class="form-input" required min="0" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Re-routes</label>
+                        <input type="number" id="setterReroutes" class="form-input" required min="0" placeholder="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea id="setterNotes" class="form-textarea" placeholder="Daily notes and observations..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('setterModal')">Cancel</button>
+                    <button type="submit" class="btn-primary" id="setterSubmitBtn">Submit Log</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Closer Modal -->
+    <div id="closerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Closer Weekly Log</h3>
+                <button class="close-btn" onclick="closeModal('closerModal')">&times;</button>
+            </div>
+            <div id="closerMessage"></div>
+            <form id="closerForm" onsubmit="submitCloserLog(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Week Of</label>
+                        <input type="date" id="closerWeek" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Team Member</label>
+                        <input type="text" id="closerName" class="form-input" required placeholder="Enter your name">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Calls Taken</label>
+                        <input type="number" id="closerCallsTaken" class="form-input" required min="0" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">No Shows</label>
+                        <input type="number" id="closerNoShows" class="form-input" required min="0" placeholder="0">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Deals Closed</label>
+                        <input type="number" id="closerDealsClosed" class="form-input" required min="0" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Revenue Collected ($)</label>
+                        <input type="number" id="closerRevenue" class="form-input" required min="0" placeholder="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea id="closerNotes" class="form-textarea" placeholder="Weekly performance notes..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('closerModal')">Cancel</button>
+                    <button type="submit" class="btn-primary" id="closerSubmitBtn">Submit Log</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- AI Team Modal -->
+    <div id="aiModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add AI Team Weekly Log</h3>
+                <button class="close-btn" onclick="closeModal('aiModal')">&times;</button>
+            </div>
+            <div id="aiMessage"></div>
+            <form id="aiForm" onsubmit="submitAILog(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Week Of</label>
+                        <input type="date" id="aiWeek" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Team Member</label>
+                        <input type="text" id="aiName" class="form-input" required placeholder="Enter your name">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Leads Generated</label>
+                        <input type="number" id="aiLeads" class="form-input" required min="0" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Registrations</label>
+                        <input type="number" id="aiRegistrations" class="form-input" required min="0" placeholder="0">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Show Rate (%)</label>
+                        <input type="number" id="aiShowRate" class="form-input" required min="0" max="100" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Completion Rate (%)</label>
+                        <input type="number" id="aiCompletionRate" class="form-input" required min="0" max="100" placeholder="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">What Changed This Week</label>
+                    <textarea id="aiChanges" class="form-textarea" placeholder="Optimizations, tests, changes made..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('aiModal')">Cancel</button>
+                    <button type="submit" class="btn-primary" id="aiSubmitBtn">Submit Log</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- EA Modal -->
+    <div id="eaModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Executive Assistant Weekly Log</h3>
+                <button class="close-btn" onclick="closeModal('eaModal')">&times;</button>
+            </div>
+            <div id="eaMessage"></div>
+            <form id="eaForm" onsubmit="submitEALog(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Week Of</label>
+                        <input type="date" id="eaWeek" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Team Member</label>
+                        <input type="text" id="eaName" class="form-input" required placeholder="Enter your name">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Clients Onboarded</label>
+                        <input type="number" id="eaOnboarded" class="form-input" required min="0" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Failed Payments Recovered ($)</label>
+                        <input type="number" id="eaRecovered" class="form-input" required min="0" placeholder="0">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Refund Rate (%)</label>
+                        <input type="number" id="eaRefundRate" class="form-input" required min="0" max="100" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">At-Risk Clients</label>
+                        <input type="number" id="eaAtRisk" class="form-input" required min="0" placeholder="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea id="eaNotes" class="form-textarea" placeholder="Weekly tasks and accomplishments..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('eaModal')">Cancel</button>
+                    <button type="submit" class="btn-primary" id="eaSubmitBtn">Submit Log</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // Supabase configuration
         const SUPABASE_URL = 'https://aqcnqxmqksashphcvgoc.supabase.co';
@@ -971,11 +1441,307 @@
             event.target.classList.add('active');
         }
 
-        // Period button handlers
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+            
+            // Set today's date as default
+            const today = new Date().toISOString().split('T')[0];
+            const modalType = modalId.replace('Modal', '');
+            
+            if (modalType === 'router') {
+                document.getElementById('routerDate').value = today;
+            } else if (modalType === 'setter') {
+                document.getElementById('setterDate').value = today;
+            } else if (modalType === 'closer') {
+                // Set to start of current week (Monday)
+                const currentDate = new Date();
+                const monday = new Date(currentDate.setDate(currentDate.getDate() - currentDate.getDay() + 1));
+                document.getElementById('closerWeek').value = monday.toISOString().split('T')[0];
+            } else if (modalType === 'ai') {
+                // Set to start of current week (Monday)
+                const currentDate = new Date();
+                const monday = new Date(currentDate.setDate(currentDate.getDate() - currentDate.getDay() + 1));
+                document.getElementById('aiWeek').value = monday.toISOString().split('T')[0];
+            } else if (modalType === 'ea') {
+                // Set to start of current week (Monday)
+                const currentDate = new Date();
+                const monday = new Date(currentDate.setDate(currentDate.getDate() - currentDate.getDay() + 1));
+                document.getElementById('eaWeek').value = monday.toISOString().split('T')[0];
+            }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            
+            // Reset form
+            const formId = modalId.replace('Modal', 'Form');
+            document.getElementById(formId).reset();
+            
+            // Clear messages
+            const messageId = modalId.replace('Modal', 'Message');
+            document.getElementById(messageId).innerHTML = '';
+        }
+
+        function showMessage(elementId, message, isError = false) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="${isError ? 'error-message' : 'success-message'}">${message}</div>`;
+            
+            if (!isError) {
+                setTimeout(() => {
+                    element.innerHTML = '';
+                }, 3000);
+            }
+        }
+
+        // Form submission functions
+        async function submitRouterLog(event) {
+            event.preventDefault();
+            
+            const submitBtn = document.getElementById('routerSubmitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            
+            const formData = {
+                date: document.getElementById('routerDate').value,
+                team_member: document.getElementById('routerName').value,
+                clock_in: document.getElementById('routerClockIn').value,
+                clock_out: document.getElementById('routerClockOut').value,
+                calls_made: parseInt(document.getElementById('routerCalls').value),
+                conversations_reached: parseInt(document.getElementById('routerConversations').value),
+                crm_accuracy_pct: parseFloat(document.getElementById('routerAccuracy').value),
+                notes: document.getElementById('routerNotes').value
+            };
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/router_logs`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    showMessage('routerMessage', '✅ Router log submitted successfully!');
+                    document.getElementById('routerForm').reset();
+                    setTimeout(() => {
+                        closeModal('routerModal');
+                        loadRouters(); // Refresh data
+                    }, 1500);
+                } else {
+                    throw new Error('Failed to submit log');
+                }
+            } catch (error) {
+                showMessage('routerMessage', `❌ Error: ${error.message}`, true);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Log';
+            }
+        }
+
+        async function submitSetterLog(event) {
+            event.preventDefault();
+            
+            const submitBtn = document.getElementById('setterSubmitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            
+            const formData = {
+                date: document.getElementById('setterDate').value,
+                team_member: document.getElementById('setterName').value,
+                clock_in: document.getElementById('setterClockIn').value,
+                clock_out: document.getElementById('setterClockOut').value,
+                webbi_leads_contacted: parseInt(document.getElementById('setterContacted').value),
+                calls_booked: parseInt(document.getElementById('setterBooked').value),
+                calls_showed: parseInt(document.getElementById('setterShowed').value),
+                webbi_reroutes: parseInt(document.getElementById('setterReroutes').value),
+                notes: document.getElementById('setterNotes').value
+            };
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/setter_logs`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    showMessage('setterMessage', '✅ Setter log submitted successfully!');
+                    document.getElementById('setterForm').reset();
+                    setTimeout(() => {
+                        closeModal('setterModal');
+                        loadSetters(); // Refresh data
+                    }, 1500);
+                } else {
+                    throw new Error('Failed to submit log');
+                }
+            } catch (error) {
+                showMessage('setterMessage', `❌ Error: ${error.message}`, true);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Log';
+            }
+        }
+
+        async function submitCloserLog(event) {
+            event.preventDefault();
+            
+            const submitBtn = document.getElementById('closerSubmitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            
+            const callsTaken = parseInt(document.getElementById('closerCallsTaken').value);
+            const dealsClosed = parseInt(document.getElementById('closerDealsClosed').value);
+            const closeRate = callsTaken > 0 ? ((dealsClosed / callsTaken) * 100).toFixed(1) : 0;
+            
+            const formData = {
+                week_of: document.getElementById('closerWeek').value,
+                team_member: document.getElementById('closerName').value,
+                calls_taken: callsTaken,
+                no_shows: parseInt(document.getElementById('closerNoShows').value),
+                deals_closed: dealsClosed,
+                close_rate_pct: parseFloat(closeRate),
+                revenue_collected: parseInt(document.getElementById('closerRevenue').value),
+                notes: document.getElementById('closerNotes').value
+            };
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/closer_logs`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    showMessage('closerMessage', '✅ Closer log submitted successfully!');
+                    document.getElementById('closerForm').reset();
+                    setTimeout(() => {
+                        closeModal('closerModal');
+                        loadClosers(); // Refresh data
+                    }, 1500);
+                } else {
+                    throw new Error('Failed to submit log');
+                }
+            } catch (error) {
+                showMessage('closerMessage', `❌ Error: ${error.message}`, true);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Log';
+            }
+        }
+
+        async function submitAILog(event) {
+            event.preventDefault();
+            
+            const submitBtn = document.getElementById('aiSubmitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            
+            const formData = {
+                week_of: document.getElementById('aiWeek').value,
+                team_member: document.getElementById('aiName').value,
+                total_leads_generated: parseInt(document.getElementById('aiLeads').value),
+                webbi_registrations: parseInt(document.getElementById('aiRegistrations').value),
+                registration_show_rate_pct: parseFloat(document.getElementById('aiShowRate').value),
+                webbi_completion_rate_pct: parseFloat(document.getElementById('aiCompletionRate').value),
+                what_changed: document.getElementById('aiChanges').value
+            };
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/ai_team_logs`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    showMessage('aiMessage', '✅ AI team log submitted successfully!');
+                    document.getElementById('aiForm').reset();
+                    setTimeout(() => {
+                        closeModal('aiModal');
+                        loadAITeam(); // Refresh data
+                    }, 1500);
+                } else {
+                    throw new Error('Failed to submit log');
+                }
+            } catch (error) {
+                showMessage('aiMessage', `❌ Error: ${error.message}`, true);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Log';
+            }
+        }
+
+        async function submitEALog(event) {
+            event.preventDefault();
+            
+            const submitBtn = document.getElementById('eaSubmitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            
+            const formData = {
+                week_of: document.getElementById('eaWeek').value,
+                team_member: document.getElementById('eaName').value,
+                new_clients_onboarded: parseInt(document.getElementById('eaOnboarded').value),
+                failed_payments_recovered: parseInt(document.getElementById('eaRecovered').value),
+                refund_rate_pct: parseFloat(document.getElementById('eaRefundRate').value),
+                at_risk_clients: parseInt(document.getElementById('eaAtRisk').value),
+                notes: document.getElementById('eaNotes').value
+            };
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/ea_logs`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    showMessage('eaMessage', '✅ EA log submitted successfully!');
+                    document.getElementById('eaForm').reset();
+                    setTimeout(() => {
+                        closeModal('eaModal');
+                        loadEA(); // Refresh data
+                    }, 1500);
+                } else {
+                    throw new Error('Failed to submit log');
+                }
+            } catch (error) {
+                showMessage('eaMessage', `❌ Error: ${error.message}`, true);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Log';
+            }
+        }
+
+        // Period button handlers (same as before)
         function setPeriod(period) {
             document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
-            // Update data based on period
             updateWeekData();
         }
 
@@ -997,20 +1763,19 @@
             loadRouters();
         }
 
-        function setSetterPeriod(period) { /* Similar logic */ loadSetters(); }
-        function setCloserPeriod(period) { /* Similar logic */ loadClosers(); }
-        function setAIPeriod(period) { /* Similar logic */ loadAITeam(); }
-        function setEAPeriod(period) { /* Similar logic */ loadEA(); }
-        function setROASPeriod(period) { /* Similar logic */ }
+        function setSetterPeriod(period) { setRouterPeriod(period); loadSetters(); }
+        function setCloserPeriod(period) { setRouterPeriod(period); loadClosers(); }
+        function setAIPeriod(period) { setRouterPeriod(period); loadAITeam(); }
+        function setEAPeriod(period) { setRouterPeriod(period); loadEA(); }
+        function setROASPeriod(period) { setRouterPeriod(period); }
 
         function updateWeekData() {
             loadWeeklyOverview();
         }
 
-        // Data loading functions (same as before but with date filtering)
+        // Data loading functions (same as before)
         async function loadWeeklyOverview() {
             try {
-                // Load all data and aggregate for weekly overview
                 await Promise.all([
                     loadRouters(),
                     loadSetters(), 
@@ -1018,7 +1783,6 @@
                     loadAITeam()
                 ]);
                 
-                // Update overview mini-KPIs
                 updateOverviewKPIs();
             } catch (error) {
                 console.error('Error loading weekly overview:', error);
@@ -1026,19 +1790,16 @@
         }
 
         function updateOverviewKPIs() {
-            // Copy values from individual section KPIs
             document.getElementById('overview-router-calls').textContent = 
                 document.getElementById('router-calls').textContent;
             document.getElementById('overview-router-convos').textContent = 
                 document.getElementById('router-conversations').textContent;
             
-            // Calculate rates
             const calls = parseInt(document.getElementById('router-calls').textContent.replace(/,/g, '')) || 0;
             const convos = parseInt(document.getElementById('router-conversations').textContent.replace(/,/g, '')) || 0;
             const rate = calls > 0 ? ((convos / calls) * 100).toFixed(1) + '%' : '0%';
             document.getElementById('overview-router-rate').textContent = rate;
 
-            // Similar for other sections...
             document.getElementById('overview-setter-contacted').textContent = 
                 document.getElementById('setter-contacted').textContent;
             document.getElementById('overview-setter-booked').textContent = 
@@ -1056,7 +1817,6 @@
             document.getElementById('overview-ai-regs').textContent = 
                 document.getElementById('ai-registrations').textContent;
 
-            // Update weekly totals
             document.getElementById('weekly-revenue').textContent = 
                 document.getElementById('closer-revenue').textContent;
             document.getElementById('weekly-deals').textContent = 
@@ -1066,7 +1826,7 @@
             document.getElementById('weekly-roas').textContent = '37:1';
         }
 
-        // Data loading functions (keeping the existing ones but with date filtering)
+        // Data loading functions (same as before but simplified for space)
         async function loadRouters() {
             try {
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/router_logs?order=date.desc&limit=20`, {
@@ -1267,13 +2027,12 @@
             loadWeeklyOverview();
         }
 
-        // Initialize with current week
+        // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             const today = new Date();
             const currentWeek = new Date(today.setDate(today.getDate() - today.getDay())).toISOString().split('T')[0];
             document.getElementById('weekDate').value = currentWeek;
             
-            // Set default dates for all sections
             const todayStr = new Date().toISOString().split('T')[0];
             document.getElementById('routerStartDate').value = todayStr;
             document.getElementById('routerEndDate').value = todayStr;
