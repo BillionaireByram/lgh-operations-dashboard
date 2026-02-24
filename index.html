@@ -3,426 +3,559 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Let's Geaux Hustle | Operations Dashboard</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>LGH Team Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --lgh-primary: #6366F1;
+            --lgh-primary-dark: #4F46E5;
+            --lgh-black: #09090B;
+            --lgh-dark: #0F0F12;
+            --lgh-card: #18181B;
+            --lgh-card-hover: #1F1F23;
+            --lgh-white: #FAFAFA;
+            --lgh-gray: #71717A;
+            --lgh-gray-light: #A1A1AA;
+            --lgh-green: #22C55E;
+            --lgh-yellow: #EAB308;
+            --lgh-red: #EF4444;
+            --lgh-border: rgba(255, 255, 255, 0.08);
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--lgh-black);
+            color: var(--lgh-white);
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 220px;
+            height: 100vh;
+            background: var(--lgh-dark);
+            border-right: 1px solid var(--lgh-border);
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 32px;
+            padding: 0 8px;
+        }
+
+        .logo span {
+            color: var(--lgh-primary);
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-label {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: var(--lgh-gray);
+            margin-bottom: 8px;
+            padding: 0 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            color: var(--lgh-gray-light);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.15s ease;
+            cursor: pointer;
+            margin-bottom: 2px;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--lgh-white);
+        }
+
+        .nav-item.active {
+            background: var(--lgh-primary);
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 220px;
+            min-height: 100vh;
+        }
+
+        .header {
+            padding: 32px 40px 24px;
+            border-bottom: 1px solid var(--lgh-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .last-updated {
+            font-size: 13px;
+            color: var(--lgh-gray);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .last-updated::before {
+            content: '●';
+            color: var(--lgh-green);
+        }
+
+        .section {
+            padding: 40px;
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* KPI Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .kpi-card {
+            background: var(--lgh-card);
+            border: 1px solid var(--lgh-border);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.2s ease;
+        }
+
+        .kpi-card:hover {
+            background: var(--lgh-card-hover);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .kpi-label {
+            font-size: 13px;
+            color: var(--lgh-gray);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .kpi-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .kpi-value.good {
+            color: var(--lgh-green);
+        }
+
+        .kpi-value.warning {
+            color: var(--lgh-yellow);
+        }
+
+        .kpi-value.danger {
+            color: var(--lgh-red);
+        }
+
+        .kpi-change {
+            font-size: 12px;
+            color: var(--lgh-gray-light);
+        }
+
+        /* Form Card */
+        .form-card {
+            background: var(--lgh-card);
+            border: 1px solid var(--lgh-border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .form-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        /* Data Table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        .data-table th,
+        .data-table td {
+            text-align: left;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--lgh-border);
+            font-size: 13px;
+        }
+
+        .data-table th {
+            color: var(--lgh-gray);
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .data-table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .loading {
+            color: var(--lgh-gray);
+            font-style: italic;
+        }
+
+        .error {
+            color: var(--lgh-red);
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="logo">
-                <span class="logo-icon">🔥</span>
-                <h1>Let's Geaux Hustle</h1>
-            </div>
-            <div class="header-actions">
-                <span class="last-updated" id="lastUpdated">Loading...</span>
-                <button class="btn btn-primary" onclick="refreshData()">↻ Refresh</button>
-            </div>
-        </header>
-
-        <!-- Navigation Tabs -->
-        <nav class="nav-tabs">
-            <button class="tab active" data-view="scorecard">📈 Scorecard</button>
-            <button class="tab" data-view="quarterly">📅 12Q Planner</button>
-            <button class="tab" data-view="team">👥 Team</button>
-            <button class="tab" data-view="sales">💰 Sales</button>
-        </nav>
-
-        <!-- View: Scorecard -->
-        <section id="scorecard" class="view active">
-            <div class="view-header">
-                <h2>Weekly KPI Scorecard</h2>
-                <div class="filters">
-                    <select id="weekFilter" onchange="loadScorecard()">
-                        <option value="">This Week</option>
-                    </select>
-                    <select id="deptFilter" onchange="loadScorecard()">
-                        <option value="">All Departments</option>
-                        <option value="Marketing">Marketing</option>
-                        <option value="Sales">Sales</option>
-                        <option value="Routers">Routers</option>
-                        <option value="Setters">Setters</option>
-                        <option value="Closers">Closers</option>
-                        <option value="AI Team">AI Team</option>
-                        <option value="EA">EA</option>
-                    </select>
-                </div>
-            </div>
-            
-            <!-- KPI Summary Cards -->
-            <div class="kpi-summary" id="kpiSummary">
-                <div class="summary-card green">
-                    <span class="summary-value" id="greenCount">0</span>
-                    <span class="summary-label">On Track</span>
-                </div>
-                <div class="summary-card yellow">
-                    <span class="summary-value" id="yellowCount">0</span>
-                    <span class="summary-label">At Risk</span>
-                </div>
-                <div class="summary-card red">
-                    <span class="summary-value" id="redCount">0</span>
-                    <span class="summary-label">Behind</span>
-                </div>
-            </div>
-
-            <!-- KPI Table -->
-            <div class="table-container">
-                <table class="data-table" id="kpiTable">
-                    <thead>
-                        <tr>
-                            <th>Department</th>
-                            <th>Metric</th>
-                            <th>Weekly</th>
-                            <th>Monthly Actual</th>
-                            <th>Monthly Target</th>
-                            <th>Status</th>
-                            <th>Owner</th>
-                        </tr>
-                    </thead>
-                    <tbody id="kpiBody">
-                        <tr><td colspan="7" class="loading">Loading KPIs...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Add KPI Button -->
-            <button class="btn btn-secondary" onclick="openModal('kpiModal')">+ Add KPI</button>
-        </section>
-
-        <!-- View: 12Q Planner -->
-        <section id="quarterly" class="view">
-            <div class="view-header">
-                <h2>12-Quarter Planner</h2>
-                <select id="yearFilter" onchange="loadQuarterly()">
-                    <option value="2026">2026</option>
-                    <option value="2027">2027</option>
-                    <option value="2028">2028</option>
-                </select>
-            </div>
-
-            <!-- Quarterly Chart -->
-            <div class="chart-container">
-                <canvas id="quarterlyChart"></canvas>
-            </div>
-
-            <!-- Quarterly Table -->
-            <div class="table-container">
-                <table class="data-table" id="quarterlyTable">
-                    <thead>
-                        <tr>
-                            <th>Quarter</th>
-                            <th>Projected Revenue</th>
-                            <th>Actual Revenue</th>
-                            <th>Projected Profit</th>
-                            <th>Actual Profit</th>
-                            <th>Margin</th>
-                            <th>Notes</th>
-                        </tr>
-                    </thead>
-                    <tbody id="quarterlyBody">
-                        <tr><td colspan="7" class="loading">Loading quarterly data...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <button class="btn btn-secondary" onclick="openModal('quarterlyModal')">+ Add Quarter</button>
-        </section>
-
-        <!-- View: Team -->
-        <section id="team" class="view">
-            <div class="view-header">
-                <h2>Team Roster</h2>
-                <div class="filters">
-                    <select id="teamDeptFilter" onchange="loadTeam()">
-                        <option value="">All Departments</option>
-                        <option value="Marketing">Marketing</option>
-                        <option value="Sales">Sales</option>
-                        <option value="Routers">Routers</option>
-                        <option value="Setters">Setters</option>
-                        <option value="Closers">Closers</option>
-                        <option value="AI Team">AI Team</option>
-                        <option value="EA">EA</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Team Cards -->
-            <div class="team-grid" id="teamGrid">
-                <div class="loading">Loading team...</div>
-            </div>
-
-            <button class="btn btn-secondary" onclick="openModal('teamModal')">+ Add Team Member</button>
-        </section>
-
-        <!-- View: Sales -->
-        <section id="sales" class="view">
-            <div class="view-header">
-                <h2>Sales Call Tracker</h2>
-                <div class="filters">
-                    <select id="repFilter" onchange="loadSales()">
-                        <option value="">All Reps</option>
-                    </select>
-                    <select id="outcomeFilter" onchange="loadSales()">
-                        <option value="">All Outcomes</option>
-                        <option value="Closed">Closed</option>
-                        <option value="No Show">No Show</option>
-                        <option value="Follow-up">Follow-up</option>
-                        <option value="Lost">Lost</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Sales Summary -->
-            <div class="sales-summary" id="salesSummary">
-                <div class="summary-card">
-                    <span class="summary-value" id="totalCalls">0</span>
-                    <span class="summary-label">Total Calls</span>
-                </div>
-                <div class="summary-card green">
-                    <span class="summary-value" id="closedDeals">0</span>
-                    <span class="summary-label">Closed</span>
-                </div>
-                <div class="summary-card">
-                    <span class="summary-value" id="closeRate">0%</span>
-                    <span class="summary-label">Close Rate</span>
-                </div>
-                <div class="summary-card">
-                    <span class="summary-value" id="totalRevenue">$0</span>
-                    <span class="summary-label">Revenue</span>
-                </div>
-            </div>
-
-            <!-- Sales Table -->
-            <div class="table-container">
-                <table class="data-table" id="salesTable">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Rep</th>
-                            <th>Prospect</th>
-                            <th>Type</th>
-                            <th>Outcome</th>
-                            <th>Value</th>
-                            <th>Recording</th>
-                        </tr>
-                    </thead>
-                    <tbody id="salesBody">
-                        <tr><td colspan="7" class="loading">Loading sales data...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <button class="btn btn-secondary" onclick="openModal('salesModal')">+ Add Call</button>
-        </section>
-
-        <!-- Modals -->
-        <!-- KPI Modal -->
-        <div id="kpiModal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal('kpiModal')">&times;</span>
-                <h3>Add KPI Metric</h3>
-                <form id="kpiForm" onsubmit="submitKPI(event)">
-                    <div class="form-group">
-                        <label>Week Of</label>
-                        <input type="date" name="week_of" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Department</label>
-                        <select name="department" required>
-                            <option value="Marketing">Marketing</option>
-                            <option value="Sales">Sales</option>
-                            <option value="Routers">Routers</option>
-                            <option value="Setters">Setters</option>
-                            <option value="Closers">Closers</option>
-                            <option value="AI Team">AI Team</option>
-                            <option value="EA">EA</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Metric Name</label>
-                        <input type="text" name="metric_name" placeholder="e.g., Leads Generated" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Weekly Value</label>
-                        <input type="number" step="0.01" name="weekly_value">
-                    </div>
-                    <div class="form-group">
-                        <label>Monthly Actual</label>
-                        <input type="number" step="0.01" name="monthly_actual">
-                    </div>
-                    <div class="form-group">
-                        <label>Monthly Target</label>
-                        <input type="number" step="0.01" name="monthly_target">
-                    </div>
-                    <div class="form-group">
-                        <label>Status</label>
-                        <select name="status">
-                            <option value="green">🟢 On Track</option>
-                            <option value="yellow">🟡 At Risk</option>
-                            <option value="red">🔴 Behind</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Owner</label>
-                        <input type="text" name="owner" placeholder="Who's responsible">
-                    </div>
-                    <div class="form-group">
-                        <label>Source</label>
-                        <input type="text" name="source" placeholder="GHL, Stripe, Manual...">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Save KPI</button>
-                </form>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">LGH <span>Dashboard</span></div>
+        
+        <div class="nav-section">
+            <div class="nav-label">Overview</div>
+            <div class="nav-item active" onclick="showSection('overview')">
+                <span>📊</span> Overview
             </div>
         </div>
 
-        <!-- Quarterly Modal -->
-        <div id="quarterlyModal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal('quarterlyModal')">&times;</span>
-                <h3>Add Quarterly Target</h3>
-                <form id="quarterlyForm" onsubmit="submitQuarterly(event)">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Quarter</label>
-                            <select name="quarter" required>
-                                <option value="Q1">Q1</option>
-                                <option value="Q2">Q2</option>
-                                <option value="Q3">Q3</option>
-                                <option value="Q4">Q4</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Year</label>
-                            <input type="number" name="year" value="2026" required>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Projected Revenue</label>
-                            <input type="number" step="0.01" name="projected_revenue">
-                        </div>
-                        <div class="form-group">
-                            <label>Projected Profit</label>
-                            <input type="number" step="0.01" name="projected_profit">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Actual Revenue</label>
-                            <input type="number" step="0.01" name="actual_revenue">
-                        </div>
-                        <div class="form-group">
-                            <label>Actual Profit</label>
-                            <input type="number" step="0.01" name="actual_profit">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Notes</label>
-                        <textarea name="notes" rows="3"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Save Quarter</button>
-                </form>
+        <div class="nav-section">
+            <div class="nav-label">Team Performance</div>
+            <div class="nav-item" onclick="showSection('deals')">
+                <span>💰</span> Deals Closed
             </div>
-        </div>
-
-        <!-- Team Modal -->
-        <div id="teamModal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal('teamModal')">&times;</span>
-                <h3>Add Team Member</h3>
-                <form id="teamForm" onsubmit="submitTeam(event)">
-                    <div class="form-group">
-                        <label>Name</label>
-                        <input type="text" name="name" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Role</label>
-                        <input type="text" name="role" placeholder="e.g., Sales Rep, Router" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Department</label>
-                        <select name="department">
-                            <option value="Marketing">Marketing</option>
-                            <option value="Sales">Sales</option>
-                            <option value="Routers">Routers</option>
-                            <option value="Setters">Setters</option>
-                            <option value="Closers">Closers</option>
-                            <option value="AI Team">AI Team</option>
-                            <option value="EA">EA</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Manager</label>
-                        <input type="text" name="manager">
-                    </div>
-                    <div class="form-group">
-                        <label>Responsibilities (one per line)</label>
-                        <textarea name="responsibilities" rows="3" placeholder="Lead qualification&#10;Follow-up calls&#10;CRM updates"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Playbook Links (one per line)</label>
-                        <textarea name="playbooks" rows="2" placeholder="https://docs.google.com/..."></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Save Team Member</button>
-                </form>
+            <div class="nav-item" onclick="showSection('ai-team')">
+                <span>🤖</span> AI Team
             </div>
-        </div>
-
-        <!-- Sales Modal -->
-        <div id="salesModal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal('salesModal')">&times;</span>
-                <h3>Add Sales Call</h3>
-                <form id="salesForm" onsubmit="submitSales(event)">
-                    <div class="form-group">
-                        <label>Call Date</label>
-                        <input type="datetime-local" name="call_date" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Rep Name</label>
-                        <input type="text" name="rep_name" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Prospect Name</label>
-                        <input type="text" name="prospect_name">
-                    </div>
-                    <div class="form-group">
-                        <label>Call Type</label>
-                        <select name="call_type">
-                            <option value="Discovery">Discovery</option>
-                            <option value="Closer">Closer</option>
-                            <option value="Follow-up">Follow-up</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Outcome</label>
-                        <select name="outcome">
-                            <option value="Closed">Closed</option>
-                            <option value="No Show">No Show</option>
-                            <option value="Follow-up">Follow-up</option>
-                            <option value="Lost">Lost</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Deal Value ($)</label>
-                        <input type="number" step="0.01" name="deal_value">
-                    </div>
-                    <div class="form-group">
-                        <label>Recording URL</label>
-                        <input type="url" name="recording_url" placeholder="Google Drive link">
-                    </div>
-                    <div class="form-group">
-                        <label>Notes</label>
-                        <textarea name="notes" rows="3"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Save Call</button>
-                </form>
+            <div class="nav-item" onclick="showSection('call-reviews')">
+                <span>📞</span> Call Reviews
             </div>
         </div>
     </div>
 
-    <script src="app.js"></script>
+    <!-- Main Content -->
+    <div class="main-content">
+        
+        <!-- Overview Section -->
+        <section id="overview" class="section active">
+            <div class="header">
+                <h1>LGH Overview</h1>
+                <div class="last-updated" id="last-updated">Loading...</div>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-label">Total Deals (All Time)</div>
+                    <div class="kpi-value good" id="total-deals">Loading...</div>
+                    <div class="kpi-change" id="deals-change">Calculating...</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Total Revenue</div>
+                    <div class="kpi-value good" id="total-revenue">Loading...</div>
+                    <div class="kpi-change" id="revenue-change">Cash collected</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">February 2026</div>
+                    <div class="kpi-value good" id="feb-deals">Loading...</div>
+                    <div class="kpi-change" id="feb-revenue">Loading...</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Average Deal Size</div>
+                    <div class="kpi-value" id="avg-deal">Loading...</div>
+                    <div class="kpi-change">Cash collected basis</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Deals Closed Section -->
+        <section id="deals" class="section">
+            <div class="header">
+                <h1>Deals Closed</h1>
+                <div class="last-updated">Live from Supabase</div>
+            </div>
+
+            <div class="form-card">
+                <h3>Recent Deals</h3>
+                <div id="deals-loading" class="loading">Loading deals from Supabase...</div>
+                <table class="data-table" id="deals-table" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Client</th>
+                            <th>Closer</th>
+                            <th>Package</th>
+                            <th>Cash Collected</th>
+                            <th>Total Value</th>
+                        </tr>
+                    </thead>
+                    <tbody id="deals-tbody">
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- AI Team Section -->
+        <section id="ai-team" class="section">
+            <div class="header">
+                <h1>AI Team</h1>
+                <div class="last-updated">Live from AI Team logs</div>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-label">Active Logs</div>
+                    <div class="kpi-value" id="ai-logs">Loading...</div>
+                    <div class="kpi-change">AI team entries</div>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <h3>Recent AI Team Activity</h3>
+                <div id="ai-loading" class="loading">Loading AI team data...</div>
+                <table class="data-table" id="ai-table" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Task</th>
+                            <th>Status</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ai-tbody">
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Call Reviews Section -->
+        <section id="call-reviews" class="section">
+            <div class="header">
+                <h1>Call Reviews</h1>
+                <div class="last-updated">Live from automated reviews</div>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-label">Total Reviews</div>
+                    <div class="kpi-value" id="total-reviews">Loading...</div>
+                    <div class="kpi-change">All time</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Average Score</div>
+                    <div class="kpi-value" id="avg-score">Loading...</div>
+                    <div class="kpi-change">Out of 10</div>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <h3>Recent Call Reviews</h3>
+                <div id="reviews-loading" class="loading">Loading call reviews...</div>
+                <table class="data-table" id="reviews-table" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Prospect</th>
+                            <th>Closer</th>
+                            <th>Score</th>
+                            <th>Prediction</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reviews-tbody">
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Supabase configuration
+        const SUPABASE_URL = 'https://aqcnqxmqksashphcvgoc.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFxY25xeG1xa3Nhc2hwaGN2Z29jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA4Mjk4MzcsImV4cCI6MjA4NjQwNTgzN30.j1lkN8KHMbvw-_Ik2qfMhGh5Y8QHQpJdM6ufL1wQLXw';
+        const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFxY25xeG1xa3Nhc2hwaGN2Z29jIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDgyOTgzNywiZXhwIjoyMDg2NDA1ODM3fQ.GcECZQqotwvKfoZ9PwMsgZ3bYETCcsIpj4f9zfpPW94';
+
+        // Helper function to fetch data from Supabase
+        async function fetchSupabase(table, params = '') {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}${params}`, {
+                    headers: {
+                        'apikey': SUPABASE_SERVICE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                return await response.json();
+            } catch (error) {
+                console.error(`Error fetching ${table}:`, error);
+                return [];
+            }
+        }
+
+        // Load deals data
+        async function loadDeals() {
+            try {
+                const deals = await fetchSupabase('deals_closed', '?order=date.desc&limit=50');
+                
+                // Update overview KPIs
+                const totalDeals = deals.length;
+                const totalRevenue = deals.reduce((sum, deal) => sum + (deal.cash_collected || 0), 0);
+                const feb2026Deals = deals.filter(deal => deal.date && deal.date.startsWith('2026-02'));
+                const febRevenue = feb2026Deals.reduce((sum, deal) => sum + (deal.cash_collected || 0), 0);
+                const avgDeal = totalRevenue / totalDeals;
+
+                document.getElementById('total-deals').textContent = totalDeals.toLocaleString();
+                document.getElementById('total-revenue').textContent = '$' + totalRevenue.toLocaleString();
+                document.getElementById('feb-deals').textContent = feb2026Deals.length + ' deals';
+                document.getElementById('feb-revenue').textContent = '$' + febRevenue.toLocaleString();
+                document.getElementById('avg-deal').textContent = '$' + Math.round(avgDeal).toLocaleString();
+
+                // Update deals table
+                const tbody = document.getElementById('deals-tbody');
+                tbody.innerHTML = deals.slice(0, 20).map(deal => `
+                    <tr>
+                        <td>${deal.date || 'N/A'}</td>
+                        <td>${deal.client_name || 'N/A'}</td>
+                        <td>${deal.closer || 'N/A'}</td>
+                        <td>${deal.package || 'N/A'}</td>
+                        <td>$${(deal.cash_collected || 0).toLocaleString()}</td>
+                        <td>$${(deal.total_value || 0).toLocaleString()}</td>
+                    </tr>
+                `).join('');
+
+                document.getElementById('deals-loading').style.display = 'none';
+                document.getElementById('deals-table').style.display = 'table';
+
+            } catch (error) {
+                console.error('Error loading deals:', error);
+                document.getElementById('deals-loading').textContent = 'Error loading deals data';
+                document.getElementById('deals-loading').className = 'error';
+            }
+        }
+
+        // Load call reviews data
+        async function loadCallReviews() {
+            try {
+                const reviews = await fetchSupabase('call_reviews', '?order=created_at.desc&limit=20');
+                
+                document.getElementById('total-reviews').textContent = reviews.length;
+                
+                const avgScore = reviews.length > 0 ? 
+                    reviews.reduce((sum, review) => sum + (review.score_overall || 0), 0) / reviews.length : 0;
+                document.getElementById('avg-score').textContent = avgScore.toFixed(1);
+
+                const tbody = document.getElementById('reviews-tbody');
+                tbody.innerHTML = reviews.map(review => `
+                    <tr>
+                        <td>${review.created_at ? new Date(review.created_at).toLocaleDateString() : 'N/A'}</td>
+                        <td>${review.prospect_name || 'N/A'}</td>
+                        <td>${review.closer || 'N/A'}</td>
+                        <td>${review.score_overall || 'N/A'}/10</td>
+                        <td>${review.prediction || 'N/A'}</td>
+                    </tr>
+                `).join('');
+
+                document.getElementById('reviews-loading').style.display = 'none';
+                document.getElementById('reviews-table').style.display = 'table';
+
+            } catch (error) {
+                console.error('Error loading call reviews:', error);
+                document.getElementById('reviews-loading').textContent = 'Error loading call reviews';
+                document.getElementById('reviews-loading').className = 'error';
+            }
+        }
+
+        // Load AI team data
+        async function loadAITeam() {
+            try {
+                const aiLogs = await fetchSupabase('ai_team_logs', '?order=created_at.desc&limit=20');
+                
+                document.getElementById('ai-logs').textContent = aiLogs.length;
+
+                const tbody = document.getElementById('ai-tbody');
+                tbody.innerHTML = aiLogs.map(log => `
+                    <tr>
+                        <td>${log.created_at ? new Date(log.created_at).toLocaleDateString() : 'N/A'}</td>
+                        <td>${log.task || 'N/A'}</td>
+                        <td>${log.status || 'N/A'}</td>
+                        <td>${log.notes ? log.notes.substring(0, 50) + '...' : 'N/A'}</td>
+                    </tr>
+                `).join('');
+
+                document.getElementById('ai-loading').style.display = 'none';
+                document.getElementById('ai-table').style.display = 'table';
+
+            } catch (error) {
+                console.error('Error loading AI team data:', error);
+                document.getElementById('ai-loading').textContent = 'Error loading AI team data';
+                document.getElementById('ai-loading').className = 'error';
+            }
+        }
+
+        // Navigation
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            document.getElementById('last-updated').textContent = 'Last updated: ' + new Date().toLocaleString();
+            
+            // Load all data
+            await Promise.all([
+                loadDeals(),
+                loadCallReviews(),
+                loadAITeam()
+            ]);
+        });
+    </script>
 </body>
 </html>
