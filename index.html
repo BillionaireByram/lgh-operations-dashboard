@@ -236,96 +236,6 @@
             color: var(--text-primary);
         }
 
-        /* Modal */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        .modal {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 2rem;
-            width: 90%;
-            max-width: 500px;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--text-secondary);
-            margin-bottom: 0.5rem;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 0.75rem;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            color: var(--text-primary);
-            font-size: 0.875rem;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--accent-red);
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: flex-end;
-            margin-top: 2rem;
-        }
-
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border-radius: 4px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-
-        .btn-primary {
-            background: var(--accent-red);
-            color: white;
-            border: none;
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: var(--text-secondary);
-            border: 1px solid var(--border-color);
-        }
-
-        .btn:hover {
-            opacity: 0.9;
-        }
-
         .loading {
             color: var(--text-secondary);
             font-style: italic;
@@ -404,20 +314,20 @@
             </div>
             <div class="kpi-grid">
                 <div class="kpi-card">
-                    <div class="kpi-value" id="router-calls">0</div>
+                    <div class="kpi-value" id="router-calls">Loading...</div>
                     <div class="kpi-label">Total Calls</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-value" id="router-conversations">0</div>
+                    <div class="kpi-value" id="router-conversations">Loading...</div>
                     <div class="kpi-label">Conversations</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-value" id="router-updates">0%</div>
-                    <div class="kpi-label">CRM Updates</div>
+                    <div class="kpi-value" id="router-accuracy">Loading...</div>
+                    <div class="kpi-label">CRM Accuracy</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-value" id="router-hours">0</div>
-                    <div class="kpi-label">Hours Logged</div>
+                    <div class="kpi-value" id="router-members">Loading...</div>
+                    <div class="kpi-label">Active Members</div>
                 </div>
             </div>
             <div class="data-table-container">
@@ -430,16 +340,15 @@
                             <th>Clock Out</th>
                             <th>Calls Made</th>
                             <th>Conversations</th>
-                            <th>CRM Updates</th>
+                            <th>CRM Accuracy</th>
                             <th>Notes</th>
                         </tr>
                     </thead>
                     <tbody id="routers-tbody">
-                        <tr><td colspan="8" class="empty-state">No router logs found</td></tr>
+                        <tr><td colspan="8" class="loading">Loading router data...</td></tr>
                     </tbody>
                 </table>
             </div>
-            <button class="add-btn" onclick="showModal('router')">+ Add Router Log</button>
         </div>
 
         <!-- Setters Section -->
@@ -449,19 +358,19 @@
             </div>
             <div class="kpi-grid">
                 <div class="kpi-card">
-                    <div class="kpi-value" id="setter-leads">0</div>
-                    <div class="kpi-label">Leads Connected</div>
+                    <div class="kpi-value" id="setter-contacted">Loading...</div>
+                    <div class="kpi-label">Leads Contacted</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-value" id="setter-booked">0</div>
+                    <div class="kpi-value" id="setter-booked">Loading...</div>
                     <div class="kpi-label">Calls Booked</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-value" id="setter-showed">0</div>
+                    <div class="kpi-value" id="setter-showed">Loading...</div>
                     <div class="kpi-label">Showed Up</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-value" id="setter-reroutes">0</div>
+                    <div class="kpi-value" id="setter-reroutes">Loading...</div>
                     <div class="kpi-label">Re-routes</div>
                 </div>
             </div>
@@ -473,19 +382,18 @@
                             <th>Team Member</th>
                             <th>Clock In</th>
                             <th>Clock Out</th>
-                            <th>Leads Connected</th>
-                            <th>Calls Booked</th>
-                            <th>Showed Up</th>
+                            <th>Contacted</th>
+                            <th>Booked</th>
+                            <th>Showed</th>
                             <th>Re-routes</th>
                             <th>Notes</th>
                         </tr>
                     </thead>
                     <tbody id="setters-tbody">
-                        <tr><td colspan="9" class="empty-state">No setter logs found</td></tr>
+                        <tr><td colspan="9" class="loading">Loading setter data...</td></tr>
                     </tbody>
                 </table>
             </div>
-            <button class="add-btn" onclick="showModal('setter')">+ Add Setter Log</button>
         </div>
 
         <!-- Closers Section -->
@@ -495,19 +403,19 @@
             </div>
             <div class="kpi-grid">
                 <div class="kpi-card">
-                    <div class="kpi-value" id="closer-calls">0</div>
+                    <div class="kpi-value" id="closer-calls">Loading...</div>
                     <div class="kpi-label">Calls Taken</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-value" id="closer-closed">0</div>
+                    <div class="kpi-value" id="closer-closed">Loading...</div>
                     <div class="kpi-label">Deals Closed</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-value" id="closer-rate">0%</div>
+                    <div class="kpi-value" id="closer-rate">Loading...</div>
                     <div class="kpi-label">Close Rate</div>
                 </div>
                 <div class="kpi-card green-accent">
-                    <div class="kpi-value green" id="closer-revenue">$0</div>
+                    <div class="kpi-value green" id="closer-revenue">Loading...</div>
                     <div class="kpi-label">Revenue</div>
                 </div>
             </div>
@@ -526,11 +434,10 @@
                         </tr>
                     </thead>
                     <tbody id="closers-tbody">
-                        <tr><td colspan="8" class="empty-state">No closer logs found</td></tr>
+                        <tr><td colspan="8" class="loading">Loading closer data...</td></tr>
                     </tbody>
                 </table>
             </div>
-            <button class="add-btn" onclick="showModal('closer')">+ Add Closer Log</button>
         </div>
 
         <!-- AI Team Section -->
@@ -540,19 +447,19 @@
             </div>
             <div class="kpi-grid">
                 <div class="kpi-card">
-                    <div class="kpi-value" id="ai-leads">1,900</div>
+                    <div class="kpi-value" id="ai-leads">Loading...</div>
                     <div class="kpi-label">Leads Generated</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-value" id="ai-registrations">135</div>
+                    <div class="kpi-value" id="ai-registrations">Loading...</div>
                     <div class="kpi-label">Registrations</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-value" id="ai-showrate">39%</div>
+                    <div class="kpi-value" id="ai-showrate">Loading...</div>
                     <div class="kpi-label">Show Rate</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-value" id="ai-completion">2%</div>
+                    <div class="kpi-value" id="ai-completion">Loading...</div>
                     <div class="kpi-label">Completion Rate</div>
                 </div>
             </div>
@@ -570,19 +477,10 @@
                         </tr>
                     </thead>
                     <tbody id="ai-tbody">
-                        <tr>
-                            <td>Current Week</td>
-                            <td>Byron (AI Team)</td>
-                            <td>1,900</td>
-                            <td>135</td>
-                            <td>39%</td>
-                            <td>2%</td>
-                            <td>Webinar revamped to improve completion</td>
-                        </tr>
+                        <tr><td colspan="7" class="loading">Loading AI team data...</td></tr>
                     </tbody>
                 </table>
             </div>
-            <button class="add-btn" onclick="showModal('ai')">+ Add AI Team Log</button>
         </div>
 
         <!-- Executive Assistant Section -->
@@ -592,42 +490,40 @@
             </div>
             <div class="kpi-grid">
                 <div class="kpi-card">
-                    <div class="kpi-value" id="ea-tasks">0</div>
-                    <div class="kpi-label">Tasks Completed</div>
+                    <div class="kpi-value" id="ea-onboarded">Loading...</div>
+                    <div class="kpi-label">Clients Onboarded</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-value" id="ea-clients">0</div>
-                    <div class="kpi-label">Clients Managed</div>
+                    <div class="kpi-value" id="ea-recovered">Loading...</div>
+                    <div class="kpi-label">Payments Recovered</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-value" id="ea-issues">0</div>
-                    <div class="kpi-label">Issues Resolved</div>
+                    <div class="kpi-value" id="ea-refunds">Loading...</div>
+                    <div class="kpi-label">Refund Rate</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-value" id="ea-hours">0</div>
-                    <div class="kpi-label">Hours Logged</div>
+                    <div class="kpi-value" id="ea-atrisk">Loading...</div>
+                    <div class="kpi-label">At-Risk Clients</div>
                 </div>
             </div>
             <div class="data-table-container">
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Date</th>
+                            <th>Week Of</th>
                             <th>Team Member</th>
-                            <th>Clock In</th>
-                            <th>Clock Out</th>
-                            <th>Tasks Completed</th>
-                            <th>Clients Managed</th>
-                            <th>Issues Resolved</th>
+                            <th>Onboarded</th>
+                            <th>Recovered</th>
+                            <th>Refund Rate</th>
+                            <th>At-Risk</th>
                             <th>Notes</th>
                         </tr>
                     </thead>
                     <tbody id="executive-tbody">
-                        <tr><td colspan="8" class="empty-state">No executive assistant logs found</td></tr>
+                        <tr><td colspan="7" class="loading">Loading EA data...</td></tr>
                     </tbody>
                 </table>
             </div>
-            <button class="add-btn" onclick="showModal('executive')">+ Add EA Log</button>
         </div>
 
         <!-- ROAS Section -->
@@ -653,48 +549,6 @@
                     <div class="kpi-label">Click-Through Rate</div>
                 </div>
             </div>
-            <div class="data-table-container">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Period</th>
-                            <th>Ad Spend</th>
-                            <th>Clicks</th>
-                            <th>Registrations</th>
-                            <th>Deals Closed</th>
-                            <th>Revenue</th>
-                            <th>ROAS</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Last 30 Days</td>
-                            <td>$740</td>
-                            <td>4,928</td>
-                            <td>135</td>
-                            <td>9</td>
-                            <td>$28,699</td>
-                            <td>38:1</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Universal Modal -->
-    <div id="universalModal" class="modal-overlay">
-        <div class="modal">
-            <div class="modal-header" id="modalTitle">Add Log</div>
-            <form id="universalForm">
-                <div id="formFields">
-                    <!-- Dynamic form fields will be inserted here -->
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" onclick="hideModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Log</button>
-                </div>
-            </form>
         </div>
     </div>
 
@@ -702,81 +556,6 @@
         // Supabase configuration
         const SUPABASE_URL = 'https://aqcnqxmqksashphcvgoc.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFxY25xeG1xa3Nhc2hwaGN2Z29jIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDgyOTgzNywiZXhwIjoyMDg2NDA1ODM3fQ.GcECZQqotwvKfoZ9PwMsgZ3bYETCcsIpj4f9zfpPW94';
-
-        let currentModalType = '';
-
-        // Form field configurations for each role
-        const formConfigs = {
-            router: {
-                title: 'Add Router Log',
-                table: 'router_logs',
-                fields: [
-                    { name: 'date', label: 'Date', type: 'date', required: true },
-                    { name: 'team_member', label: 'Team Member', type: 'text', required: true },
-                    { name: 'clock_in', label: 'Clock In Time', type: 'time', required: true },
-                    { name: 'clock_out', label: 'Clock Out Time', type: 'time', required: true },
-                    { name: 'calls_made', label: 'Calls Made', type: 'number', required: true },
-                    { name: 'conversations_reached', label: 'Conversations Reached', type: 'number', required: true },
-                    { name: 'crm_updates_pct', label: 'CRM Updates %', type: 'number', required: true },
-                    { name: 'notes', label: 'Notes', type: 'textarea', required: false }
-                ]
-            },
-            setter: {
-                title: 'Add Setter Log',
-                table: 'setter_logs',
-                fields: [
-                    { name: 'date', label: 'Date', type: 'date', required: true },
-                    { name: 'team_member', label: 'Team Member', type: 'text', required: true },
-                    { name: 'clock_in', label: 'Clock In Time', type: 'time', required: true },
-                    { name: 'clock_out', label: 'Clock Out Time', type: 'time', required: true },
-                    { name: 'leads_connected', label: 'Leads Connected', type: 'number', required: true },
-                    { name: 'calls_booked', label: 'Calls Booked', type: 'number', required: true },
-                    { name: 'calls_showed', label: 'Calls Showed Up', type: 'number', required: true },
-                    { name: 'reroutes', label: 'Re-routes Done', type: 'number', required: true },
-                    { name: 'notes', label: 'Notes', type: 'textarea', required: false }
-                ]
-            },
-            closer: {
-                title: 'Add Closer Log',
-                table: 'closer_logs',
-                fields: [
-                    { name: 'week_of', label: 'Week Of', type: 'date', required: true },
-                    { name: 'team_member', label: 'Team Member', type: 'text', required: true },
-                    { name: 'calls_taken', label: 'Calls Taken', type: 'number', required: true },
-                    { name: 'no_shows', label: 'No Shows', type: 'number', required: true },
-                    { name: 'deals_closed', label: 'Deals Closed', type: 'number', required: true },
-                    { name: 'revenue', label: 'Total Revenue ($)', type: 'number', required: true },
-                    { name: 'notes', label: 'Notes', type: 'textarea', required: false }
-                ]
-            },
-            ai: {
-                title: 'Add AI Team Log',
-                table: 'ai_team_logs',
-                fields: [
-                    { name: 'week_of', label: 'Week Of', type: 'date', required: true },
-                    { name: 'team_member', label: 'Team Member', type: 'text', required: true },
-                    { name: 'leads_generated', label: 'Leads Generated', type: 'number', required: true },
-                    { name: 'webbi_registrations', label: 'Registrations', type: 'number', required: true },
-                    { name: 'registration_show_rate_pct', label: 'Show Rate %', type: 'number', required: true },
-                    { name: 'webbi_completion_rate_pct', label: 'Completion Rate %', type: 'number', required: true },
-                    { name: 'notes', label: 'Notes', type: 'textarea', required: false }
-                ]
-            },
-            executive: {
-                title: 'Add Executive Assistant Log',
-                table: 'executive_logs',
-                fields: [
-                    { name: 'date', label: 'Date', type: 'date', required: true },
-                    { name: 'team_member', label: 'Team Member', type: 'text', required: true },
-                    { name: 'clock_in', label: 'Clock In Time', type: 'time', required: true },
-                    { name: 'clock_out', label: 'Clock Out Time', type: 'time', required: true },
-                    { name: 'tasks_completed', label: 'Tasks Completed', type: 'number', required: true },
-                    { name: 'clients_managed', label: 'Clients Managed', type: 'number', required: true },
-                    { name: 'issues_resolved', label: 'Issues Resolved', type: 'number', required: true },
-                    { name: 'notes', label: 'Notes', type: 'textarea', required: false }
-                ]
-            }
-        };
 
         // Navigation
         function showTab(tabName) {
@@ -789,83 +568,6 @@
             document.getElementById(tabName).classList.add('active');
             event.target.classList.add('active');
         }
-
-        // Modal functions
-        function showModal(type) {
-            currentModalType = type;
-            const config = formConfigs[type];
-            
-            document.getElementById('modalTitle').textContent = config.title;
-            
-            const formFields = document.getElementById('formFields');
-            formFields.innerHTML = config.fields.map(field => {
-                if (field.type === 'textarea') {
-                    return `
-                        <div class="form-group">
-                            <label class="form-label">${field.label}</label>
-                            <textarea class="form-input" name="${field.name}" ${field.required ? 'required' : ''}></textarea>
-                        </div>
-                    `;
-                } else {
-                    return `
-                        <div class="form-group">
-                            <label class="form-label">${field.label}</label>
-                            <input type="${field.type}" class="form-input" name="${field.name}" ${field.required ? 'required' : ''}>
-                        </div>
-                    `;
-                }
-            }).join('');
-            
-            document.getElementById('universalModal').style.display = 'flex';
-        }
-
-        function hideModal() {
-            document.getElementById('universalModal').style.display = 'none';
-            document.getElementById('universalForm').reset();
-        }
-
-        // Form submission
-        document.getElementById('universalForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const config = formConfigs[currentModalType];
-            const formData = new FormData(this);
-            const data = {};
-            
-            for (let [key, value] of formData.entries()) {
-                data[key] = value;
-            }
-            
-            // Calculate close rate for closers
-            if (currentModalType === 'closer') {
-                const closeRate = data.calls_taken > 0 ? 
-                    ((data.deals_closed / data.calls_taken) * 100).toFixed(1) : 0;
-                data.close_rate = closeRate;
-            }
-
-            try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/${config.table}`, {
-                    method: 'POST',
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                });
-
-                if (response.ok) {
-                    hideModal();
-                    refreshData();
-                    alert('Log saved successfully!');
-                } else {
-                    alert('Error saving log');
-                }
-            } catch (error) {
-                console.error('Error saving log:', error);
-                alert('Error saving log');
-            }
-        });
 
         // Data loading functions
         async function loadDeals() {
@@ -907,10 +609,223 @@
             }
         }
 
+        async function loadRouters() {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/router_logs?order=date.desc&limit=20`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                
+                const logs = await response.json();
+
+                // Update KPIs
+                const totalCalls = logs.reduce((sum, log) => sum + (log.calls_made || 0), 0);
+                const totalConversations = logs.reduce((sum, log) => sum + (log.conversations_reached || 0), 0);
+                const avgAccuracy = logs.length > 0 ? 
+                    logs.reduce((sum, log) => sum + (log.crm_accuracy_pct || 0), 0) / logs.length : 0;
+
+                document.getElementById('router-calls').textContent = totalCalls.toLocaleString();
+                document.getElementById('router-conversations').textContent = totalConversations.toLocaleString();
+                document.getElementById('router-accuracy').textContent = avgAccuracy.toFixed(1) + '%';
+                document.getElementById('router-members').textContent = new Set(logs.map(l => l.team_member)).size;
+
+                // Update table
+                const tbody = document.getElementById('routers-tbody');
+                tbody.innerHTML = logs.map(log => `
+                    <tr>
+                        <td>${log.date}</td>
+                        <td>${log.team_member}</td>
+                        <td>${log.clock_in}</td>
+                        <td>${log.clock_out}</td>
+                        <td>${log.calls_made}</td>
+                        <td>${log.conversations_reached}</td>
+                        <td>${log.crm_accuracy_pct}%</td>
+                        <td>${(log.notes || '').substring(0, 50)}...</td>
+                    </tr>
+                `).join('');
+
+            } catch (error) {
+                console.error('Error loading router logs:', error);
+                document.getElementById('routers-tbody').innerHTML = '<tr><td colspan="8" class="loading">Error loading data</td></tr>';
+            }
+        }
+
+        async function loadSetters() {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/setter_logs?order=date.desc&limit=20`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                
+                const logs = await response.json();
+
+                // Update KPIs
+                const totalContacted = logs.reduce((sum, log) => sum + (log.webbi_leads_contacted || 0), 0);
+                const totalBooked = logs.reduce((sum, log) => sum + (log.calls_booked || 0), 0);
+                const totalShowed = logs.reduce((sum, log) => sum + (log.calls_showed || 0), 0);
+                const totalReroutes = logs.reduce((sum, log) => sum + (log.webbi_reroutes || 0), 0);
+
+                document.getElementById('setter-contacted').textContent = totalContacted.toLocaleString();
+                document.getElementById('setter-booked').textContent = totalBooked.toLocaleString();
+                document.getElementById('setter-showed').textContent = totalShowed.toLocaleString();
+                document.getElementById('setter-reroutes').textContent = totalReroutes.toLocaleString();
+
+                // Update table
+                const tbody = document.getElementById('setters-tbody');
+                tbody.innerHTML = logs.map(log => `
+                    <tr>
+                        <td>${log.date}</td>
+                        <td>${log.team_member}</td>
+                        <td>${log.clock_in}</td>
+                        <td>${log.clock_out}</td>
+                        <td>${log.webbi_leads_contacted}</td>
+                        <td>${log.calls_booked}</td>
+                        <td>${log.calls_showed}</td>
+                        <td>${log.webbi_reroutes}</td>
+                        <td>${(log.notes || '').substring(0, 30)}...</td>
+                    </tr>
+                `).join('');
+
+            } catch (error) {
+                console.error('Error loading setter logs:', error);
+                document.getElementById('setters-tbody').innerHTML = '<tr><td colspan="9" class="loading">Error loading data</td></tr>';
+            }
+        }
+
+        async function loadClosers() {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/closer_logs?order=week_of.desc&limit=20`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                
+                const logs = await response.json();
+
+                // Update KPIs
+                const totalCalls = logs.reduce((sum, log) => sum + (log.calls_taken || 0), 0);
+                const totalClosed = logs.reduce((sum, log) => sum + (log.deals_closed || 0), 0);
+                const totalRevenue = logs.reduce((sum, log) => sum + (log.revenue_collected || 0), 0);
+                const avgCloseRate = totalCalls > 0 ? ((totalClosed / totalCalls) * 100) : 0;
+
+                document.getElementById('closer-calls').textContent = totalCalls.toLocaleString();
+                document.getElementById('closer-closed').textContent = totalClosed.toLocaleString();
+                document.getElementById('closer-rate').textContent = avgCloseRate.toFixed(1) + '%';
+                document.getElementById('closer-revenue').textContent = '$' + totalRevenue.toLocaleString();
+
+                // Update table
+                const tbody = document.getElementById('closers-tbody');
+                tbody.innerHTML = logs.map(log => `
+                    <tr>
+                        <td>${log.week_of}</td>
+                        <td>${log.team_member}</td>
+                        <td>${log.calls_taken}</td>
+                        <td>${log.no_shows}</td>
+                        <td>${log.deals_closed}</td>
+                        <td>${log.close_rate_pct || 'N/A'}%</td>
+                        <td>$${(log.revenue_collected || 0).toLocaleString()}</td>
+                        <td>${(log.notes || '').substring(0, 40)}...</td>
+                    </tr>
+                `).join('');
+
+            } catch (error) {
+                console.error('Error loading closer logs:', error);
+                document.getElementById('closers-tbody').innerHTML = '<tr><td colspan="8" class="loading">Error loading data</td></tr>';
+            }
+        }
+
+        async function loadAITeam() {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/ai_team_logs?order=week_of.desc&limit=20`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                
+                const logs = await response.json();
+
+                if (logs.length > 0) {
+                    const latest = logs[0];
+                    document.getElementById('ai-leads').textContent = (latest.total_leads_generated || 0).toLocaleString();
+                    document.getElementById('ai-registrations').textContent = (latest.webbi_registrations || 0).toLocaleString();
+                    document.getElementById('ai-showrate').textContent = (latest.registration_show_rate_pct || 0) + '%';
+                    document.getElementById('ai-completion').textContent = (latest.webbi_completion_rate_pct || 0) + '%';
+                }
+
+                // Update table
+                const tbody = document.getElementById('ai-tbody');
+                tbody.innerHTML = logs.map(log => `
+                    <tr>
+                        <td>${log.week_of}</td>
+                        <td>${log.team_member}</td>
+                        <td>${(log.total_leads_generated || 0).toLocaleString()}</td>
+                        <td>${(log.webbi_registrations || 0).toLocaleString()}</td>
+                        <td>${log.registration_show_rate_pct || 'N/A'}%</td>
+                        <td>${log.webbi_completion_rate_pct || 'N/A'}%</td>
+                        <td>${(log.what_changed || '').substring(0, 50)}...</td>
+                    </tr>
+                `).join('');
+
+            } catch (error) {
+                console.error('Error loading AI team logs:', error);
+                document.getElementById('ai-tbody').innerHTML = '<tr><td colspan="7" class="loading">Error loading data</td></tr>';
+            }
+        }
+
+        async function loadEA() {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/ea_logs?order=week_of.desc&limit=20`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                
+                const logs = await response.json();
+
+                if (logs.length > 0) {
+                    const latest = logs[0];
+                    document.getElementById('ea-onboarded').textContent = latest.new_clients_onboarded || 0;
+                    document.getElementById('ea-recovered').textContent = '$' + (latest.failed_payments_recovered || 0).toLocaleString();
+                    document.getElementById('ea-refunds').textContent = (latest.refund_rate_pct || 0) + '%';
+                    document.getElementById('ea-atrisk').textContent = latest.at_risk_clients || 0;
+                }
+
+                // Update table
+                const tbody = document.getElementById('executive-tbody');
+                tbody.innerHTML = logs.length > 0 ? logs.map(log => `
+                    <tr>
+                        <td>${log.week_of}</td>
+                        <td>${log.team_member}</td>
+                        <td>${log.new_clients_onboarded}</td>
+                        <td>$${(log.failed_payments_recovered || 0).toLocaleString()}</td>
+                        <td>${log.refund_rate_pct || 0}%</td>
+                        <td>${log.at_risk_clients}</td>
+                        <td>${(log.notes || '').substring(0, 30)}...</td>
+                    </tr>
+                `).join('') : '<tr><td colspan="7" class="empty-state">No EA logs found</td></tr>';
+
+            } catch (error) {
+                console.error('Error loading EA logs:', error);
+                document.getElementById('executive-tbody').innerHTML = '<tr><td colspan="7" class="loading">Error loading data</td></tr>';
+            }
+        }
+
         // Refresh data
         function refreshData() {
             document.getElementById('lastUpdated').textContent = `Updated: ${new Date().toLocaleTimeString()}`;
             loadDeals();
+            loadRouters();
+            loadSetters();
+            loadClosers();
+            loadAITeam();
+            loadEA();
         }
 
         // Initialize
