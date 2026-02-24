@@ -896,21 +896,36 @@
                 </button>
             </div>
 
+            <!-- Date Controls -->
+            <div class="date-controls">
+                <div class="date-picker-group">
+                    <label>Week Range:</label>
+                    <input type="date" class="date-input" id="closerStartWeek">
+                    <span>to</span>
+                    <input type="date" class="date-input" id="closerEndWeek">
+                </div>
+                <div class="period-buttons">
+                    <button class="period-btn active" onclick="setCloserPeriod('week')">This Week</button>
+                    <button class="period-btn" onclick="setCloserPeriod('month')">This Month</button>
+                    <button class="period-btn" onclick="setCloserPeriod('quarter')">Quarter</button>
+                </div>
+            </div>
+
             <div class="kpi-grid">
                 <div class="kpi-card">
-                    <div class="kpi-value" id="closer-calls">0</div>
+                    <div class="kpi-value" id="closer-calls">Loading...</div>
                     <div class="kpi-label">Calls Taken</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-value" id="closer-closed">0</div>
+                    <div class="kpi-value" id="closer-closed">Loading...</div>
                     <div class="kpi-label">Deals Closed</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-value" id="closer-rate">0%</div>
+                    <div class="kpi-value" id="closer-rate">Loading...</div>
                     <div class="kpi-label">Close Rate</div>
                 </div>
                 <div class="kpi-card success">
-                    <div class="kpi-value success" id="closer-revenue">$0</div>
+                    <div class="kpi-value success" id="closer-revenue">Loading...</div>
                     <div class="kpi-label">Revenue</div>
                 </div>
             </div>
@@ -930,9 +945,176 @@
                         </tr>
                     </thead>
                     <tbody id="closers-tbody">
-                        <tr><td colspan="8" class="empty-state">No closer logs found.</td></tr>
+                        <tr><td colspan="8" class="loading">Loading closer data...</td></tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+
+        <!-- AI Team Section -->
+        <div id="ai-team" class="section">
+            <div class="section-header">
+                <h2 class="section-title">AI Team Weekly Logs</h2>
+                <button class="add-entry-btn" onclick="openModal('aiModal')">
+                    + Add AI Log
+                </button>
+            </div>
+
+            <!-- Date Controls -->
+            <div class="date-controls">
+                <div class="date-picker-group">
+                    <label>Week Range:</label>
+                    <input type="date" class="date-input" id="aiStartWeek">
+                    <span>to</span>
+                    <input type="date" class="date-input" id="aiEndWeek">
+                </div>
+                <div class="period-buttons">
+                    <button class="period-btn active" onclick="setAIPeriod('week')">This Week</button>
+                    <button class="period-btn" onclick="setAIPeriod('month')">This Month</button>
+                    <button class="period-btn" onclick="setAIPeriod('quarter')">Quarter</button>
+                </div>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-value" id="ai-leads">Loading...</div>
+                    <div class="kpi-label">Leads Generated</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="ai-registrations">Loading...</div>
+                    <div class="kpi-label">Registrations</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="ai-showrate">Loading...</div>
+                    <div class="kpi-label">Show Rate</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="ai-completion">Loading...</div>
+                    <div class="kpi-label">Completion Rate</div>
+                </div>
+            </div>
+
+            <div class="data-table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Week Of</th>
+                            <th>Team Member</th>
+                            <th>Leads Generated</th>
+                            <th>Registrations</th>
+                            <th>Show Rate</th>
+                            <th>Completion Rate</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ai-tbody">
+                        <tr><td colspan="7" class="loading">Loading AI team data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Executive Assistant Section -->
+        <div id="executive" class="section">
+            <div class="section-header">
+                <h2 class="section-title">Executive Assistant Weekly Logs</h2>
+                <button class="add-entry-btn" onclick="openModal('eaModal')">
+                    + Add EA Log
+                </button>
+            </div>
+
+            <!-- Date Controls -->
+            <div class="date-controls">
+                <div class="date-picker-group">
+                    <label>Week Range:</label>
+                    <input type="date" class="date-input" id="eaStartWeek">
+                    <span>to</span>
+                    <input type="date" class="date-input" id="eaEndWeek">
+                </div>
+                <div class="period-buttons">
+                    <button class="period-btn active" onclick="setEAPeriod('week')">This Week</button>
+                    <button class="period-btn" onclick="setEAPeriod('month')">This Month</button>
+                    <button class="period-btn" onclick="setEAPeriod('quarter')">Quarter</button>
+                </div>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-value" id="ea-onboarded">Loading...</div>
+                    <div class="kpi-label">Clients Onboarded</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="ea-recovered">Loading...</div>
+                    <div class="kpi-label">Payments Recovered</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="ea-refunds">Loading...</div>
+                    <div class="kpi-label">Refund Rate</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="ea-atrisk">Loading...</div>
+                    <div class="kpi-label">At-Risk Clients</div>
+                </div>
+            </div>
+
+            <div class="data-table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Week Of</th>
+                            <th>Team Member</th>
+                            <th>Onboarded</th>
+                            <th>Recovered</th>
+                            <th>Refund Rate</th>
+                            <th>At-Risk</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="executive-tbody">
+                        <tr><td colspan="7" class="loading">Loading EA data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ROAS Section -->
+        <div id="roas" class="section">
+            <div class="section-header">
+                <h2 class="section-title">Return on Ad Spend (ROAS)</h2>
+            </div>
+
+            <!-- Date Controls -->
+            <div class="date-controls">
+                <div class="date-picker-group">
+                    <label>Period:</label>
+                    <input type="date" class="date-input" id="roasStartDate">
+                    <span>to</span>
+                    <input type="date" class="date-input" id="roasEndDate">
+                </div>
+                <div class="period-buttons">
+                    <button class="period-btn active" onclick="setROASPeriod('week')">7 Days</button>
+                    <button class="period-btn" onclick="setROASPeriod('month')">30 Days</button>
+                    <button class="period-btn" onclick="setROASPeriod('quarter')">90 Days</button>
+                </div>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card success">
+                    <div class="kpi-value success" id="roas-revenue">$28,699</div>
+                    <div class="kpi-label">Revenue</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="roas-spend">$777</div>
+                    <div class="kpi-label">Ad Spend</div>
+                </div>
+                <div class="kpi-card success">
+                    <div class="kpi-value success" id="roas-ratio">37:1</div>
+                    <div class="kpi-label">ROAS Ratio</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="roas-ctr">5.04%</div>
+                    <div class="kpi-label">Click-Through Rate</div>
+                </div>
             </div>
         </div>
 
@@ -1000,6 +1182,67 @@
         </div>
     </div>
 
+    <!-- Setter Modal -->
+    <div id="setterModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Setter Daily Log</h3>
+                <button class="close-btn" onclick="closeModal('setterModal')">&times;</button>
+            </div>
+            <div id="setterMessage"></div>
+            <form id="setterForm" onsubmit="submitSetterLog(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Date</label>
+                        <input type="date" id="setterDate" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Team Member</label>
+                        <input type="text" id="setterName" class="form-input" required placeholder="Enter your name">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Clock In</label>
+                        <input type="time" id="setterClockIn" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Clock Out</label>
+                        <input type="time" id="setterClockOut" class="form-input" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Leads Contacted</label>
+                        <input type="number" id="setterContacted" class="form-input" required min="0" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Calls Booked</label>
+                        <input type="number" id="setterBooked" class="form-input" required min="0" placeholder="0">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Calls Showed</label>
+                        <input type="number" id="setterShowed" class="form-input" required min="0" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Re-routes</label>
+                        <input type="number" id="setterReroutes" class="form-input" required min="0" placeholder="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea id="setterNotes" class="form-textarea" placeholder="Daily notes and observations..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('setterModal')">Cancel</button>
+                    <button type="submit" class="btn-primary" id="setterSubmitBtn">Submit Log</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Closer Modal -->
     <div id="closerModal" class="modal">
         <div class="modal-content">
@@ -1025,13 +1268,19 @@
                         <input type="number" id="closerCallsTaken" class="form-input" required min="0" placeholder="0">
                     </div>
                     <div class="form-group">
+                        <label class="form-label">No Shows</label>
+                        <input type="number" id="closerNoShows" class="form-input" required min="0" placeholder="0">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
                         <label class="form-label">Deals Closed</label>
                         <input type="number" id="closerDealsClosed" class="form-input" required min="0" placeholder="0">
                     </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Revenue Collected ($)</label>
-                    <input type="number" id="closerRevenue" class="form-input" required min="0" placeholder="0">
+                    <div class="form-group">
+                        <label class="form-label">Revenue Collected ($)</label>
+                        <input type="number" id="closerRevenue" class="form-input" required min="0" placeholder="0">
+                    </div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Notes</label>
@@ -1040,6 +1289,108 @@
                 <div class="form-actions">
                     <button type="button" class="btn-secondary" onclick="closeModal('closerModal')">Cancel</button>
                     <button type="submit" class="btn-primary" id="closerSubmitBtn">Submit Log</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- AI Team Modal -->
+    <div id="aiModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add AI Team Weekly Log</h3>
+                <button class="close-btn" onclick="closeModal('aiModal')">&times;</button>
+            </div>
+            <div id="aiMessage"></div>
+            <form id="aiForm" onsubmit="submitAILog(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Week Of</label>
+                        <input type="date" id="aiWeek" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Team Member</label>
+                        <input type="text" id="aiName" class="form-input" required placeholder="Enter your name">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Leads Generated</label>
+                        <input type="number" id="aiLeads" class="form-input" required min="0" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Registrations</label>
+                        <input type="number" id="aiRegistrations" class="form-input" required min="0" placeholder="0">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Show Rate (%)</label>
+                        <input type="number" id="aiShowRate" class="form-input" required min="0" max="100" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Completion Rate (%)</label>
+                        <input type="number" id="aiCompletionRate" class="form-input" required min="0" max="100" placeholder="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">What Changed This Week</label>
+                    <textarea id="aiChanges" class="form-textarea" placeholder="Optimizations, tests, changes made..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('aiModal')">Cancel</button>
+                    <button type="submit" class="btn-primary" id="aiSubmitBtn">Submit Log</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- EA Modal -->
+    <div id="eaModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add EA Weekly Log</h3>
+                <button class="close-btn" onclick="closeModal('eaModal')">&times;</button>
+            </div>
+            <div id="eaMessage"></div>
+            <form id="eaForm" onsubmit="submitEALog(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Week Of</label>
+                        <input type="date" id="eaWeek" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Team Member</label>
+                        <input type="text" id="eaName" class="form-input" required placeholder="Enter your name">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Clients Onboarded</label>
+                        <input type="number" id="eaOnboarded" class="form-input" required min="0" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Payments Recovered ($)</label>
+                        <input type="number" id="eaRecovered" class="form-input" required min="0" placeholder="0">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Refund Rate (%)</label>
+                        <input type="number" id="eaRefundRate" class="form-input" required min="0" max="100" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">At-Risk Clients</label>
+                        <input type="number" id="eaAtRisk" class="form-input" required min="0" placeholder="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea id="eaNotes" class="form-textarea" placeholder="Weekly tasks and accomplishments..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('eaModal')">Cancel</button>
+                    <button type="submit" class="btn-primary" id="eaSubmitBtn">Submit Log</button>
                 </div>
             </form>
         </div>
@@ -1068,12 +1419,20 @@
             
             // Set defaults
             const today = new Date().toISOString().split('T')[0];
+            const currentDate = new Date();
+            const monday = new Date(currentDate.setDate(currentDate.getDate() - currentDate.getDay() + 1));
+            const mondayStr = monday.toISOString().split('T')[0];
+            
             if (modalId === 'routerModal') {
                 document.getElementById('routerDate').value = today;
+            } else if (modalId === 'setterModal') {
+                document.getElementById('setterDate').value = today;
             } else if (modalId === 'closerModal') {
-                const currentDate = new Date();
-                const monday = new Date(currentDate.setDate(currentDate.getDate() - currentDate.getDay() + 1));
-                document.getElementById('closerWeek').value = monday.toISOString().split('T')[0];
+                document.getElementById('closerWeek').value = mondayStr;
+            } else if (modalId === 'aiModal') {
+                document.getElementById('aiWeek').value = mondayStr;
+            } else if (modalId === 'eaModal') {
+                document.getElementById('eaWeek').value = mondayStr;
             }
         }
 
@@ -1146,6 +1505,55 @@
             }
         }
 
+        async function submitSetterLog(event) {
+            event.preventDefault();
+            
+            const submitBtn = document.getElementById('setterSubmitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            
+            const formData = {
+                date: document.getElementById('setterDate').value,
+                team_member: document.getElementById('setterName').value,
+                clock_in: document.getElementById('setterClockIn').value,
+                clock_out: document.getElementById('setterClockOut').value,
+                webbi_leads_contacted: parseInt(document.getElementById('setterContacted').value),
+                calls_booked: parseInt(document.getElementById('setterBooked').value),
+                calls_showed: parseInt(document.getElementById('setterShowed').value),
+                webbi_reroutes: parseInt(document.getElementById('setterReroutes').value),
+                notes: document.getElementById('setterNotes').value
+            };
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/setter_logs`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    showMessage('setterMessage', '✅ Setter log submitted successfully!');
+                    document.getElementById('setterForm').reset();
+                    setTimeout(() => {
+                        closeModal('setterModal');
+                        loadSetters();
+                    }, 1500);
+                } else {
+                    throw new Error('Failed to submit log');
+                }
+            } catch (error) {
+                showMessage('setterMessage', `❌ Error: ${error.message}`, true);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Log';
+            }
+        }
+
         async function submitCloserLog(event) {
             event.preventDefault();
             
@@ -1161,6 +1569,7 @@
                 week_of: document.getElementById('closerWeek').value,
                 team_member: document.getElementById('closerName').value,
                 calls_taken: callsTaken,
+                no_shows: parseInt(document.getElementById('closerNoShows').value),
                 deals_closed: dealsClosed,
                 close_rate_pct: parseFloat(closeRate),
                 revenue_collected: parseInt(document.getElementById('closerRevenue').value),
@@ -1184,13 +1593,107 @@
                     document.getElementById('closerForm').reset();
                     setTimeout(() => {
                         closeModal('closerModal');
-                        refreshData();
+                        loadClosers();
                     }, 1500);
                 } else {
                     throw new Error('Failed to submit log');
                 }
             } catch (error) {
                 showMessage('closerMessage', `❌ Error: ${error.message}`, true);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Log';
+            }
+        }
+
+        async function submitAILog(event) {
+            event.preventDefault();
+            
+            const submitBtn = document.getElementById('aiSubmitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            
+            const formData = {
+                week_of: document.getElementById('aiWeek').value,
+                team_member: document.getElementById('aiName').value,
+                total_leads_generated: parseInt(document.getElementById('aiLeads').value),
+                webbi_registrations: parseInt(document.getElementById('aiRegistrations').value),
+                registration_show_rate_pct: parseFloat(document.getElementById('aiShowRate').value),
+                webbi_completion_rate_pct: parseFloat(document.getElementById('aiCompletionRate').value),
+                what_changed: document.getElementById('aiChanges').value
+            };
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/ai_team_logs`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    showMessage('aiMessage', '✅ AI team log submitted successfully!');
+                    document.getElementById('aiForm').reset();
+                    setTimeout(() => {
+                        closeModal('aiModal');
+                        loadAITeam();
+                    }, 1500);
+                } else {
+                    throw new Error('Failed to submit log');
+                }
+            } catch (error) {
+                showMessage('aiMessage', `❌ Error: ${error.message}`, true);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Log';
+            }
+        }
+
+        async function submitEALog(event) {
+            event.preventDefault();
+            
+            const submitBtn = document.getElementById('eaSubmitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            
+            const formData = {
+                week_of: document.getElementById('eaWeek').value,
+                team_member: document.getElementById('eaName').value,
+                new_clients_onboarded: parseInt(document.getElementById('eaOnboarded').value),
+                failed_payments_recovered: parseInt(document.getElementById('eaRecovered').value),
+                refund_rate_pct: parseFloat(document.getElementById('eaRefundRate').value),
+                at_risk_clients: parseInt(document.getElementById('eaAtRisk').value),
+                notes: document.getElementById('eaNotes').value
+            };
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/ea_logs`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    showMessage('eaMessage', '✅ EA log submitted successfully!');
+                    document.getElementById('eaForm').reset();
+                    setTimeout(() => {
+                        closeModal('eaModal');
+                        loadEA();
+                    }, 1500);
+                } else {
+                    throw new Error('Failed to submit log');
+                }
+            } catch (error) {
+                showMessage('eaMessage', `❌ Error: ${error.message}`, true);
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Submit Log';
@@ -1272,9 +1775,201 @@
             loadRouters();
         }
 
+        async function loadSetters() {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/setter_logs?order=date.desc&limit=20`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                
+                const logs = await response.json();
+
+                const totalContacted = logs.reduce((sum, log) => sum + (log.webbi_leads_contacted || 0), 0);
+                const totalBooked = logs.reduce((sum, log) => sum + (log.calls_booked || 0), 0);
+                const totalShowed = logs.reduce((sum, log) => sum + (log.calls_showed || 0), 0);
+                const totalReroutes = logs.reduce((sum, log) => sum + (log.webbi_reroutes || 0), 0);
+
+                document.getElementById('setter-contacted').textContent = totalContacted.toLocaleString();
+                document.getElementById('setter-booked').textContent = totalBooked.toLocaleString();
+                document.getElementById('setter-showed').textContent = totalShowed.toLocaleString();
+                document.getElementById('setter-reroutes').textContent = totalReroutes.toLocaleString();
+
+                const tbody = document.getElementById('setters-tbody');
+                tbody.innerHTML = logs.map(log => `
+                    <tr>
+                        <td>${log.date}</td>
+                        <td>${log.team_member}</td>
+                        <td>${log.clock_in}</td>
+                        <td>${log.clock_out}</td>
+                        <td>${log.webbi_leads_contacted}</td>
+                        <td>${log.calls_booked}</td>
+                        <td>${log.calls_showed}</td>
+                        <td>${log.webbi_reroutes}</td>
+                        <td>${(log.notes || '').substring(0, 30)}...</td>
+                    </tr>
+                `).join('');
+
+            } catch (error) {
+                console.error('Error loading setter logs:', error);
+                document.getElementById('setters-tbody').innerHTML = '<tr><td colspan="9" class="loading">Error loading data</td></tr>';
+            }
+        }
+
+        async function loadClosers() {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/closer_logs?order=week_of.desc&limit=20`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                
+                const logs = await response.json();
+
+                const totalCalls = logs.reduce((sum, log) => sum + (log.calls_taken || 0), 0);
+                const totalClosed = logs.reduce((sum, log) => sum + (log.deals_closed || 0), 0);
+                const totalRevenue = logs.reduce((sum, log) => sum + (log.revenue_collected || 0), 0);
+                const avgCloseRate = totalCalls > 0 ? ((totalClosed / totalCalls) * 100) : 0;
+
+                document.getElementById('closer-calls').textContent = totalCalls.toLocaleString();
+                document.getElementById('closer-closed').textContent = totalClosed.toLocaleString();
+                document.getElementById('closer-rate').textContent = avgCloseRate.toFixed(1) + '%';
+                document.getElementById('closer-revenue').textContent = '$' + totalRevenue.toLocaleString();
+
+                const tbody = document.getElementById('closers-tbody');
+                tbody.innerHTML = logs.map(log => `
+                    <tr>
+                        <td>${log.week_of}</td>
+                        <td>${log.team_member}</td>
+                        <td>${log.calls_taken}</td>
+                        <td>${log.no_shows}</td>
+                        <td>${log.deals_closed}</td>
+                        <td>${log.close_rate_pct || 'N/A'}%</td>
+                        <td>$${(log.revenue_collected || 0).toLocaleString()}</td>
+                        <td>${(log.notes || '').substring(0, 40)}...</td>
+                    </tr>
+                `).join('');
+
+            } catch (error) {
+                console.error('Error loading closer logs:', error);
+                document.getElementById('closers-tbody').innerHTML = '<tr><td colspan="8" class="loading">Error loading data</td></tr>';
+            }
+        }
+
+        async function loadAITeam() {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/ai_team_logs?order=week_of.desc&limit=20`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                
+                const logs = await response.json();
+
+                if (logs.length > 0) {
+                    const latest = logs[0];
+                    document.getElementById('ai-leads').textContent = (latest.total_leads_generated || 0).toLocaleString();
+                    document.getElementById('ai-registrations').textContent = (latest.webbi_registrations || 0).toLocaleString();
+                    document.getElementById('ai-showrate').textContent = (latest.registration_show_rate_pct || 0) + '%';
+                    document.getElementById('ai-completion').textContent = (latest.webbi_completion_rate_pct || 0) + '%';
+                } else {
+                    document.getElementById('ai-leads').textContent = '0';
+                    document.getElementById('ai-registrations').textContent = '0';
+                    document.getElementById('ai-showrate').textContent = '0%';
+                    document.getElementById('ai-completion').textContent = '0%';
+                }
+
+                const tbody = document.getElementById('ai-tbody');
+                tbody.innerHTML = logs.length > 0 ? logs.map(log => `
+                    <tr>
+                        <td>${log.week_of}</td>
+                        <td>${log.team_member}</td>
+                        <td>${(log.total_leads_generated || 0).toLocaleString()}</td>
+                        <td>${(log.webbi_registrations || 0).toLocaleString()}</td>
+                        <td>${log.registration_show_rate_pct || 'N/A'}%</td>
+                        <td>${log.webbi_completion_rate_pct || 'N/A'}%</td>
+                        <td>${(log.what_changed || '').substring(0, 50)}...</td>
+                    </tr>
+                `).join('') : '<tr><td colspan="7" class="empty-state">No AI logs found.</td></tr>';
+
+            } catch (error) {
+                console.error('Error loading AI team logs:', error);
+                document.getElementById('ai-tbody').innerHTML = '<tr><td colspan="7" class="loading">Error loading data</td></tr>';
+            }
+        }
+
+        async function loadEA() {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/ea_logs?order=week_of.desc&limit=20`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                
+                const logs = await response.json();
+
+                if (logs.length > 0) {
+                    const latest = logs[0];
+                    document.getElementById('ea-onboarded').textContent = latest.new_clients_onboarded || 0;
+                    document.getElementById('ea-recovered').textContent = '$' + (latest.failed_payments_recovered || 0).toLocaleString();
+                    document.getElementById('ea-refunds').textContent = (latest.refund_rate_pct || 0) + '%';
+                    document.getElementById('ea-atrisk').textContent = latest.at_risk_clients || 0;
+                } else {
+                    document.getElementById('ea-onboarded').textContent = '0';
+                    document.getElementById('ea-recovered').textContent = '$0';
+                    document.getElementById('ea-refunds').textContent = '0%';
+                    document.getElementById('ea-atrisk').textContent = '0';
+                }
+
+                const tbody = document.getElementById('executive-tbody');
+                tbody.innerHTML = logs.length > 0 ? logs.map(log => `
+                    <tr>
+                        <td>${log.week_of}</td>
+                        <td>${log.team_member}</td>
+                        <td>${log.new_clients_onboarded}</td>
+                        <td>$${(log.failed_payments_recovered || 0).toLocaleString()}</td>
+                        <td>${log.refund_rate_pct || 0}%</td>
+                        <td>${log.at_risk_clients}</td>
+                        <td>${(log.notes || '').substring(0, 30)}...</td>
+                    </tr>
+                `).join('') : '<tr><td colspan="7" class="empty-state">No EA logs found.</td></tr>';
+
+            } catch (error) {
+                console.error('Error loading EA logs:', error);
+                document.getElementById('executive-tbody').innerHTML = '<tr><td colspan="7" class="loading">Error loading data</td></tr>';
+            }
+        }
+
+        function setCloserPeriod(period) { 
+            setRouterPeriod(period); 
+            loadClosers();
+        }
+
+        function setAIPeriod(period) { 
+            setRouterPeriod(period); 
+            loadAITeam();
+        }
+
+        function setEAPeriod(period) { 
+            setRouterPeriod(period); 
+            loadEA();
+        }
+
+        function setROASPeriod(period) { 
+            setRouterPeriod(period); 
+        }
+
         function refreshData() {
             document.getElementById('lastUpdated').textContent = `Updated: ${new Date().toLocaleTimeString()}`;
             loadRouters();
+            loadSetters();
+            loadClosers();
+            loadAITeam();
+            loadEA();
         }
 
         // Initialize
@@ -1282,12 +1977,38 @@
             const today = new Date();
             const currentWeek = new Date(today.setDate(today.getDate() - today.getDay())).toISOString().split('T')[0];
             const todayStr = new Date().toISOString().split('T')[0];
+            const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
             
+            // Set default dates
             document.getElementById('weekDate').value = currentWeek;
-            document.getElementById('routerStartDate').value = todayStr;
+            
+            // Router dates
+            document.getElementById('routerStartDate').value = weekAgo;
             document.getElementById('routerEndDate').value = todayStr;
-            document.getElementById('setterStartDate').value = todayStr;
+            
+            // Setter dates
+            document.getElementById('setterStartDate').value = weekAgo;
             document.getElementById('setterEndDate').value = todayStr;
+            
+            // Closer dates
+            document.getElementById('closerStartWeek').value = currentWeek;
+            document.getElementById('closerEndWeek').value = todayStr;
+            
+            // AI Team dates
+            document.getElementById('aiStartWeek').value = currentWeek;
+            document.getElementById('aiEndWeek').value = todayStr;
+            
+            // EA dates
+            document.getElementById('eaStartWeek').value = currentWeek;
+            document.getElementById('eaEndWeek').value = todayStr;
+            
+            // ROAS dates (if elements exist)
+            const roasStart = document.getElementById('roasStartDate');
+            const roasEnd = document.getElementById('roasEndDate');
+            if (roasStart && roasEnd) {
+                roasStart.value = weekAgo;
+                roasEnd.value = todayStr;
+            }
             
             refreshData();
         });
