@@ -3,27 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LGH Team Dashboard</title>
+    <title>Let's Geaux Hustle</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --lgh-primary: #6366F1;
-            --lgh-primary-dark: #4F46E5;
-            --lgh-black: #09090B;
-            --lgh-dark: #0F0F12;
-            --lgh-card: #18181B;
-            --lgh-card-hover: #1F1F23;
-            --lgh-white: #FAFAFA;
-            --lgh-gray: #71717A;
-            --lgh-gray-light: #A1A1AA;
-            --lgh-green: #22C55E;
-            --lgh-yellow: #EAB308;
-            --lgh-red: #EF4444;
-            --lgh-border: rgba(255, 255, 255, 0.08);
-            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --bg-primary: #000000;
+            --bg-secondary: #1a1a1a;
+            --bg-card: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --accent-red: #dc3545;
+            --accent-green: #22c55e;
+            --border-color: #404040;
         }
 
         * {
@@ -33,112 +26,95 @@
         }
 
         body {
-            font-family: var(--font-body);
-            background: var(--lgh-black);
-            color: var(--lgh-white);
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             min-height: 100vh;
         }
 
-        /* Sidebar */
-        .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 220px;
-            height: 100vh;
-            background: var(--lgh-dark);
-            border-right: 1px solid var(--lgh-border);
-            padding: 24px 16px;
+        /* Header */
+        .header {
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
         }
 
         .logo {
-            font-size: 18px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            margin-bottom: 32px;
-            padding: 0 8px;
-        }
-
-        .logo span {
-            color: var(--lgh-primary);
-        }
-
-        .nav-section {
-            margin-bottom: 24px;
-        }
-
-        .nav-label {
-            font-size: 10px;
+            font-size: 1.25rem;
             font-weight: 600;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            color: var(--lgh-gray);
-            margin-bottom: 8px;
-            padding: 0 8px;
+            color: var(--text-primary);
         }
 
-        .nav-item {
+        .header-right {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            border-radius: 8px;
-            color: var(--lgh-gray-light);
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 500;
-            transition: all 0.15s ease;
-            cursor: pointer;
-            margin-bottom: 2px;
+            gap: 1rem;
         }
 
-        .nav-item:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--lgh-white);
+        .last-updated {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
         }
 
-        .nav-item.active {
-            background: var(--lgh-primary);
+        .refresh-btn {
+            background: var(--accent-red);
             color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .refresh-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            padding: 0 2rem;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            gap: 0.5rem;
+        }
+
+        .nav-tab {
+            padding: 0.75rem 1rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 4px 4px 0 0;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-tab.active {
+            background: var(--accent-red);
+            color: white;
+        }
+
+        .nav-tab:hover:not(.active) {
+            background: var(--bg-card);
+            color: var(--text-primary);
         }
 
         /* Main Content */
         .main-content {
-            margin-left: 220px;
-            min-height: 100vh;
-        }
-
-        .header {
-            padding: 32px 40px 24px;
-            border-bottom: 1px solid var(--lgh-border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .header h1 {
-            font-size: 24px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
-
-        .last-updated {
-            font-size: 13px;
-            color: var(--lgh-gray);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .last-updated::before {
-            content: '●';
-            color: var(--lgh-green);
+            padding: 2rem;
         }
 
         .section {
-            padding: 40px;
             display: none;
         }
 
@@ -146,415 +122,584 @@
             display: block;
         }
 
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
         /* KPI Grid */
         .kpi-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 24px;
-            margin-bottom: 32px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         .kpi-card {
-            background: var(--lgh-card);
-            border: 1px solid var(--lgh-border);
-            border-radius: 12px;
-            padding: 24px;
-            transition: all 0.2s ease;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
         }
 
-        .kpi-card:hover {
-            background: var(--lgh-card-hover);
-            border-color: rgba(255, 255, 255, 0.12);
-        }
-
-        .kpi-label {
-            font-size: 13px;
-            color: var(--lgh-gray);
-            margin-bottom: 8px;
-            font-weight: 500;
+        .kpi-card.green-accent {
+            border-color: var(--accent-green);
         }
 
         .kpi-value {
-            font-size: 32px;
+            font-size: 2rem;
             font-weight: 700;
-            margin-bottom: 4px;
+            margin-bottom: 0.5rem;
         }
 
-        .kpi-value.good {
-            color: var(--lgh-green);
+        .kpi-value.green {
+            color: var(--accent-green);
         }
 
-        .kpi-value.warning {
-            color: var(--lgh-yellow);
-        }
-
-        .kpi-value.danger {
-            color: var(--lgh-red);
-        }
-
-        .kpi-change {
-            font-size: 12px;
-            color: var(--lgh-gray-light);
-        }
-
-        /* Form Card */
-        .form-card {
-            background: var(--lgh-card);
-            border: 1px solid var(--lgh-border);
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 24px;
-        }
-
-        .form-card h3 {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 20px;
+        .kpi-label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
         }
 
         /* Data Table */
+        .data-table-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
         .data-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 16px;
-        }
-
-        .data-table th,
-        .data-table td {
-            text-align: left;
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--lgh-border);
-            font-size: 13px;
         }
 
         .data-table th {
-            color: var(--lgh-gray);
+            background: var(--bg-secondary);
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-size: 0.75rem;
             font-weight: 600;
-            font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .data-table tr:hover td {
-            background: rgba(255, 255, 255, 0.02);
+        .data-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.875rem;
         }
 
+        .data-table tr:hover {
+            background: var(--bg-secondary);
+        }
+
+        .empty-state {
+            padding: 3rem;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        /* Add Button */
+        .add-btn {
+            background: transparent;
+            border: 1px dashed var(--border-color);
+            color: var(--text-secondary);
+            padding: 0.75rem 1rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 1rem;
+        }
+
+        .add-btn:hover {
+            border-color: var(--text-primary);
+            color: var(--text-primary);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .modal-header {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-red);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--accent-red);
+            color: white;
+            border: none;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Loading State */
         .loading {
-            color: var(--lgh-gray);
+            color: var(--text-secondary);
             font-style: italic;
-        }
-
-        .error {
-            color: var(--lgh-red);
         }
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="logo">LGH <span>Dashboard</span></div>
-        
-        <div class="nav-section">
-            <div class="nav-label">Overview</div>
-            <div class="nav-item active" onclick="showSection('overview')">
-                <span>📊</span> Overview
-            </div>
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">Let's Geaux Hustle</div>
+        <div class="header-right">
+            <div class="last-updated" id="lastUpdated">Updated: Loading...</div>
+            <button class="refresh-btn" onclick="refreshData()">🔄 Refresh</button>
         </div>
+    </div>
 
-        <div class="nav-section">
-            <div class="nav-label">Team Performance</div>
-            <div class="nav-item" onclick="showSection('deals')">
-                <span>💰</span> Deals Closed
-            </div>
-            <div class="nav-item" onclick="showSection('ai-team')">
-                <span>🤖</span> AI Team
-            </div>
-            <div class="nav-item" onclick="showSection('call-reviews')">
-                <span>📞</span> Call Reviews
-            </div>
-        </div>
+    <!-- Navigation -->
+    <div class="nav-tabs">
+        <button class="nav-tab" onclick="showTab('sales')">📊 Sales</button>
+        <button class="nav-tab" onclick="showTab('routers')">📞 Routers</button>
+        <button class="nav-tab" onclick="showTab('setters')">📅 Setters</button>
+        <button class="nav-tab active" onclick="showTab('closers')">💰 Closers</button>
+        <button class="nav-tab" onclick="showTab('ai-team')">🤖 AI Team</button>
+        <button class="nav-tab" onclick="showTab('team')">👥 Team</button>
+        <button class="nav-tab" onclick="showTab('dev')">⚙️ Dev</button>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
         
-        <!-- Overview Section -->
-        <section id="overview" class="section active">
-            <div class="header">
-                <h1>LGH Overview</h1>
-                <div class="last-updated" id="last-updated">Loading...</div>
+        <!-- Sales Section -->
+        <div id="sales" class="section">
+            <div class="section-header">
+                <h2 class="section-title">Sales Overview</h2>
             </div>
-
             <div class="kpi-grid">
-                <div class="kpi-card">
-                    <div class="kpi-label">Total Deals (All Time)</div>
-                    <div class="kpi-value good" id="total-deals">Loading...</div>
-                    <div class="kpi-change" id="deals-change">Calculating...</div>
+                <div class="kpi-card green-accent">
+                    <div class="kpi-value green" id="total-deals-sales">Loading...</div>
+                    <div class="kpi-label">Total Deals</div>
                 </div>
-                <div class="kpi-card">
+                <div class="kpi-card green-accent">
+                    <div class="kpi-value green" id="total-revenue-sales">Loading...</div>
                     <div class="kpi-label">Total Revenue</div>
-                    <div class="kpi-value good" id="total-revenue">Loading...</div>
-                    <div class="kpi-change" id="revenue-change">Cash collected</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-label">February 2026</div>
-                    <div class="kpi-value good" id="feb-deals">Loading...</div>
-                    <div class="kpi-change" id="feb-revenue">Loading...</div>
+                    <div class="kpi-value" id="avg-deal-sales">Loading...</div>
+                    <div class="kpi-label">Average Deal</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-label">Average Deal Size</div>
-                    <div class="kpi-value" id="avg-deal">Loading...</div>
-                    <div class="kpi-change">Cash collected basis</div>
+                    <div class="kpi-value" id="feb-deals-sales">Loading...</div>
+                    <div class="kpi-label">February Deals</div>
                 </div>
             </div>
-        </section>
-
-        <!-- Deals Closed Section -->
-        <section id="deals" class="section">
-            <div class="header">
-                <h1>Deals Closed</h1>
-                <div class="last-updated">Live from Supabase</div>
-            </div>
-
-            <div class="form-card">
-                <h3>Recent Deals</h3>
-                <div id="deals-loading" class="loading">Loading deals from Supabase...</div>
-                <table class="data-table" id="deals-table" style="display: none;">
+            <div class="data-table-container">
+                <table class="data-table">
                     <thead>
                         <tr>
                             <th>Date</th>
                             <th>Client</th>
                             <th>Closer</th>
                             <th>Package</th>
-                            <th>Cash Collected</th>
-                            <th>Total Value</th>
+                            <th>Revenue</th>
                         </tr>
                     </thead>
-                    <tbody id="deals-tbody">
+                    <tbody id="sales-tbody">
+                        <tr><td colspan="5" class="loading">Loading deals...</td></tr>
                     </tbody>
                 </table>
             </div>
-        </section>
+        </div>
 
-        <!-- AI Team Section -->
-        <section id="ai-team" class="section">
-            <div class="header">
-                <h1>AI Team</h1>
-                <div class="last-updated">Live from AI Team logs</div>
+        <!-- Closers Section (Active) -->
+        <div id="closers" class="section active">
+            <div class="section-header">
+                <h2 class="section-title">Closer Weekly Logs</h2>
             </div>
-
+            
             <div class="kpi-grid">
                 <div class="kpi-card">
-                    <div class="kpi-label">Active Logs</div>
-                    <div class="kpi-value" id="ai-logs">Loading...</div>
-                    <div class="kpi-change">AI team entries</div>
+                    <div class="kpi-value" id="calls-taken">0</div>
+                    <div class="kpi-label">Calls Taken</div>
+                </div>
+                <div class="kpi-card green-accent">
+                    <div class="kpi-value" id="deals-closed">0</div>
+                    <div class="kpi-label">Deals Closed</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="close-rate">0%</div>
+                    <div class="kpi-label">Close Rate</div>
+                </div>
+                <div class="kpi-card green-accent">
+                    <div class="kpi-value green" id="revenue">$0</div>
+                    <div class="kpi-label">Revenue</div>
                 </div>
             </div>
 
-            <div class="form-card">
-                <h3>Recent AI Team Activity</h3>
-                <div id="ai-loading" class="loading">Loading AI team data...</div>
-                <table class="data-table" id="ai-table" style="display: none;">
+            <div class="data-table-container">
+                <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Date</th>
-                            <th>Task</th>
-                            <th>Status</th>
+                            <th>Week Of</th>
+                            <th>Team Member</th>
+                            <th>Calls Taken</th>
+                            <th>No Shows</th>
+                            <th>Deals Closed</th>
+                            <th>Close Rate</th>
+                            <th>Revenue</th>
                             <th>Notes</th>
                         </tr>
                     </thead>
-                    <tbody id="ai-tbody">
+                    <tbody id="closers-tbody">
                     </tbody>
                 </table>
-            </div>
-        </section>
-
-        <!-- Call Reviews Section -->
-        <section id="call-reviews" class="section">
-            <div class="header">
-                <h1>Call Reviews</h1>
-                <div class="last-updated">Live from automated reviews</div>
-            </div>
-
-            <div class="kpi-grid">
-                <div class="kpi-card">
-                    <div class="kpi-label">Total Reviews</div>
-                    <div class="kpi-value" id="total-reviews">Loading...</div>
-                    <div class="kpi-change">All time</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-label">Average Score</div>
-                    <div class="kpi-value" id="avg-score">Loading...</div>
-                    <div class="kpi-change">Out of 10</div>
+                <div class="empty-state" id="closers-empty" style="display: none;">
+                    No closer logs found
                 </div>
             </div>
+            
+            <button class="add-btn" onclick="showCloserModal()">+ Add Closer Log</button>
+        </div>
 
-            <div class="form-card">
-                <h3>Recent Call Reviews</h3>
-                <div id="reviews-loading" class="loading">Loading call reviews...</div>
-                <table class="data-table" id="reviews-table" style="display: none;">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Prospect</th>
-                            <th>Closer</th>
-                            <th>Score</th>
-                            <th>Prediction</th>
-                        </tr>
-                    </thead>
-                    <tbody id="reviews-tbody">
-                    </tbody>
-                </table>
-            </div>
-        </section>
+        <!-- Other sections placeholder -->
+        <div id="routers" class="section">
+            <h2 class="section-title">Routers</h2>
+            <p class="loading">Router data coming soon...</p>
+        </div>
+
+        <div id="setters" class="section">
+            <h2 class="section-title">Setters</h2>
+            <p class="loading">Setter data coming soon...</p>
+        </div>
+
+        <div id="ai-team" class="section">
+            <h2 class="section-title">AI Team</h2>
+            <p class="loading">AI Team data coming soon...</p>
+        </div>
+
+        <div id="team" class="section">
+            <h2 class="section-title">Team</h2>
+            <p class="loading">Team data coming soon...</p>
+        </div>
+
+        <div id="dev" class="section">
+            <h2 class="section-title">Development</h2>
+            <p class="loading">Dev data coming soon...</p>
+        </div>
+    </div>
+
+    <!-- Closer Modal -->
+    <div id="closerModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">Add Closer Log</div>
+            <form id="closerForm">
+                <div class="form-group">
+                    <label class="form-label">Week Of</label>
+                    <input type="date" class="form-input" id="weekOf" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Team Member</label>
+                    <input type="text" class="form-input" id="teamMember" placeholder="Enter closer name" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Calls Taken</label>
+                    <input type="number" class="form-input" id="callsTaken" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">No Shows</label>
+                    <input type="number" class="form-input" id="noShows" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Deals Closed</label>
+                    <input type="number" class="form-input" id="dealsClosed" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Revenue ($)</label>
+                    <input type="number" class="form-input" id="revenueInput" min="0" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <input type="text" class="form-input" id="notes" placeholder="Optional notes">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="hideCloserModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Log</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script>
         // Supabase configuration
         const SUPABASE_URL = 'https://aqcnqxmqksashphcvgoc.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFxY25xeG1xa3Nhc2hwaGN2Z29jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA4Mjk4MzcsImV4cCI6MjA4NjQwNTgzN30.j1lkN8KHMbvw-_Ik2qfMhGh5Y8QHQpJdM6ufL1wQLXw';
-        const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFxY25xeG1xa3Nhc2hwaGN2Z29jIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDgyOTgzNywiZXhwIjoyMDg2NDA1ODM3fQ.GcECZQqotwvKfoZ9PwMsgZ3bYETCcsIpj4f9zfpPW94';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFxY25xeG1xa3Nhc2hwaGN2Z29jIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDgyOTgzNywiZXhwIjoyMDg2NDA1ODM3fQ.GcECZQqotwvKfoZ9PwMsgZ3bYETCcsIpj4f9zfpPW94';
 
-        // Helper function to fetch data from Supabase
-        async function fetchSupabase(table, params = '') {
+        // Navigation
+        function showTab(tabName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        // Modal functions
+        function showCloserModal() {
+            document.getElementById('closerModal').style.display = 'flex';
+        }
+
+        function hideCloserModal() {
+            document.getElementById('closerModal').style.display = 'none';
+            document.getElementById('closerForm').reset();
+        }
+
+        // Data loading functions
+        async function loadDeals() {
             try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}${params}`, {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/deals_closed?order=date.desc&limit=20`, {
                     headers: {
-                        'apikey': SUPABASE_SERVICE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
                         'Content-Type': 'application/json'
                     }
                 });
                 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+                const deals = await response.json();
                 
-                return await response.json();
-            } catch (error) {
-                console.error(`Error fetching ${table}:`, error);
-                return [];
-            }
-        }
-
-        // Load deals data
-        async function loadDeals() {
-            try {
-                const deals = await fetchSupabase('deals_closed', '?order=date.desc&limit=50');
-                
-                // Update overview KPIs
+                // Update sales KPIs
                 const totalDeals = deals.length;
                 const totalRevenue = deals.reduce((sum, deal) => sum + (deal.cash_collected || 0), 0);
                 const feb2026Deals = deals.filter(deal => deal.date && deal.date.startsWith('2026-02'));
-                const febRevenue = feb2026Deals.reduce((sum, deal) => sum + (deal.cash_collected || 0), 0);
-                const avgDeal = totalRevenue / totalDeals;
+                const avgDeal = totalRevenue / totalDeals || 0;
 
-                document.getElementById('total-deals').textContent = totalDeals.toLocaleString();
-                document.getElementById('total-revenue').textContent = '$' + totalRevenue.toLocaleString();
-                document.getElementById('feb-deals').textContent = feb2026Deals.length + ' deals';
-                document.getElementById('feb-revenue').textContent = '$' + febRevenue.toLocaleString();
-                document.getElementById('avg-deal').textContent = '$' + Math.round(avgDeal).toLocaleString();
+                document.getElementById('total-deals-sales').textContent = totalDeals.toLocaleString();
+                document.getElementById('total-revenue-sales').textContent = '$' + totalRevenue.toLocaleString();
+                document.getElementById('avg-deal-sales').textContent = '$' + Math.round(avgDeal).toLocaleString();
+                document.getElementById('feb-deals-sales').textContent = feb2026Deals.length;
 
                 // Update deals table
-                const tbody = document.getElementById('deals-tbody');
-                tbody.innerHTML = deals.slice(0, 20).map(deal => `
+                const tbody = document.getElementById('sales-tbody');
+                tbody.innerHTML = deals.slice(0, 10).map(deal => `
                     <tr>
                         <td>${deal.date || 'N/A'}</td>
                         <td>${deal.client_name || 'N/A'}</td>
                         <td>${deal.closer || 'N/A'}</td>
                         <td>${deal.package || 'N/A'}</td>
                         <td>$${(deal.cash_collected || 0).toLocaleString()}</td>
-                        <td>$${(deal.total_value || 0).toLocaleString()}</td>
                     </tr>
                 `).join('');
 
-                document.getElementById('deals-loading').style.display = 'none';
-                document.getElementById('deals-table').style.display = 'table';
+                // Update closer metrics (using recent deals)
+                updateCloserMetrics(deals);
 
             } catch (error) {
                 console.error('Error loading deals:', error);
-                document.getElementById('deals-loading').textContent = 'Error loading deals data';
-                document.getElementById('deals-loading').className = 'error';
             }
         }
 
-        // Load call reviews data
-        async function loadCallReviews() {
+        function updateCloserMetrics(deals) {
+            // Calculate closer metrics from recent deals
+            const recentDeals = deals.filter(deal => {
+                const dealDate = new Date(deal.date);
+                const oneWeekAgo = new Date();
+                oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+                return dealDate >= oneWeekAgo;
+            });
+
+            const totalDealsCount = recentDeals.length;
+            const totalRevenue = recentDeals.reduce((sum, deal) => sum + (deal.cash_collected || 0), 0);
+
+            document.getElementById('deals-closed').textContent = totalDealsCount;
+            document.getElementById('revenue').textContent = '$' + totalRevenue.toLocaleString();
+
+            // Show empty state for closer logs table
+            const tbody = document.getElementById('closers-tbody');
+            if (tbody.children.length === 0) {
+                document.getElementById('closers-empty').style.display = 'block';
+            }
+        }
+
+        // Form submission
+        document.getElementById('closerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                week_of: document.getElementById('weekOf').value,
+                team_member: document.getElementById('teamMember').value,
+                calls_taken: parseInt(document.getElementById('callsTaken').value),
+                no_shows: parseInt(document.getElementById('noShows').value),
+                deals_closed: parseInt(document.getElementById('dealsClosed').value),
+                revenue: parseFloat(document.getElementById('revenueInput').value),
+                notes: document.getElementById('notes').value
+            };
+
+            // Calculate close rate
+            const closeRate = formData.calls_taken > 0 ? 
+                ((formData.deals_closed / formData.calls_taken) * 100).toFixed(1) : 0;
+
             try {
-                const reviews = await fetchSupabase('call_reviews', '?order=created_at.desc&limit=20');
-                
-                document.getElementById('total-reviews').textContent = reviews.length;
-                
-                const avgScore = reviews.length > 0 ? 
-                    reviews.reduce((sum, review) => sum + (review.score_overall || 0), 0) / reviews.length : 0;
-                document.getElementById('avg-score').textContent = avgScore.toFixed(1);
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/closer_logs`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({...formData, close_rate: closeRate})
+                });
 
-                const tbody = document.getElementById('reviews-tbody');
-                tbody.innerHTML = reviews.map(review => `
-                    <tr>
-                        <td>${review.created_at ? new Date(review.created_at).toLocaleDateString() : 'N/A'}</td>
-                        <td>${review.prospect_name || 'N/A'}</td>
-                        <td>${review.closer || 'N/A'}</td>
-                        <td>${review.score_overall || 'N/A'}/10</td>
-                        <td>${review.prediction || 'N/A'}</td>
-                    </tr>
-                `).join('');
-
-                document.getElementById('reviews-loading').style.display = 'none';
-                document.getElementById('reviews-table').style.display = 'table';
-
+                if (response.ok) {
+                    hideCloserModal();
+                    loadCloserLogs();
+                } else {
+                    alert('Error saving closer log');
+                }
             } catch (error) {
-                console.error('Error loading call reviews:', error);
-                document.getElementById('reviews-loading').textContent = 'Error loading call reviews';
-                document.getElementById('reviews-loading').className = 'error';
+                console.error('Error saving closer log:', error);
+                alert('Error saving closer log');
             }
-        }
+        });
 
-        // Load AI team data
-        async function loadAITeam() {
+        // Load closer logs
+        async function loadCloserLogs() {
             try {
-                const aiLogs = await fetchSupabase('ai_team_logs', '?order=created_at.desc&limit=20');
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/closer_logs?order=week_of.desc`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
                 
-                document.getElementById('ai-logs').textContent = aiLogs.length;
+                const logs = await response.json();
+                const tbody = document.getElementById('closers-tbody');
+                const emptyState = document.getElementById('closers-empty');
 
-                const tbody = document.getElementById('ai-tbody');
-                tbody.innerHTML = aiLogs.map(log => `
-                    <tr>
-                        <td>${log.created_at ? new Date(log.created_at).toLocaleDateString() : 'N/A'}</td>
-                        <td>${log.task || 'N/A'}</td>
-                        <td>${log.status || 'N/A'}</td>
-                        <td>${log.notes ? log.notes.substring(0, 50) + '...' : 'N/A'}</td>
-                    </tr>
-                `).join('');
-
-                document.getElementById('ai-loading').style.display = 'none';
-                document.getElementById('ai-table').style.display = 'table';
-
+                if (logs.length === 0) {
+                    tbody.innerHTML = '';
+                    emptyState.style.display = 'block';
+                } else {
+                    emptyState.style.display = 'none';
+                    tbody.innerHTML = logs.map(log => `
+                        <tr>
+                            <td>${log.week_of}</td>
+                            <td>${log.team_member}</td>
+                            <td>${log.calls_taken}</td>
+                            <td>${log.no_shows}</td>
+                            <td>${log.deals_closed}</td>
+                            <td>${log.close_rate}%</td>
+                            <td>$${log.revenue.toLocaleString()}</td>
+                            <td>${log.notes || ''}</td>
+                        </tr>
+                    `).join('');
+                }
             } catch (error) {
-                console.error('Error loading AI team data:', error);
-                document.getElementById('ai-loading').textContent = 'Error loading AI team data';
-                document.getElementById('ai-loading').className = 'error';
+                console.error('Error loading closer logs:', error);
             }
         }
 
-        // Navigation
-        function showSection(sectionId) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(sectionId).classList.add('active');
-            event.currentTarget.classList.add('active');
+        // Refresh data
+        function refreshData() {
+            document.getElementById('lastUpdated').textContent = `Updated: ${new Date().toLocaleTimeString()}`;
+            loadDeals();
+            loadCloserLogs();
         }
 
         // Initialize
-        document.addEventListener('DOMContentLoaded', async () => {
-            document.getElementById('last-updated').textContent = 'Last updated: ' + new Date().toLocaleString();
-            
-            // Load all data
-            await Promise.all([
-                loadDeals(),
-                loadCallReviews(),
-                loadAITeam()
-            ]);
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshData();
         });
     </script>
 </body>
