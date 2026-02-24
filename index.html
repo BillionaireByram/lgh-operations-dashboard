@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Let's Geaux Hustle</title>
+    <title>LGH Metrics Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -82,6 +82,7 @@
             background: var(--bg-secondary);
             border-bottom: 1px solid var(--border-color);
             gap: 0.5rem;
+            overflow-x: auto;
         }
 
         .nav-tab {
@@ -97,6 +98,7 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            white-space: nowrap;
         }
 
         .nav-tab.active {
@@ -178,6 +180,7 @@
             border: 1px solid var(--border-color);
             border-radius: 8px;
             overflow: hidden;
+            margin-bottom: 1rem;
         }
 
         .data-table {
@@ -254,6 +257,8 @@
             padding: 2rem;
             width: 90%;
             max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         .modal-header {
@@ -321,7 +326,6 @@
             opacity: 0.9;
         }
 
-        /* Loading State */
         .loading {
             color: var(--text-secondary);
             font-style: italic;
@@ -331,7 +335,7 @@
 <body>
     <!-- Header -->
     <div class="header">
-        <div class="logo">Let's Geaux Hustle</div>
+        <div class="logo">LGH Metrics Dashboard</div>
         <div class="header-right">
             <div class="last-updated" id="lastUpdated">Updated: Loading...</div>
             <button class="refresh-btn" onclick="refreshData()">🔄 Refresh</button>
@@ -340,39 +344,39 @@
 
     <!-- Navigation -->
     <div class="nav-tabs">
-        <button class="nav-tab" onclick="showTab('sales')">📊 Sales</button>
+        <button class="nav-tab active" onclick="showTab('overview')">📊 Overview</button>
         <button class="nav-tab" onclick="showTab('routers')">📞 Routers</button>
         <button class="nav-tab" onclick="showTab('setters')">📅 Setters</button>
-        <button class="nav-tab active" onclick="showTab('closers')">💰 Closers</button>
+        <button class="nav-tab" onclick="showTab('closers')">💰 Closers</button>
         <button class="nav-tab" onclick="showTab('ai-team')">🤖 AI Team</button>
-        <button class="nav-tab" onclick="showTab('team')">👥 Team</button>
-        <button class="nav-tab" onclick="showTab('dev')">⚙️ Dev</button>
+        <button class="nav-tab" onclick="showTab('executive')">👥 Executive Assistant</button>
+        <button class="nav-tab" onclick="showTab('roas')">📈 ROAS</button>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
         
-        <!-- Sales Section -->
-        <div id="sales" class="section">
+        <!-- Overview Section -->
+        <div id="overview" class="section active">
             <div class="section-header">
-                <h2 class="section-title">Sales Overview</h2>
+                <h2 class="section-title">Company Overview</h2>
             </div>
             <div class="kpi-grid">
                 <div class="kpi-card green-accent">
-                    <div class="kpi-value green" id="total-deals-sales">Loading...</div>
+                    <div class="kpi-value green" id="total-deals">Loading...</div>
                     <div class="kpi-label">Total Deals</div>
                 </div>
                 <div class="kpi-card green-accent">
-                    <div class="kpi-value green" id="total-revenue-sales">Loading...</div>
+                    <div class="kpi-value green" id="total-revenue">Loading...</div>
                     <div class="kpi-label">Total Revenue</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-value" id="avg-deal-sales">Loading...</div>
-                    <div class="kpi-label">Average Deal</div>
+                    <div class="kpi-value" id="feb-deals">Loading...</div>
+                    <div class="kpi-label">February Deals</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-value" id="feb-deals-sales">Loading...</div>
-                    <div class="kpi-label">February Deals</div>
+                    <div class="kpi-value" id="avg-deal">Loading...</div>
+                    <div class="kpi-label">Average Deal</div>
                 </div>
             </div>
             <div class="data-table-container">
@@ -386,38 +390,127 @@
                             <th>Revenue</th>
                         </tr>
                     </thead>
-                    <tbody id="sales-tbody">
+                    <tbody id="overview-tbody">
                         <tr><td colspan="5" class="loading">Loading deals...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- Closers Section (Active) -->
-        <div id="closers" class="section active">
+        <!-- Routers Section -->
+        <div id="routers" class="section">
             <div class="section-header">
-                <h2 class="section-title">Closer Weekly Logs</h2>
+                <h2 class="section-title">Routers Daily Logs</h2>
             </div>
-            
             <div class="kpi-grid">
                 <div class="kpi-card">
-                    <div class="kpi-value" id="calls-taken">0</div>
+                    <div class="kpi-value" id="router-calls">0</div>
+                    <div class="kpi-label">Total Calls</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="router-conversations">0</div>
+                    <div class="kpi-label">Conversations</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="router-updates">0%</div>
+                    <div class="kpi-label">CRM Updates</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="router-hours">0</div>
+                    <div class="kpi-label">Hours Logged</div>
+                </div>
+            </div>
+            <div class="data-table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Team Member</th>
+                            <th>Clock In</th>
+                            <th>Clock Out</th>
+                            <th>Calls Made</th>
+                            <th>Conversations</th>
+                            <th>CRM Updates</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="routers-tbody">
+                        <tr><td colspan="8" class="empty-state">No router logs found</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <button class="add-btn" onclick="showModal('router')">+ Add Router Log</button>
+        </div>
+
+        <!-- Setters Section -->
+        <div id="setters" class="section">
+            <div class="section-header">
+                <h2 class="section-title">Setters Daily Logs</h2>
+            </div>
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-value" id="setter-leads">0</div>
+                    <div class="kpi-label">Leads Connected</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="setter-booked">0</div>
+                    <div class="kpi-label">Calls Booked</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="setter-showed">0</div>
+                    <div class="kpi-label">Showed Up</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="setter-reroutes">0</div>
+                    <div class="kpi-label">Re-routes</div>
+                </div>
+            </div>
+            <div class="data-table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Team Member</th>
+                            <th>Clock In</th>
+                            <th>Clock Out</th>
+                            <th>Leads Connected</th>
+                            <th>Calls Booked</th>
+                            <th>Showed Up</th>
+                            <th>Re-routes</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="setters-tbody">
+                        <tr><td colspan="9" class="empty-state">No setter logs found</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <button class="add-btn" onclick="showModal('setter')">+ Add Setter Log</button>
+        </div>
+
+        <!-- Closers Section -->
+        <div id="closers" class="section">
+            <div class="section-header">
+                <h2 class="section-title">Closers Weekly Logs</h2>
+            </div>
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-value" id="closer-calls">0</div>
                     <div class="kpi-label">Calls Taken</div>
                 </div>
-                <div class="kpi-card green-accent">
-                    <div class="kpi-value" id="deals-closed">0</div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="closer-closed">0</div>
                     <div class="kpi-label">Deals Closed</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-value" id="close-rate">0%</div>
+                    <div class="kpi-value" id="closer-rate">0%</div>
                     <div class="kpi-label">Close Rate</div>
                 </div>
                 <div class="kpi-card green-accent">
-                    <div class="kpi-value green" id="revenue">$0</div>
+                    <div class="kpi-value green" id="closer-revenue">$0</div>
                     <div class="kpi-label">Revenue</div>
                 </div>
             </div>
-
             <div class="data-table-container">
                 <table class="data-table">
                     <thead>
@@ -433,78 +526,172 @@
                         </tr>
                     </thead>
                     <tbody id="closers-tbody">
+                        <tr><td colspan="8" class="empty-state">No closer logs found</td></tr>
                     </tbody>
                 </table>
-                <div class="empty-state" id="closers-empty" style="display: none;">
-                    No closer logs found
+            </div>
+            <button class="add-btn" onclick="showModal('closer')">+ Add Closer Log</button>
+        </div>
+
+        <!-- AI Team Section -->
+        <div id="ai-team" class="section">
+            <div class="section-header">
+                <h2 class="section-title">AI Team Weekly Logs</h2>
+            </div>
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-value" id="ai-leads">1,900</div>
+                    <div class="kpi-label">Leads Generated</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="ai-registrations">135</div>
+                    <div class="kpi-label">Registrations</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="ai-showrate">39%</div>
+                    <div class="kpi-label">Show Rate</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="ai-completion">2%</div>
+                    <div class="kpi-label">Completion Rate</div>
                 </div>
             </div>
-            
-            <button class="add-btn" onclick="showCloserModal()">+ Add Closer Log</button>
+            <div class="data-table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Week Of</th>
+                            <th>Team Member</th>
+                            <th>Leads Generated</th>
+                            <th>Registrations</th>
+                            <th>Show Rate</th>
+                            <th>Completion Rate</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ai-tbody">
+                        <tr>
+                            <td>Current Week</td>
+                            <td>Byron (AI Team)</td>
+                            <td>1,900</td>
+                            <td>135</td>
+                            <td>39%</td>
+                            <td>2%</td>
+                            <td>Webinar revamped to improve completion</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <button class="add-btn" onclick="showModal('ai')">+ Add AI Team Log</button>
         </div>
 
-        <!-- Other sections placeholder -->
-        <div id="routers" class="section">
-            <h2 class="section-title">Routers</h2>
-            <p class="loading">Router data coming soon...</p>
+        <!-- Executive Assistant Section -->
+        <div id="executive" class="section">
+            <div class="section-header">
+                <h2 class="section-title">Executive Assistant Logs</h2>
+            </div>
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-value" id="ea-tasks">0</div>
+                    <div class="kpi-label">Tasks Completed</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="ea-clients">0</div>
+                    <div class="kpi-label">Clients Managed</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="ea-issues">0</div>
+                    <div class="kpi-label">Issues Resolved</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="ea-hours">0</div>
+                    <div class="kpi-label">Hours Logged</div>
+                </div>
+            </div>
+            <div class="data-table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Team Member</th>
+                            <th>Clock In</th>
+                            <th>Clock Out</th>
+                            <th>Tasks Completed</th>
+                            <th>Clients Managed</th>
+                            <th>Issues Resolved</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="executive-tbody">
+                        <tr><td colspan="8" class="empty-state">No executive assistant logs found</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <button class="add-btn" onclick="showModal('executive')">+ Add EA Log</button>
         </div>
 
-        <div id="setters" class="section">
-            <h2 class="section-title">Setters</h2>
-            <p class="loading">Setter data coming soon...</p>
-        </div>
-
-        <div id="ai-team" class="section">
-            <h2 class="section-title">AI Team</h2>
-            <p class="loading">AI Team data coming soon...</p>
-        </div>
-
-        <div id="team" class="section">
-            <h2 class="section-title">Team</h2>
-            <p class="loading">Team data coming soon...</p>
-        </div>
-
-        <div id="dev" class="section">
-            <h2 class="section-title">Development</h2>
-            <p class="loading">Dev data coming soon...</p>
+        <!-- ROAS Section -->
+        <div id="roas" class="section">
+            <div class="section-header">
+                <h2 class="section-title">Return on Ad Spend (ROAS)</h2>
+            </div>
+            <div class="kpi-grid">
+                <div class="kpi-card green-accent">
+                    <div class="kpi-value green" id="roas-revenue">$28,699</div>
+                    <div class="kpi-label">Revenue (30 Days)</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="roas-spend">$740</div>
+                    <div class="kpi-label">Ad Spend (7 Days)</div>
+                </div>
+                <div class="kpi-card green-accent">
+                    <div class="kpi-value green" id="roas-ratio">38:1</div>
+                    <div class="kpi-label">ROAS Ratio</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="roas-ctr">4.82%</div>
+                    <div class="kpi-label">Click-Through Rate</div>
+                </div>
+            </div>
+            <div class="data-table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Period</th>
+                            <th>Ad Spend</th>
+                            <th>Clicks</th>
+                            <th>Registrations</th>
+                            <th>Deals Closed</th>
+                            <th>Revenue</th>
+                            <th>ROAS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Last 30 Days</td>
+                            <td>$740</td>
+                            <td>4,928</td>
+                            <td>135</td>
+                            <td>9</td>
+                            <td>$28,699</td>
+                            <td>38:1</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
-    <!-- Closer Modal -->
-    <div id="closerModal" class="modal-overlay">
+    <!-- Universal Modal -->
+    <div id="universalModal" class="modal-overlay">
         <div class="modal">
-            <div class="modal-header">Add Closer Log</div>
-            <form id="closerForm">
-                <div class="form-group">
-                    <label class="form-label">Week Of</label>
-                    <input type="date" class="form-input" id="weekOf" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Team Member</label>
-                    <input type="text" class="form-input" id="teamMember" placeholder="Enter closer name" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Calls Taken</label>
-                    <input type="number" class="form-input" id="callsTaken" min="0" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">No Shows</label>
-                    <input type="number" class="form-input" id="noShows" min="0" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Deals Closed</label>
-                    <input type="number" class="form-input" id="dealsClosed" min="0" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Revenue ($)</label>
-                    <input type="number" class="form-input" id="revenueInput" min="0" step="0.01" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Notes</label>
-                    <input type="text" class="form-input" id="notes" placeholder="Optional notes">
+            <div class="modal-header" id="modalTitle">Add Log</div>
+            <form id="universalForm">
+                <div id="formFields">
+                    <!-- Dynamic form fields will be inserted here -->
                 </div>
                 <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" onclick="hideCloserModal()">Cancel</button>
+                    <button type="button" class="btn btn-secondary" onclick="hideModal()">Cancel</button>
                     <button type="submit" class="btn btn-primary">Save Log</button>
                 </div>
             </form>
@@ -516,34 +703,169 @@
         const SUPABASE_URL = 'https://aqcnqxmqksashphcvgoc.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFxY25xeG1xa3Nhc2hwaGN2Z29jIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDgyOTgzNywiZXhwIjoyMDg2NDA1ODM3fQ.GcECZQqotwvKfoZ9PwMsgZ3bYETCcsIpj4f9zfpPW94';
 
+        let currentModalType = '';
+
+        // Form field configurations for each role
+        const formConfigs = {
+            router: {
+                title: 'Add Router Log',
+                table: 'router_logs',
+                fields: [
+                    { name: 'date', label: 'Date', type: 'date', required: true },
+                    { name: 'team_member', label: 'Team Member', type: 'text', required: true },
+                    { name: 'clock_in', label: 'Clock In Time', type: 'time', required: true },
+                    { name: 'clock_out', label: 'Clock Out Time', type: 'time', required: true },
+                    { name: 'calls_made', label: 'Calls Made', type: 'number', required: true },
+                    { name: 'conversations_reached', label: 'Conversations Reached', type: 'number', required: true },
+                    { name: 'crm_updates_pct', label: 'CRM Updates %', type: 'number', required: true },
+                    { name: 'notes', label: 'Notes', type: 'textarea', required: false }
+                ]
+            },
+            setter: {
+                title: 'Add Setter Log',
+                table: 'setter_logs',
+                fields: [
+                    { name: 'date', label: 'Date', type: 'date', required: true },
+                    { name: 'team_member', label: 'Team Member', type: 'text', required: true },
+                    { name: 'clock_in', label: 'Clock In Time', type: 'time', required: true },
+                    { name: 'clock_out', label: 'Clock Out Time', type: 'time', required: true },
+                    { name: 'leads_connected', label: 'Leads Connected', type: 'number', required: true },
+                    { name: 'calls_booked', label: 'Calls Booked', type: 'number', required: true },
+                    { name: 'calls_showed', label: 'Calls Showed Up', type: 'number', required: true },
+                    { name: 'reroutes', label: 'Re-routes Done', type: 'number', required: true },
+                    { name: 'notes', label: 'Notes', type: 'textarea', required: false }
+                ]
+            },
+            closer: {
+                title: 'Add Closer Log',
+                table: 'closer_logs',
+                fields: [
+                    { name: 'week_of', label: 'Week Of', type: 'date', required: true },
+                    { name: 'team_member', label: 'Team Member', type: 'text', required: true },
+                    { name: 'calls_taken', label: 'Calls Taken', type: 'number', required: true },
+                    { name: 'no_shows', label: 'No Shows', type: 'number', required: true },
+                    { name: 'deals_closed', label: 'Deals Closed', type: 'number', required: true },
+                    { name: 'revenue', label: 'Total Revenue ($)', type: 'number', required: true },
+                    { name: 'notes', label: 'Notes', type: 'textarea', required: false }
+                ]
+            },
+            ai: {
+                title: 'Add AI Team Log',
+                table: 'ai_team_logs',
+                fields: [
+                    { name: 'week_of', label: 'Week Of', type: 'date', required: true },
+                    { name: 'team_member', label: 'Team Member', type: 'text', required: true },
+                    { name: 'leads_generated', label: 'Leads Generated', type: 'number', required: true },
+                    { name: 'webbi_registrations', label: 'Registrations', type: 'number', required: true },
+                    { name: 'registration_show_rate_pct', label: 'Show Rate %', type: 'number', required: true },
+                    { name: 'webbi_completion_rate_pct', label: 'Completion Rate %', type: 'number', required: true },
+                    { name: 'notes', label: 'Notes', type: 'textarea', required: false }
+                ]
+            },
+            executive: {
+                title: 'Add Executive Assistant Log',
+                table: 'executive_logs',
+                fields: [
+                    { name: 'date', label: 'Date', type: 'date', required: true },
+                    { name: 'team_member', label: 'Team Member', type: 'text', required: true },
+                    { name: 'clock_in', label: 'Clock In Time', type: 'time', required: true },
+                    { name: 'clock_out', label: 'Clock Out Time', type: 'time', required: true },
+                    { name: 'tasks_completed', label: 'Tasks Completed', type: 'number', required: true },
+                    { name: 'clients_managed', label: 'Clients Managed', type: 'number', required: true },
+                    { name: 'issues_resolved', label: 'Issues Resolved', type: 'number', required: true },
+                    { name: 'notes', label: 'Notes', type: 'textarea', required: false }
+                ]
+            }
+        };
+
         // Navigation
         function showTab(tabName) {
-            // Hide all sections
             document.querySelectorAll('.section').forEach(section => {
                 section.classList.remove('active');
             });
-            
-            // Remove active class from all tabs
             document.querySelectorAll('.nav-tab').forEach(tab => {
                 tab.classList.remove('active');
             });
-            
-            // Show selected section
             document.getElementById(tabName).classList.add('active');
-            
-            // Add active class to clicked tab
             event.target.classList.add('active');
         }
 
         // Modal functions
-        function showCloserModal() {
-            document.getElementById('closerModal').style.display = 'flex';
+        function showModal(type) {
+            currentModalType = type;
+            const config = formConfigs[type];
+            
+            document.getElementById('modalTitle').textContent = config.title;
+            
+            const formFields = document.getElementById('formFields');
+            formFields.innerHTML = config.fields.map(field => {
+                if (field.type === 'textarea') {
+                    return `
+                        <div class="form-group">
+                            <label class="form-label">${field.label}</label>
+                            <textarea class="form-input" name="${field.name}" ${field.required ? 'required' : ''}></textarea>
+                        </div>
+                    `;
+                } else {
+                    return `
+                        <div class="form-group">
+                            <label class="form-label">${field.label}</label>
+                            <input type="${field.type}" class="form-input" name="${field.name}" ${field.required ? 'required' : ''}>
+                        </div>
+                    `;
+                }
+            }).join('');
+            
+            document.getElementById('universalModal').style.display = 'flex';
         }
 
-        function hideCloserModal() {
-            document.getElementById('closerModal').style.display = 'none';
-            document.getElementById('closerForm').reset();
+        function hideModal() {
+            document.getElementById('universalModal').style.display = 'none';
+            document.getElementById('universalForm').reset();
         }
+
+        // Form submission
+        document.getElementById('universalForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const config = formConfigs[currentModalType];
+            const formData = new FormData(this);
+            const data = {};
+            
+            for (let [key, value] of formData.entries()) {
+                data[key] = value;
+            }
+            
+            // Calculate close rate for closers
+            if (currentModalType === 'closer') {
+                const closeRate = data.calls_taken > 0 ? 
+                    ((data.deals_closed / data.calls_taken) * 100).toFixed(1) : 0;
+                data.close_rate = closeRate;
+            }
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/${config.table}`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    hideModal();
+                    refreshData();
+                    alert('Log saved successfully!');
+                } else {
+                    alert('Error saving log');
+                }
+            } catch (error) {
+                console.error('Error saving log:', error);
+                alert('Error saving log');
+            }
+        });
 
         // Data loading functions
         async function loadDeals() {
@@ -551,26 +873,25 @@
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/deals_closed?order=date.desc&limit=20`, {
                     headers: {
                         'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
-                        'Content-Type': 'application/json'
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
                     }
                 });
                 
                 const deals = await response.json();
                 
-                // Update sales KPIs
+                // Update overview KPIs
                 const totalDeals = deals.length;
                 const totalRevenue = deals.reduce((sum, deal) => sum + (deal.cash_collected || 0), 0);
                 const feb2026Deals = deals.filter(deal => deal.date && deal.date.startsWith('2026-02'));
                 const avgDeal = totalRevenue / totalDeals || 0;
 
-                document.getElementById('total-deals-sales').textContent = totalDeals.toLocaleString();
-                document.getElementById('total-revenue-sales').textContent = '$' + totalRevenue.toLocaleString();
-                document.getElementById('avg-deal-sales').textContent = '$' + Math.round(avgDeal).toLocaleString();
-                document.getElementById('feb-deals-sales').textContent = feb2026Deals.length;
+                document.getElementById('total-deals').textContent = totalDeals.toLocaleString();
+                document.getElementById('total-revenue').textContent = '$' + totalRevenue.toLocaleString();
+                document.getElementById('feb-deals').textContent = feb2026Deals.length;
+                document.getElementById('avg-deal').textContent = '$' + Math.round(avgDeal).toLocaleString();
 
-                // Update deals table
-                const tbody = document.getElementById('sales-tbody');
+                // Update overview table
+                const tbody = document.getElementById('overview-tbody');
                 tbody.innerHTML = deals.slice(0, 10).map(deal => `
                     <tr>
                         <td>${deal.date || 'N/A'}</td>
@@ -581,112 +902,8 @@
                     </tr>
                 `).join('');
 
-                // Update closer metrics (using recent deals)
-                updateCloserMetrics(deals);
-
             } catch (error) {
                 console.error('Error loading deals:', error);
-            }
-        }
-
-        function updateCloserMetrics(deals) {
-            // Calculate closer metrics from recent deals
-            const recentDeals = deals.filter(deal => {
-                const dealDate = new Date(deal.date);
-                const oneWeekAgo = new Date();
-                oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-                return dealDate >= oneWeekAgo;
-            });
-
-            const totalDealsCount = recentDeals.length;
-            const totalRevenue = recentDeals.reduce((sum, deal) => sum + (deal.cash_collected || 0), 0);
-
-            document.getElementById('deals-closed').textContent = totalDealsCount;
-            document.getElementById('revenue').textContent = '$' + totalRevenue.toLocaleString();
-
-            // Show empty state for closer logs table
-            const tbody = document.getElementById('closers-tbody');
-            if (tbody.children.length === 0) {
-                document.getElementById('closers-empty').style.display = 'block';
-            }
-        }
-
-        // Form submission
-        document.getElementById('closerForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const formData = {
-                week_of: document.getElementById('weekOf').value,
-                team_member: document.getElementById('teamMember').value,
-                calls_taken: parseInt(document.getElementById('callsTaken').value),
-                no_shows: parseInt(document.getElementById('noShows').value),
-                deals_closed: parseInt(document.getElementById('dealsClosed').value),
-                revenue: parseFloat(document.getElementById('revenueInput').value),
-                notes: document.getElementById('notes').value
-            };
-
-            // Calculate close rate
-            const closeRate = formData.calls_taken > 0 ? 
-                ((formData.deals_closed / formData.calls_taken) * 100).toFixed(1) : 0;
-
-            try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/closer_logs`, {
-                    method: 'POST',
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({...formData, close_rate: closeRate})
-                });
-
-                if (response.ok) {
-                    hideCloserModal();
-                    loadCloserLogs();
-                } else {
-                    alert('Error saving closer log');
-                }
-            } catch (error) {
-                console.error('Error saving closer log:', error);
-                alert('Error saving closer log');
-            }
-        });
-
-        // Load closer logs
-        async function loadCloserLogs() {
-            try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/closer_logs?order=week_of.desc`, {
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                const logs = await response.json();
-                const tbody = document.getElementById('closers-tbody');
-                const emptyState = document.getElementById('closers-empty');
-
-                if (logs.length === 0) {
-                    tbody.innerHTML = '';
-                    emptyState.style.display = 'block';
-                } else {
-                    emptyState.style.display = 'none';
-                    tbody.innerHTML = logs.map(log => `
-                        <tr>
-                            <td>${log.week_of}</td>
-                            <td>${log.team_member}</td>
-                            <td>${log.calls_taken}</td>
-                            <td>${log.no_shows}</td>
-                            <td>${log.deals_closed}</td>
-                            <td>${log.close_rate}%</td>
-                            <td>$${log.revenue.toLocaleString()}</td>
-                            <td>${log.notes || ''}</td>
-                        </tr>
-                    `).join('');
-                }
-            } catch (error) {
-                console.error('Error loading closer logs:', error);
             }
         }
 
@@ -694,7 +911,6 @@
         function refreshData() {
             document.getElementById('lastUpdated').textContent = `Updated: ${new Date().toLocaleTimeString()}`;
             loadDeals();
-            loadCloserLogs();
         }
 
         // Initialize
