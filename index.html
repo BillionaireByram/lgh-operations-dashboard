@@ -757,7 +757,137 @@
             </div>
         </div>
 
-        <!-- Closers Section (Example) -->
+        <!-- Routers Section -->
+        <div id="routers" class="section">
+            <div class="section-header">
+                <h2 class="section-title">Routers Daily Logs</h2>
+                <button class="add-entry-btn" onclick="openModal('routerModal')">
+                    + Add Router Log
+                </button>
+            </div>
+
+            <!-- Date Controls -->
+            <div class="date-controls">
+                <div class="date-picker-group">
+                    <label>Date Range:</label>
+                    <input type="date" class="date-input" id="routerStartDate">
+                    <span>to</span>
+                    <input type="date" class="date-input" id="routerEndDate">
+                </div>
+                <div class="period-buttons">
+                    <button class="period-btn active" onclick="setRouterPeriod('today')">Today</button>
+                    <button class="period-btn" onclick="setRouterPeriod('week')">7 Days</button>
+                    <button class="period-btn" onclick="setRouterPeriod('month')">30 Days</button>
+                </div>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-value" id="router-calls">Loading...</div>
+                    <div class="kpi-label">Total Calls</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="router-conversations">Loading...</div>
+                    <div class="kpi-label">Conversations</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="router-registrations">Loading...</div>
+                    <div class="kpi-label">Live Registrations</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="router-accuracy">Loading...</div>
+                    <div class="kpi-label">CRM Accuracy</div>
+                </div>
+            </div>
+
+            <div class="data-table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Team Member</th>
+                            <th>Clock In</th>
+                            <th>Clock Out</th>
+                            <th>Calls Made</th>
+                            <th>Conversations</th>
+                            <th>Live Registrations</th>
+                            <th>CRM Accuracy</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="routers-tbody">
+                        <tr><td colspan="9" class="loading">Loading router data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Setters Section -->
+        <div id="setters" class="section">
+            <div class="section-header">
+                <h2 class="section-title">Setters Daily Logs</h2>
+                <button class="add-entry-btn" onclick="openModal('setterModal')">
+                    + Add Setter Log
+                </button>
+            </div>
+
+            <!-- Date Controls -->
+            <div class="date-controls">
+                <div class="date-picker-group">
+                    <label>Date Range:</label>
+                    <input type="date" class="date-input" id="setterStartDate">
+                    <span>to</span>
+                    <input type="date" class="date-input" id="setterEndDate">
+                </div>
+                <div class="period-buttons">
+                    <button class="period-btn active" onclick="setSetterPeriod('today')">Today</button>
+                    <button class="period-btn" onclick="setSetterPeriod('week')">7 Days</button>
+                    <button class="period-btn" onclick="setSetterPeriod('month')">30 Days</button>
+                </div>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-value" id="setter-contacted">Loading...</div>
+                    <div class="kpi-label">Leads Contacted</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="setter-booked">Loading...</div>
+                    <div class="kpi-label">Calls Booked</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="setter-showed">Loading...</div>
+                    <div class="kpi-label">Showed Up</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="setter-reroutes">Loading...</div>
+                    <div class="kpi-label">Re-routes</div>
+                </div>
+            </div>
+
+            <div class="data-table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Team Member</th>
+                            <th>Clock In</th>
+                            <th>Clock Out</th>
+                            <th>Contacted</th>
+                            <th>Booked</th>
+                            <th>Showed</th>
+                            <th>Re-routes</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="setters-tbody">
+                        <tr><td colspan="9" class="loading">Loading setter data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Closers Section -->
         <div id="closers" class="section">
             <div class="section-header">
                 <h2 class="section-title">Closer Weekly Logs</h2>
@@ -809,7 +939,68 @@
         <!-- Other sections would follow similar pattern... -->
     </div>
 
-    <!-- Example Modal -->
+    <!-- Router Modal -->
+    <div id="routerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Router Daily Log</h3>
+                <button class="close-btn" onclick="closeModal('routerModal')">&times;</button>
+            </div>
+            <div id="routerMessage"></div>
+            <form id="routerForm" onsubmit="submitRouterLog(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Date</label>
+                        <input type="date" id="routerDate" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Team Member</label>
+                        <input type="text" id="routerName" class="form-input" required placeholder="Enter your name">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Clock In</label>
+                        <input type="time" id="routerClockIn" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Clock Out</label>
+                        <input type="time" id="routerClockOut" class="form-input" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Calls Made</label>
+                        <input type="number" id="routerCalls" class="form-input" required min="0" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Conversations</label>
+                        <input type="number" id="routerConversations" class="form-input" required min="0" placeholder="0">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Live Registrations</label>
+                        <input type="number" id="routerRegistrations" class="form-input" required min="0" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">CRM Accuracy (%)</label>
+                        <input type="number" id="routerAccuracy" class="form-input" required min="0" max="100" placeholder="100">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea id="routerNotes" class="form-textarea" placeholder="Daily notes and observations..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('routerModal')">Cancel</button>
+                    <button type="submit" class="btn-primary" id="routerSubmitBtn">Submit Log</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Closer Modal -->
     <div id="closerModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -876,7 +1067,10 @@
             document.getElementById(modalId).classList.add('active');
             
             // Set defaults
-            if (modalId === 'closerModal') {
+            const today = new Date().toISOString().split('T')[0];
+            if (modalId === 'routerModal') {
+                document.getElementById('routerDate').value = today;
+            } else if (modalId === 'closerModal') {
                 const currentDate = new Date();
                 const monday = new Date(currentDate.setDate(currentDate.getDate() - currentDate.getDay() + 1));
                 document.getElementById('closerWeek').value = monday.toISOString().split('T')[0];
@@ -902,7 +1096,56 @@
             }
         }
 
-        // Example form submission
+        // Form submission functions
+        async function submitRouterLog(event) {
+            event.preventDefault();
+            
+            const submitBtn = document.getElementById('routerSubmitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            
+            const formData = {
+                date: document.getElementById('routerDate').value,
+                team_member: document.getElementById('routerName').value,
+                clock_in: document.getElementById('routerClockIn').value,
+                clock_out: document.getElementById('routerClockOut').value,
+                calls_made: parseInt(document.getElementById('routerCalls').value),
+                conversations_reached: parseInt(document.getElementById('routerConversations').value),
+                training_registrations_live: parseInt(document.getElementById('routerRegistrations').value),
+                crm_accuracy_pct: parseFloat(document.getElementById('routerAccuracy').value),
+                notes: document.getElementById('routerNotes').value
+            };
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/router_logs`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    showMessage('routerMessage', '✅ Router log submitted successfully!');
+                    document.getElementById('routerForm').reset();
+                    setTimeout(() => {
+                        closeModal('routerModal');
+                        loadRouters();
+                    }, 1500);
+                } else {
+                    throw new Error('Failed to submit log');
+                }
+            } catch (error) {
+                showMessage('routerMessage', `❌ Error: ${error.message}`, true);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Log';
+            }
+        }
+
         async function submitCloserLog(event) {
             event.preventDefault();
             
@@ -954,26 +1197,97 @@
             }
         }
 
-        // Data loading and other functions would be similar to previous implementation
+        // Data loading functions
+        async function loadRouters() {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/router_logs?order=date.desc&limit=20`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                
+                const logs = await response.json();
+
+                const totalCalls = logs.reduce((sum, log) => sum + (log.calls_made || 0), 0);
+                const totalConversations = logs.reduce((sum, log) => sum + (log.conversations_reached || 0), 0);
+                const totalRegistrations = logs.reduce((sum, log) => sum + (log.training_registrations_live || 0), 0);
+                const avgAccuracy = logs.length > 0 ? 
+                    logs.reduce((sum, log) => sum + (log.crm_accuracy_pct || 0), 0) / logs.length : 0;
+
+                document.getElementById('router-calls').textContent = totalCalls.toLocaleString();
+                document.getElementById('router-conversations').textContent = totalConversations.toLocaleString();
+                document.getElementById('router-registrations').textContent = totalRegistrations.toLocaleString();
+                document.getElementById('router-accuracy').textContent = avgAccuracy.toFixed(1) + '%';
+
+                const tbody = document.getElementById('routers-tbody');
+                tbody.innerHTML = logs.map(log => `
+                    <tr>
+                        <td>${log.date}</td>
+                        <td>${log.team_member}</td>
+                        <td>${log.clock_in}</td>
+                        <td>${log.clock_out}</td>
+                        <td>${log.calls_made}</td>
+                        <td>${log.conversations_reached}</td>
+                        <td>${log.training_registrations_live || 0}</td>
+                        <td>${log.crm_accuracy_pct}%</td>
+                        <td>${(log.notes || '').substring(0, 50)}...</td>
+                    </tr>
+                `).join('');
+
+            } catch (error) {
+                console.error('Error loading router logs:', error);
+                document.getElementById('routers-tbody').innerHTML = '<tr><td colspan="9" class="loading">Error loading data</td></tr>';
+            }
+        }
+
         function setPeriod(period) {
             document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
         }
 
+        function setRouterPeriod(period) {
+            const today = new Date().toISOString().split('T')[0];
+            const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+            const monthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+            
+            if (period === 'today') {
+                document.getElementById('routerStartDate').value = today;
+                document.getElementById('routerEndDate').value = today;
+            } else if (period === 'week') {
+                document.getElementById('routerStartDate').value = weekAgo;
+                document.getElementById('routerEndDate').value = today;
+            } else if (period === 'month') {
+                document.getElementById('routerStartDate').value = monthAgo;
+                document.getElementById('routerEndDate').value = today;
+            }
+            loadRouters();
+        }
+
+        function setSetterPeriod(period) { 
+            setRouterPeriod(period); 
+        }
+
         function updateWeekData() {
-            // Update data based on selected week
+            loadRouters();
         }
 
         function refreshData() {
             document.getElementById('lastUpdated').textContent = `Updated: ${new Date().toLocaleTimeString()}`;
-            // Load all data
+            loadRouters();
         }
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             const today = new Date();
             const currentWeek = new Date(today.setDate(today.getDate() - today.getDay())).toISOString().split('T')[0];
+            const todayStr = new Date().toISOString().split('T')[0];
+            
             document.getElementById('weekDate').value = currentWeek;
+            document.getElementById('routerStartDate').value = todayStr;
+            document.getElementById('routerEndDate').value = todayStr;
+            document.getElementById('setterStartDate').value = todayStr;
+            document.getElementById('setterEndDate').value = todayStr;
             
             refreshData();
         });
