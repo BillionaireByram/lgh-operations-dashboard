@@ -1,2105 +1,1770 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LGH Metrics Dashboard</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            /* Futuristic Dark Theme */
-            --bg-primary: #0a0a0a;
-            --bg-secondary: #111111;
-            --bg-card: rgba(255, 255, 255, 0.03);
-            --bg-card-hover: rgba(255, 255, 255, 0.06);
-            --text-primary: #ffffff;
-            --text-secondary: #888888;
-            --text-muted: #666666;
-            
-            /* Futuristic Accents */
-            --accent-primary: #ff4757;
-            --accent-success: #2ed573;
-            --accent-warning: #ffa502;
-            --accent-info: #3742fa;
-            
-            /* Glassmorphism */
-            --glass-bg: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-            
-            /* Borders */
-            --border-color: rgba(255, 255, 255, 0.08);
-            --border-radius: 16px;
-            --border-radius-lg: 24px;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            min-height: 100vh;
-            font-weight: 400;
-            line-height: 1.5;
-        }
-
-        /* Header */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 32px;
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .logo {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--text-primary);
-            letter-spacing: -0.02em;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .last-updated {
-            font-size: 14px;
-            color: var(--text-secondary);
-            font-weight: 400;
-        }
-
-        .refresh-btn {
-            background: var(--accent-primary);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .refresh-btn:hover {
-            background: #ff3838;
-            transform: translateY(-1px);
-        }
-
-        /* Navigation */
-        .nav-tabs {
-            display: flex;
-            padding: 0 32px;
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border-color);
-            gap: 8px;
-            overflow-x: auto;
-        }
-
-        .nav-tab {
-            padding: 16px 24px;
-            background: transparent;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            border-radius: 12px 12px 0 0;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            white-space: nowrap;
-            position: relative;
-        }
-
-        .nav-tab.active {
-            background: var(--accent-primary);
-            color: white;
-        }
-
-        .nav-tab:hover:not(.active) {
-            background: var(--glass-bg);
-            color: var(--text-primary);
-        }
-
-        /* Main Content */
-        .main-content {
-            padding: 32px;
-            background: var(--bg-primary);
-        }
-
-        .section {
-            display: none;
-        }
-
-        .section.active {
-            display: block;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 32px;
-        }
-
-        .section-title {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--text-primary);
-            letter-spacing: -0.02em;
-        }
-
-        /* Add Button */
-        .add-entry-btn {
-            background: var(--glass-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            padding: 12px 20px;
-            border-radius: var(--border-radius);
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .add-entry-btn:hover {
-            background: var(--bg-card-hover);
-            border-color: rgba(255, 255, 255, 0.2);
-        }
-
-        /* Date Controls */
-        .date-controls {
-            display: flex;
-            gap: 16px;
-            align-items: center;
-            margin-bottom: 32px;
-            padding: 20px;
-            background: var(--glass-bg);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-        }
-
-        .date-picker-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .date-picker-group label {
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-secondary);
-        }
-
-        .date-input {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 8px 12px;
-            color: var(--text-primary);
-            font-size: 14px;
-            font-weight: 400;
-        }
-
-        .date-input:focus {
-            outline: none;
-            border-color: var(--accent-primary);
-        }
-
-        .period-buttons {
-            display: flex;
-            gap: 8px;
-        }
-
-        .period-btn {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 8px 16px;
-            color: var(--text-secondary);
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .period-btn.active {
-            background: var(--accent-primary);
-            color: white;
-            border-color: var(--accent-primary);
-        }
-
-        .period-btn:hover:not(.active) {
-            background: var(--bg-card);
-            color: var(--text-primary);
-        }
-
-        /* KPI Grid */
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 24px;
-            margin-bottom: 32px;
-        }
-
-        .kpi-card {
-            background: var(--glass-bg);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            padding: 24px;
-            transition: all 0.2s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .kpi-card:hover {
-            background: var(--bg-card-hover);
-            border-color: rgba(255, 255, 255, 0.15);
-        }
-
-        .kpi-card.success {
-            border-color: rgba(46, 213, 115, 0.3);
-        }
-
-        .kpi-card.success:hover {
-            border-color: rgba(46, 213, 115, 0.5);
-        }
-
-        .kpi-value {
-            font-size: 36px;
-            font-weight: 800;
-            margin-bottom: 8px;
-            letter-spacing: -0.02em;
-            color: var(--text-primary);
-        }
-
-        .kpi-value.success {
-            color: var(--accent-success);
-        }
-
-        .kpi-label {
-            font-size: 12px;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text-secondary);
-        }
-
-        /* Overview Grid */
-        .overview-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 24px;
-            margin-bottom: 32px;
-        }
-
-        .overview-section {
-            background: var(--glass-bg);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            padding: 24px;
-        }
-
-        .overview-section h3 {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: var(--text-primary);
-        }
-
-        .mini-kpi {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .mini-kpi:last-child {
-            border-bottom: none;
-        }
-
-        .mini-kpi-label {
-            font-size: 14px;
-            color: var(--text-secondary);
-            font-weight: 400;
-        }
-
-        .mini-kpi-value {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        /* Data Table */
-        .data-table-container {
-            background: var(--glass-bg);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            margin-bottom: 24px;
-        }
-
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .data-table th {
-            background: var(--bg-secondary);
-            padding: 16px;
-            text-align: left;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-secondary);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .data-table td {
-            padding: 16px;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 14px;
-            font-weight: 400;
-            color: var(--text-primary);
-        }
-
-        .data-table tr:hover {
-            background: var(--bg-card);
-        }
-
-        .empty-state {
-            padding: 48px;
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 14px;
-            font-weight: 400;
-        }
-
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius-lg);
-            padding: 32px;
-            width: 90%;
-            max-width: 600px;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .modal-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 24px;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-        }
-
-        .close-btn:hover {
-            background: var(--bg-card);
-            color: var(--text-primary);
-        }
-
-        /* Form Styles */
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-secondary);
-        }
-
-        .form-input,
-        .form-textarea,
-        .form-select {
-            width: 100%;
-            background: var(--bg-primary);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 12px 16px;
-            color: var(--text-primary);
-            font-size: 14px;
-            font-weight: 400;
-            transition: all 0.2s ease;
-        }
-
-        .form-input:focus,
-        .form-textarea:focus,
-        .form-select:focus {
-            outline: none;
-            border-color: var(--accent-success);
-        }
-
-        .form-textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .form-actions {
-            display: flex;
-            gap: 12px;
-            justify-content: flex-end;
-            margin-top: 24px;
-        }
-
-        .btn-secondary {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 12px 24px;
-            color: var(--text-secondary);
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .btn-secondary:hover {
-            background: var(--bg-card-hover);
-            color: var(--text-primary);
-        }
-
-        .btn-primary {
-            background: var(--accent-success);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            padding: 12px 24px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .btn-primary:hover {
-            background: #26a162;
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .success-message {
-            background: rgba(46, 213, 115, 0.1);
-            border: 1px solid rgba(46, 213, 115, 0.3);
-            border-radius: 8px;
-            padding: 12px;
-            color: var(--accent-success);
-            margin-bottom: 16px;
-            font-size: 14px;
-        }
-
-        .error-message {
-            background: rgba(255, 71, 87, 0.1);
-            border: 1px solid rgba(255, 71, 87, 0.3);
-            border-radius: 8px;
-            padding: 12px;
-            color: var(--accent-primary);
-            margin-bottom: 16px;
-            font-size: 14px;
-        }
-
-        .loading {
-            color: var(--text-muted);
-            font-style: italic;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .main-content {
-                padding: 16px;
-            }
-
-            .header {
-                padding: 16px;
-                flex-direction: column;
-                gap: 16px;
-            }
-
-            .nav-tabs {
-                padding: 0 16px;
-            }
-
-            .date-controls {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 16px;
-            }
-
-            .period-buttons {
-                justify-content: center;
-            }
-
-            .kpi-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 16px;
-            }
-
-            .overview-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .modal-content {
-                width: 95%;
-                padding: 24px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .kpi-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .kpi-value {
-                font-size: 28px;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LGH Operations OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+:root {
+    /* AI Social Flo Brand */
+    --bg-primary: #090614;
+    --bg-secondary: #1B1E23;
+    --bg-card: rgba(17,108,227,0.04);
+    --bg-card-hover: rgba(17,108,227,0.08);
+    --bg-input: rgba(17,108,227,0.08);
+    --text-primary: #E2FFFF;
+    --text-secondary: #B1B6FE;
+    --text-muted: #6B7094;
+    --accent: #116CE3;
+    --accent-hover: #1FA1FE;
+    --accent-glow: rgba(17,108,227,0.4);
+    --green: #2ed573;
+    --yellow: #ffa502;
+    --blue: #2196F3;
+    --purple: #B1B6FE;
+    --cyan: #10caF0;
+    --electric: #116CE3;
+    --steel: #2196F3;
+    --sky: #15B6D1;
+    --glass-bg: rgba(17,108,227,0.06);
+    --glass-border: rgba(17,108,227,0.15);
+    --glass-shadow: 0 8px 32px rgba(17,108,227,0.12);
+    --glass-glow: 0 0 20px rgba(17,108,227,0.08);
+    --border: rgba(17,108,227,0.12);
+    --gradient-btn: linear-gradient(135deg, #116CE3 0%, #15B6D1 100%);
+    --gradient-btn-hover: linear-gradient(135deg, #1FA1FE 0%, #10caF0 100%);
+    --radius: 14px;
+    --radius-sm: 8px;
+    --radius-lg: 20px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-primary);color:var(--text-primary);min-height:100vh;line-height:1.5;background-image:radial-gradient(ellipse at 50% 0%,rgba(17,108,227,0.08) 0%,transparent 60%)}
+a{color:var(--cyan);text-decoration:none}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(17,108,227,0.25);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:rgba(17,108,227,0.4)}
+
+/* Header */
+.header{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;background:rgba(27,30,35,0.85);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;backdrop-filter:blur(24px) saturate(1.4);box-shadow:0 1px 24px rgba(17,108,227,0.06)}
+.logo{font-size:18px;font-weight:700;letter-spacing:-0.03em}
+.logo span{background:var(--gradient-btn);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.header-right{display:flex;align-items:center;gap:12px}
+.last-updated{font-size:12px;color:var(--text-muted)}
+
+/* Buttons */
+.btn{border:none;padding:8px 16px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--gradient-btn);color:#fff;box-shadow:0 2px 12px var(--accent-glow)}
+.btn-primary:hover{background:var(--gradient-btn-hover);transform:translateY(-1px);box-shadow:0 4px 20px var(--accent-glow)}
+.btn-ghost{background:var(--glass-bg);color:var(--text-secondary);border:1px solid var(--glass-border);backdrop-filter:blur(8px)}
+.btn-ghost:hover{background:var(--bg-card-hover);color:var(--text-primary);border-color:rgba(17,108,227,0.3);box-shadow:0 0 12px rgba(17,108,227,0.1)}
+.btn-sm{padding:5px 10px;font-size:11px}
+.btn-success{background:linear-gradient(135deg,#2ed573,#10caF0);color:#000}
+.btn-warning{background:var(--yellow);color:#000}
+.btn-danger{background:linear-gradient(135deg,#ff4757,#ff6b7a);color:#fff}
+
+/* Navigation */
+.nav{display:flex;gap:2px;padding:8px 24px;background:rgba(27,30,35,0.6);border-bottom:1px solid var(--border);overflow-x:auto;-webkit-overflow-scrolling:touch;backdrop-filter:blur(16px)}
+.nav::-webkit-scrollbar{display:none}
+.nav-btn{padding:8px 14px;border:none;background:transparent;color:var(--text-muted);font-size:12px;font-weight:500;cursor:pointer;border-radius:var(--radius-sm);white-space:nowrap;transition:all .2s;font-family:inherit;border:1px solid transparent}
+.nav-btn:hover{color:var(--text-secondary);background:var(--glass-bg);border-color:var(--glass-border)}
+.nav-btn.active{color:var(--cyan);background:rgba(17,108,227,0.1);border:1px solid rgba(17,108,227,0.25);box-shadow:0 0 12px rgba(17,108,227,0.08)}
+
+/* Controls Bar */
+.controls{display:flex;justify-content:space-between;align-items:center;padding:12px 24px;gap:12px;flex-wrap:wrap}
+.date-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.date-preset{padding:6px 12px;border:1px solid var(--border);background:transparent;color:var(--text-secondary);border-radius:var(--radius-sm);font-size:11px;cursor:pointer;font-family:inherit;transition:all .2s}
+.date-preset:hover{background:var(--glass-bg);color:var(--text-primary);border-color:rgba(17,108,227,0.25)}
+.date-preset.active{background:rgba(17,108,227,0.12);color:var(--cyan);border-color:rgba(17,108,227,0.3);box-shadow:0 0 8px rgba(17,108,227,0.1)}
+input[type="date"]{background:var(--bg-input);border:1px solid var(--border);color:var(--text-primary);padding:6px 10px;border-radius:var(--radius-sm);font-size:12px;font-family:inherit}
+input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.5}
+
+/* Main Content */
+.main{padding:16px 24px 40px;max-width:1440px;margin:0 auto}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* Cards & KPIs */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:20px}
+.kpi-card{background:rgba(17,108,227,0.05);border:1px solid rgba(17,108,227,0.12);border-radius:var(--radius);padding:18px;transition:all .25s;backdrop-filter:blur(12px);box-shadow:var(--glass-glow)}
+.kpi-card:hover{background:rgba(17,108,227,0.1);border-color:rgba(17,108,227,0.25);box-shadow:0 0 24px rgba(17,108,227,0.12),var(--glass-shadow);transform:translateY(-1px)}
+.kpi-label{font-size:11px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px}
+.kpi-value{font-size:28px;font-weight:700;letter-spacing:-0.03em;line-height:1.1}
+.kpi-sub{font-size:11px;color:var(--text-muted);margin-top:4px}
+.kpi-value.green{color:var(--green)}
+.kpi-value.red{color:var(--accent)}
+.kpi-value.blue{color:var(--blue)}
+.kpi-value.yellow{color:var(--yellow)}
+.kpi-value.purple{color:var(--purple)}
+.kpi-value.cyan{color:var(--cyan)}
+
+/* Section */
+.section{background:rgba(17,108,227,0.04);border:1px solid rgba(17,108,227,0.1);border-radius:var(--radius);padding:20px;margin-bottom:16px;backdrop-filter:blur(12px);box-shadow:var(--glass-glow)}
+.section-title{font-size:14px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.section-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+/* Tables */
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;padding:10px 12px;color:var(--text-muted);font-weight:500;text-transform:uppercase;letter-spacing:0.05em;font-size:10px;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.03);white-space:nowrap}
+tr:hover td{background:rgba(255,255,255,0.02)}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600}
+.badge-green{background:rgba(46,213,115,0.12);color:var(--green);border:1px solid rgba(46,213,115,0.2)}
+.badge-yellow{background:rgba(255,165,2,0.12);color:var(--yellow);border:1px solid rgba(255,165,2,0.2)}
+.badge-red{background:rgba(255,71,87,0.12);color:#ff6b7a;border:1px solid rgba(255,71,87,0.2)}
+.badge-blue{background:rgba(17,108,227,0.15);color:var(--cyan);border:1px solid rgba(17,108,227,0.25)}
+.badge-purple{background:rgba(177,182,254,0.1);color:var(--purple);border:1px solid rgba(177,182,254,0.2)}
+
+/* Skeleton Shimmer */
+@keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
+.skeleton{background:linear-gradient(90deg,rgba(17,108,227,0.04) 25%,rgba(17,108,227,0.1) 50%,rgba(17,108,227,0.04) 75%);background-size:800px 100%;animation:shimmer 1.5s ease-in-out infinite;border-radius:var(--radius-sm);border:1px solid rgba(17,108,227,0.08)}
+.skel-kpi{height:100px;border-radius:var(--radius)}
+.skel-table{height:200px;border-radius:var(--radius)}
+.skel-chart{height:250px;border-radius:var(--radius)}
+.skel-line{height:14px;margin-bottom:8px;width:60%}
+
+/* Empty & Error States */
+.empty-state{text-align:center;padding:40px 20px;color:var(--text-muted)}
+.empty-state h3{font-size:16px;margin-bottom:6px;color:var(--text-secondary)}
+.empty-state p{font-size:13px}
+.error-banner{background:rgba(255,71,87,0.08);border:1px solid rgba(255,71,87,0.2);border-radius:var(--radius-sm);padding:10px 16px;color:#ff6b7a;font-size:12px;margin-bottom:12px;display:none}
+.error-banner.show{display:flex;align-items:center;gap:8px}
+
+/* Charts */
+.chart-container{position:relative;height:260px;margin-top:8px}
+.chart-container canvas{max-height:260px}
+
+/* Modal */
+.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(9,6,20,0.8);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
+.modal-overlay.show{display:flex}
+.modal{background:rgba(27,30,35,0.95);border:1px solid rgba(17,108,227,0.2);border-radius:var(--radius-lg);padding:24px;width:90%;max-width:480px;max-height:90vh;overflow-y:auto;backdrop-filter:blur(20px);box-shadow:0 8px 40px rgba(17,108,227,0.15),0 0 60px rgba(17,108,227,0.05)}
+.modal h2{font-size:18px;margin-bottom:16px;font-weight:600}
+.form-group{margin-bottom:12px}
+.form-group label{display:block;font-size:11px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px}
+.form-group input,.form-group select,.form-group textarea{width:100%;background:rgba(17,108,227,0.06);border:1px solid rgba(17,108,227,0.15);color:var(--text-primary);padding:8px 12px;border-radius:var(--radius-sm);font-size:13px;font-family:inherit;transition:border-color .2s,box-shadow .2s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:rgba(17,108,227,0.4);box-shadow:0 0 12px rgba(17,108,227,0.12)}
+.form-group textarea{min-height:60px;resize:vertical}
+.form-group select option{background:var(--bg-secondary)}
+.form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+
+/* Kanban */
+.kanban{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.kanban-col{background:rgba(17,108,227,0.03);border:1px solid rgba(17,108,227,0.08);border-radius:var(--radius);padding:12px;min-height:200px;backdrop-filter:blur(8px)}
+.kanban-col-title{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.kanban-col-title .count{background:var(--glass-bg);padding:2px 8px;border-radius:10px;font-size:10px}
+.kanban-card{background:rgba(17,108,227,0.05);border:1px solid rgba(17,108,227,0.12);border-radius:var(--radius-sm);padding:12px;margin-bottom:8px;cursor:pointer;transition:all .2s;backdrop-filter:blur(8px)}
+.kanban-card:hover{background:rgba(17,108,227,0.1);border-color:rgba(17,108,227,0.25);box-shadow:0 0 16px rgba(17,108,227,0.1)}
+.kanban-card h4{font-size:13px;font-weight:500;margin-bottom:4px}
+.kanban-card p{font-size:11px;color:var(--text-muted)}
+.kanban-card .meta{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.priority-dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+.priority-low{background:var(--steel)}
+.priority-medium{background:var(--yellow)}
+.priority-high{background:#ff4757}
+.priority-urgent{background:#ff0040;box-shadow:0 0 6px rgba(255,0,64,0.4)}
+
+/* Pipeline Kanban */
+.pipeline-card{background:rgba(17,108,227,0.05);border:1px solid rgba(17,108,227,0.1);border-radius:var(--radius-sm);padding:10px;margin-bottom:6px;font-size:12px;backdrop-filter:blur(8px);transition:all .2s}
+.pipeline-card:hover{border-color:rgba(17,108,227,0.2);box-shadow:0 0 12px rgba(17,108,227,0.08)}
+.pipeline-card strong{font-weight:500}
+.pipeline-card .detail{color:var(--text-muted);font-size:11px;margin-top:2px}
+
+/* Leaderboard */
+.leaderboard-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.03)}
+.leaderboard-rank{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:var(--glass-bg);flex-shrink:0}
+.leaderboard-rank.gold{background:rgba(255,215,0,0.15);color:#ffd700}
+.leaderboard-rank.silver{background:rgba(192,192,192,0.15);color:#c0c0c0}
+.leaderboard-rank.bronze{background:rgba(205,127,50,0.15);color:#cd7f32}
+.leaderboard-info{flex:1;min-width:0}
+.leaderboard-name{font-size:13px;font-weight:500}
+.leaderboard-stats{font-size:11px;color:var(--text-muted)}
+.leaderboard-value{font-size:15px;font-weight:700;color:var(--green)}
+
+/* Responsive */
+@media(max-width:768px){
+    .header{padding:12px 16px}
+    .nav{padding:6px 16px}
+    .main{padding:12px 16px 32px}
+    .controls{padding:10px 16px}
+    .kpi-grid{grid-template-columns:repeat(2,1fr)}
+    .section-grid{grid-template-columns:1fr}
+    .kpi-value{font-size:22px}
+    .kanban{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+    .kpi-grid{grid-template-columns:1fr 1fr;gap:8px}
+    .kpi-card{padding:12px}
+    .kpi-value{font-size:20px}
+}
+</style>
 </head>
 <body>
-    <!-- Header -->
-    <div class="header">
-        <div class="logo">Let's Geaux Hustle</div>
-        <div class="header-right">
-            <div class="last-updated" id="lastUpdated">Updated: 2:51:51 PM</div>
-            <button class="refresh-btn" onclick="refreshData()">🔄 Refresh</button>
+
+<!-- Header -->
+<div class="header">
+    <div class="logo">LGH <span>Operations OS</span></div>
+    <div style="font-size:10px;color:var(--text-muted);font-weight:400;letter-spacing:0.04em;margin-top:2px">Powered by AI Social Flo System</div>
+    <div class="header-right">
+        <span class="last-updated" id="lastUpdated">Loading...</span>
+        <button class="btn btn-primary" onclick="refreshCurrentTab()">Refresh</button>
+    </div>
+</div>
+
+<!-- Navigation -->
+<nav class="nav" id="nav">
+    <button class="nav-btn active" data-tab="command-center">Command Center</button>
+    <button class="nav-btn" data-tab="revenue">Revenue</button>
+    <button class="nav-btn" data-tab="pipeline">Pipeline</button>
+    <button class="nav-btn" data-tab="routers">Routers</button>
+    <button class="nav-btn" data-tab="setters">Setters</button>
+    <button class="nav-btn" data-tab="closers">Closers</button>
+    <button class="nav-btn" data-tab="ai-webinar">AI & Webinar</button>
+    <button class="nav-btn" data-tab="ea">EA</button>
+    <button class="nav-btn" data-tab="ads-roas">Ads & ROAS</button>
+    <button class="nav-btn" data-tab="tasks">Tasks</button>
+</nav>
+
+<!-- Date Controls -->
+<div class="controls" id="dateControls">
+    <div class="date-controls">
+        <button class="date-preset" data-range="today">Today</button>
+        <button class="date-preset" data-range="yesterday">Yesterday</button>
+        <button class="date-preset" data-range="this_week">This Week</button>
+        <button class="date-preset" data-range="last_week">Last Week</button>
+        <button class="date-preset active" data-range="this_month">This Month</button>
+        <button class="date-preset" data-range="last_30">Last 30 Days</button>
+        <input type="date" id="dateStart" title="Start date">
+        <input type="date" id="dateEnd" title="End date">
+    </div>
+</div>
+
+<!-- Error Banner -->
+<div class="main">
+    <div class="error-banner" id="globalError"></div>
+
+    <!-- Tab: Command Center -->
+    <div class="tab-content active" id="tab-command-center">
+        <div class="kpi-grid" id="cc-kpis"></div>
+        <div class="section-grid">
+            <div class="section">
+                <div class="section-title">Revenue Trend</div>
+                <div class="chart-container"><canvas id="ccRevenueChart"></canvas></div>
+            </div>
+            <div class="section">
+                <div class="section-title">Pipeline Health</div>
+                <div class="chart-container"><canvas id="ccPipelineChart"></canvas></div>
+            </div>
+        </div>
+        <div class="section">
+            <div class="section-title">Team Activity Summary</div>
+            <div id="cc-team-summary"></div>
         </div>
     </div>
 
-    <!-- Navigation -->
-    <div class="nav-tabs">
-        <button class="nav-tab active" onclick="showTab('weekly-overview')">📊 Overview</button>
-        <button class="nav-tab" onclick="showTab('routers')">📞 Routers</button>
-        <button class="nav-tab" onclick="showTab('setters')">📅 Setters</button>
-        <button class="nav-tab" onclick="showTab('closers')">💰 Closers</button>
-        <button class="nav-tab" onclick="showTab('ai-team')">🤖 AI Team</button>
-        <button class="nav-tab" onclick="showTab('executive')">👥 EA</button>
-        <button class="nav-tab" onclick="showTab('roas')">📈 ROAS</button>
+    <!-- Tab: Revenue -->
+    <div class="tab-content" id="tab-revenue">
+        <div class="kpi-grid" id="rev-kpis"></div>
+        <div class="section-grid">
+            <div class="section">
+                <div class="section-title">Revenue Trend</div>
+                <div class="chart-container"><canvas id="revTrendChart"></canvas></div>
+            </div>
+            <div class="section">
+                <div class="section-title">Closer Leaderboard</div>
+                <div id="rev-leaderboard"></div>
+            </div>
+        </div>
+        <div class="section-grid">
+            <div class="section">
+                <div class="section-title">Lead Source Breakdown</div>
+                <div id="rev-sources"></div>
+            </div>
+            <div class="section">
+                <div class="section-title">Payment Type Split</div>
+                <div id="rev-payment-split"></div>
+            </div>
+        </div>
+        <div class="section">
+            <div class="section-title">Recent Deals</div>
+            <div class="table-wrap" id="rev-table"></div>
+        </div>
     </div>
 
-    <!-- Main Content -->
-    <div class="main-content">
-        
-        <!-- Weekly Overview Section -->
-        <div id="weekly-overview" class="section active">
-            <div class="section-header">
-                <h2 class="section-title">Weekly Performance Overview</h2>
+    <!-- Tab: Pipeline -->
+    <div class="tab-content" id="tab-pipeline">
+        <div class="kpi-grid" id="pipe-kpis"></div>
+        <div class="section">
+            <div class="section-title">
+                Sales Pipeline
+                <span id="pipe-follow-up-alert" style="color:var(--yellow);font-size:12px"></span>
             </div>
-
-            <!-- Date Controls -->
-            <div class="date-controls">
-                <div class="date-picker-group">
-                    <label>Week of:</label>
-                    <input type="date" class="date-input" id="weekDate" onchange="updateWeekData()">
-                </div>
-                <div class="period-buttons">
-                    <button class="period-btn active" onclick="setPeriod('week')">This Week</button>
-                    <button class="period-btn" onclick="setPeriod('month')">This Month</button>
-                    <button class="period-btn" onclick="setPeriod('quarter')">Quarter</button>
-                </div>
-            </div>
-
-            <!-- Overview Grid -->
-            <div class="overview-grid">
-                <div class="overview-section">
-                    <h3>📞 Routing Performance</h3>
-                    <div class="mini-kpi">
-                        <span class="mini-kpi-label">Total Calls</span>
-                        <span class="mini-kpi-value" id="overview-router-calls">Loading...</span>
-                    </div>
-                    <div class="mini-kpi">
-                        <span class="mini-kpi-label">Conversations</span>
-                        <span class="mini-kpi-value" id="overview-router-convos">Loading...</span>
-                    </div>
-                    <div class="mini-kpi">
-                        <span class="mini-kpi-label">Success Rate</span>
-                        <span class="mini-kpi-value" id="overview-router-rate">Loading...</span>
-                    </div>
-                </div>
-
-                <div class="overview-section">
-                    <h3>📅 Setting Performance</h3>
-                    <div class="mini-kpi">
-                        <span class="mini-kpi-label">Leads Contacted</span>
-                        <span class="mini-kpi-value" id="overview-setter-contacted">Loading...</span>
-                    </div>
-                    <div class="mini-kpi">
-                        <span class="mini-kpi-label">Calls Booked</span>
-                        <span class="mini-kpi-value" id="overview-setter-booked">Loading...</span>
-                    </div>
-                    <div class="mini-kpi">
-                        <span class="mini-kpi-label">Show Rate</span>
-                        <span class="mini-kpi-value" id="overview-setter-rate">Loading...</span>
-                    </div>
-                </div>
-
-                <div class="overview-section">
-                    <h3>💰 Closing Performance</h3>
-                    <div class="mini-kpi">
-                        <span class="mini-kpi-label">Calls Taken</span>
-                        <span class="mini-kpi-value" id="overview-closer-calls">Loading...</span>
-                    </div>
-                    <div class="mini-kpi">
-                        <span class="mini-kpi-label">Deals Closed</span>
-                        <span class="mini-kpi-value" id="overview-closer-deals">Loading...</span>
-                    </div>
-                    <div class="mini-kpi">
-                        <span class="mini-kpi-label">Revenue</span>
-                        <span class="mini-kpi-value" id="overview-closer-revenue">Loading...</span>
-                    </div>
-                </div>
-
-                <div class="overview-section">
-                    <h3>🤖 AI Performance</h3>
-                    <div class="mini-kpi">
-                        <span class="mini-kpi-label">Leads Generated</span>
-                        <span class="mini-kpi-value" id="overview-ai-leads">Loading...</span>
-                    </div>
-                    <div class="mini-kpi">
-                        <span class="mini-kpi-label">Registrations</span>
-                        <span class="mini-kpi-value" id="overview-ai-regs">Loading...</span>
-                    </div>
-                    <div class="mini-kpi">
-                        <span class="mini-kpi-label">Cost Per Lead</span>
-                        <span class="mini-kpi-value" id="overview-ai-cpl">Loading...</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Company KPIs -->
-            <div class="kpi-grid">
-                <div class="kpi-card success">
-                    <div class="kpi-value success" id="weekly-revenue">Loading...</div>
-                    <div class="kpi-label">Weekly Revenue</div>
-                </div>
-                <div class="kpi-card success">
-                    <div class="kpi-value success" id="weekly-deals">Loading...</div>
-                    <div class="kpi-label">Deals Closed</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-value" id="weekly-leads">Loading...</div>
-                    <div class="kpi-label">Leads Generated</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-value" id="weekly-roas">Loading...</div>
-                    <div class="kpi-label">ROAS</div>
-                </div>
-            </div>
+            <div class="kanban" id="pipe-kanban"></div>
         </div>
-
-        <!-- Routers Section -->
-        <div id="routers" class="section">
-            <div class="section-header">
-                <h2 class="section-title">Routers Daily Logs</h2>
-                <button class="add-entry-btn" onclick="openModal('routerModal')">
-                    + Add Router Log
-                </button>
-            </div>
-
-            <!-- Date Controls -->
-            <div class="date-controls">
-                <div class="date-picker-group">
-                    <label>Date Range:</label>
-                    <input type="date" class="date-input" id="routerStartDate">
-                    <span>to</span>
-                    <input type="date" class="date-input" id="routerEndDate">
-                </div>
-                <div class="period-buttons">
-                    <button class="period-btn active" onclick="setRouterPeriod('today')">Today</button>
-                    <button class="period-btn" onclick="setRouterPeriod('week')">7 Days</button>
-                    <button class="period-btn" onclick="setRouterPeriod('month')">30 Days</button>
-                </div>
-            </div>
-
-            <div class="kpi-grid">
-                <div class="kpi-card">
-                    <div class="kpi-value" id="router-calls">Loading...</div>
-                    <div class="kpi-label">Total Calls</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-value" id="router-conversations">Loading...</div>
-                    <div class="kpi-label">Conversations</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-value" id="router-registrations">Loading...</div>
-                    <div class="kpi-label">Live Registrations</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-value" id="router-accuracy">Loading...</div>
-                    <div class="kpi-label">CRM Accuracy</div>
-                </div>
-            </div>
-
-            <div class="data-table-container">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Team Member</th>
-                            <th>Clock In</th>
-                            <th>Clock Out</th>
-                            <th>Calls Made</th>
-                            <th>Conversations</th>
-                            <th>Live Registrations</th>
-                            <th>CRM Accuracy</th>
-                            <th>Notes</th>
-                        </tr>
-                    </thead>
-                    <tbody id="routers-tbody">
-                        <tr><td colspan="9" class="loading">Loading router data...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Setters Section -->
-        <div id="setters" class="section">
-            <div class="section-header">
-                <h2 class="section-title">Setters Daily Logs</h2>
-                <button class="add-entry-btn" onclick="openModal('setterModal')">
-                    + Add Setter Log
-                </button>
-            </div>
-
-            <!-- Date Controls -->
-            <div class="date-controls">
-                <div class="date-picker-group">
-                    <label>Date Range:</label>
-                    <input type="date" class="date-input" id="setterStartDate">
-                    <span>to</span>
-                    <input type="date" class="date-input" id="setterEndDate">
-                </div>
-                <div class="period-buttons">
-                    <button class="period-btn active" onclick="setSetterPeriod('today')">Today</button>
-                    <button class="period-btn" onclick="setSetterPeriod('week')">7 Days</button>
-                    <button class="period-btn" onclick="setSetterPeriod('month')">30 Days</button>
-                </div>
-            </div>
-
-            <div class="kpi-grid">
-                <div class="kpi-card">
-                    <div class="kpi-value" id="setter-contacted">Loading...</div>
-                    <div class="kpi-label">Leads Contacted</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-value" id="setter-booked">Loading...</div>
-                    <div class="kpi-label">Calls Booked</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-value" id="setter-showed">Loading...</div>
-                    <div class="kpi-label">Showed Up</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-value" id="setter-reroutes">Loading...</div>
-                    <div class="kpi-label">Re-routes</div>
-                </div>
-            </div>
-
-            <div class="data-table-container">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Team Member</th>
-                            <th>Clock In</th>
-                            <th>Clock Out</th>
-                            <th>Contacted</th>
-                            <th>Booked</th>
-                            <th>Showed</th>
-                            <th>Re-routes</th>
-                            <th>Notes</th>
-                        </tr>
-                    </thead>
-                    <tbody id="setters-tbody">
-                        <tr><td colspan="9" class="loading">Loading setter data...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Closers Section -->
-        <div id="closers" class="section">
-            <div class="section-header">
-                <h2 class="section-title">Closer Weekly Logs</h2>
-                <button class="add-entry-btn" onclick="openModal('closerModal')">
-                    + Add Closer Log
-                </button>
-            </div>
-
-            <!-- Date Controls -->
-            <div class="date-controls">
-                <div class="date-picker-group">
-                    <label>Week Range:</label>
-                    <input type="date" class="date-input" id="closerStartWeek">
-                    <span>to</span>
-                    <input type="date" class="date-input" id="closerEndWeek">
-                </div>
-                <div class="period-buttons">
-                    <button class="period-btn active" onclick="setCloserPeriod('week')">This Week</button>
-                    <button class="period-btn" onclick="setCloserPeriod('month')">This Month</button>
-                    <button class="period-btn" onclick="setCloserPeriod('quarter')">Quarter</button>
-                </div>
-            </div>
-
-            <div class="kpi-grid">
-                <div class="kpi-card">
-                    <div class="kpi-value" id="closer-calls">Loading...</div>
-                    <div class="kpi-label">Calls Taken</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-value" id="closer-closed">Loading...</div>
-                    <div class="kpi-label">Deals Closed</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-value" id="closer-rate">Loading...</div>
-                    <div class="kpi-label">Close Rate</div>
-                </div>
-                <div class="kpi-card success">
-                    <div class="kpi-value success" id="closer-revenue">Loading...</div>
-                    <div class="kpi-label">Revenue</div>
-                </div>
-            </div>
-
-            <div class="data-table-container">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Week Of</th>
-                            <th>Team Member</th>
-                            <th>Calls Taken</th>
-                            <th>No Shows</th>
-                            <th>Deals Closed</th>
-                            <th>Close Rate</th>
-                            <th>Revenue</th>
-                            <th>Notes</th>
-                        </tr>
-                    </thead>
-                    <tbody id="closers-tbody">
-                        <tr><td colspan="8" class="loading">Loading closer data...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- AI Team Section -->
-        <div id="ai-team" class="section">
-            <div class="section-header">
-                <h2 class="section-title">AI Team Weekly Logs</h2>
-                <button class="add-entry-btn" onclick="openModal('aiModal')">
-                    + Add AI Log
-                </button>
-            </div>
-
-            <!-- Date Controls -->
-            <div class="date-controls">
-                <div class="date-picker-group">
-                    <label>Week Range:</label>
-                    <input type="date" class="date-input" id="aiStartWeek">
-                    <span>to</span>
-                    <input type="date" class="date-input" id="aiEndWeek">
-                </div>
-                <div class="period-buttons">
-                    <button class="period-btn active" onclick="setAIPeriod('week')">This Week</button>
-                    <button class="period-btn" onclick="setAIPeriod('month')">This Month</button>
-                    <button class="period-btn" onclick="setAIPeriod('quarter')">Quarter</button>
-                </div>
-            </div>
-
-            <div class="kpi-grid">
-                <div class="kpi-card">
-                    <div class="kpi-value" id="ai-leads">Loading...</div>
-                    <div class="kpi-label">Leads Generated</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-value" id="ai-registrations">Loading...</div>
-                    <div class="kpi-label">Registrations</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-value" id="ai-showrate">Loading...</div>
-                    <div class="kpi-label">Show Rate</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-value" id="ai-completion">Loading...</div>
-                    <div class="kpi-label">Completion Rate</div>
-                </div>
-            </div>
-
-            <div class="data-table-container">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Week Of</th>
-                            <th>Team Member</th>
-                            <th>Leads Generated</th>
-                            <th>Registrations</th>
-                            <th>Show Rate</th>
-                            <th>Completion Rate</th>
-                            <th>Notes</th>
-                        </tr>
-                    </thead>
-                    <tbody id="ai-tbody">
-                        <tr><td colspan="7" class="loading">Loading AI team data...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Executive Assistant Section -->
-        <div id="executive" class="section">
-            <div class="section-header">
-                <h2 class="section-title">Executive Assistant Weekly Logs</h2>
-                <button class="add-entry-btn" onclick="openModal('eaModal')">
-                    + Add EA Log
-                </button>
-            </div>
-
-            <!-- Date Controls -->
-            <div class="date-controls">
-                <div class="date-picker-group">
-                    <label>Week Range:</label>
-                    <input type="date" class="date-input" id="eaStartWeek">
-                    <span>to</span>
-                    <input type="date" class="date-input" id="eaEndWeek">
-                </div>
-                <div class="period-buttons">
-                    <button class="period-btn active" onclick="setEAPeriod('week')">This Week</button>
-                    <button class="period-btn" onclick="setEAPeriod('month')">This Month</button>
-                    <button class="period-btn" onclick="setEAPeriod('quarter')">Quarter</button>
-                </div>
-            </div>
-
-            <div class="kpi-grid">
-                <div class="kpi-card">
-                    <div class="kpi-value" id="ea-onboarded">Loading...</div>
-                    <div class="kpi-label">Clients Onboarded</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-value" id="ea-recovered">Loading...</div>
-                    <div class="kpi-label">Payments Recovered</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-value" id="ea-refunds">Loading...</div>
-                    <div class="kpi-label">Refund Rate</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-value" id="ea-atrisk">Loading...</div>
-                    <div class="kpi-label">At-Risk Clients</div>
-                </div>
-            </div>
-
-            <div class="data-table-container">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Week Of</th>
-                            <th>Team Member</th>
-                            <th>Onboarded</th>
-                            <th>Recovered</th>
-                            <th>Refund Rate</th>
-                            <th>At-Risk</th>
-                            <th>Notes</th>
-                        </tr>
-                    </thead>
-                    <tbody id="executive-tbody">
-                        <tr><td colspan="7" class="loading">Loading EA data...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- ROAS Section -->
-        <div id="roas" class="section">
-            <div class="section-header">
-                <h2 class="section-title">Return on Ad Spend (ROAS)</h2>
-            </div>
-
-            <!-- Date Controls -->
-            <div class="date-controls">
-                <div class="date-picker-group">
-                    <label>Period:</label>
-                    <input type="date" class="date-input" id="roasStartDate">
-                    <span>to</span>
-                    <input type="date" class="date-input" id="roasEndDate">
-                </div>
-                <div class="period-buttons">
-                    <button class="period-btn active" onclick="setROASPeriod('week')">7 Days</button>
-                    <button class="period-btn" onclick="setROASPeriod('month')">30 Days</button>
-                    <button class="period-btn" onclick="setROASPeriod('quarter')">90 Days</button>
-                </div>
-            </div>
-
-            <div class="kpi-grid">
-                <div class="kpi-card success">
-                    <div class="kpi-value success" id="roas-revenue">$28,699</div>
-                    <div class="kpi-label">Revenue</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-value" id="roas-spend">$777</div>
-                    <div class="kpi-label">Ad Spend</div>
-                </div>
-                <div class="kpi-card success">
-                    <div class="kpi-value success" id="roas-ratio">37:1</div>
-                    <div class="kpi-label">ROAS Ratio</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-value" id="roas-ctr">5.04%</div>
-                    <div class="kpi-label">Click-Through Rate</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Other sections would follow similar pattern... -->
     </div>
 
-    <!-- Router Modal -->
-    <div id="routerModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Add Router Daily Log</h3>
-                <button class="close-btn" onclick="closeModal('routerModal')">&times;</button>
+    <!-- Tab: Routers -->
+    <div class="tab-content" id="tab-routers">
+        <div class="kpi-grid" id="routers-kpis"></div>
+        <div class="section">
+            <div class="section-title">
+                Router Logs
+                <button class="btn btn-ghost btn-sm" onclick="openFormModal('routers')">+ Add Entry</button>
             </div>
-            <div id="routerMessage"></div>
-            <form id="routerForm" onsubmit="submitRouterLog(event)">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Date</label>
-                        <input type="date" id="routerDate" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Team Member</label>
-                        <input type="text" id="routerName" class="form-input" required placeholder="Enter your name">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Clock In</label>
-                        <input type="time" id="routerClockIn" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Clock Out</label>
-                        <input type="time" id="routerClockOut" class="form-input" required>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Calls Made</label>
-                        <input type="number" id="routerCalls" class="form-input" required min="0" placeholder="0">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Conversations</label>
-                        <input type="number" id="routerConversations" class="form-input" required min="0" placeholder="0">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Live Registrations</label>
-                        <input type="number" id="routerRegistrations" class="form-input" required min="0" placeholder="0">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">CRM Accuracy (%)</label>
-                        <input type="number" id="routerAccuracy" class="form-input" required min="0" max="100" placeholder="100">
-                    </div>
+            <div class="table-wrap" id="routers-table"></div>
+        </div>
+    </div>
+
+    <!-- Tab: Setters -->
+    <div class="tab-content" id="tab-setters">
+        <div class="kpi-grid" id="setters-kpis"></div>
+        <div class="section">
+            <div class="section-title">
+                Setter Logs
+                <button class="btn btn-ghost btn-sm" onclick="openFormModal('setters')">+ Add Entry</button>
+            </div>
+            <div class="table-wrap" id="setters-table"></div>
+        </div>
+    </div>
+
+    <!-- Tab: Closers -->
+    <div class="tab-content" id="tab-closers">
+        <div class="kpi-grid" id="closers-kpis"></div>
+        <div class="section-grid">
+            <div class="section">
+                <div class="section-title">Call Review Scores</div>
+                <div class="chart-container"><canvas id="closerRadarChart"></canvas></div>
+            </div>
+            <div class="section">
+                <div class="section-title">Per-Closer Breakdown</div>
+                <div id="closers-breakdown"></div>
+            </div>
+        </div>
+        <div class="section">
+            <div class="section-title">
+                Closer Logs
+                <button class="btn btn-ghost btn-sm" onclick="openFormModal('closers')">+ Add Entry</button>
+            </div>
+            <div class="table-wrap" id="closers-table"></div>
+        </div>
+    </div>
+
+    <!-- Tab: AI & Webinar -->
+    <div class="tab-content" id="tab-ai-webinar">
+        <div class="kpi-grid" id="ai-kpis"></div>
+        <div class="section-grid">
+            <div class="section">
+                <div class="section-title">Funnel Conversion</div>
+                <div id="ai-funnel"></div>
+            </div>
+            <div class="section">
+                <div class="section-title">Webinar Performance</div>
+                <div class="chart-container"><canvas id="webinarChart"></canvas></div>
+            </div>
+        </div>
+        <div class="section">
+            <div class="section-title">AI Team Logs</div>
+            <div class="table-wrap" id="ai-table"></div>
+        </div>
+        <div class="section">
+            <div class="section-title">Webinar Metrics</div>
+            <div class="table-wrap" id="webinar-table"></div>
+        </div>
+    </div>
+
+    <!-- Tab: EA -->
+    <div class="tab-content" id="tab-ea">
+        <div class="kpi-grid" id="ea-kpis"></div>
+        <div class="section">
+            <div class="section-title">
+                EA Logs
+                <button class="btn btn-ghost btn-sm" onclick="openFormModal('ea')">+ Add Entry</button>
+            </div>
+            <div class="table-wrap" id="ea-table"></div>
+        </div>
+    </div>
+
+    <!-- Tab: Ads & ROAS -->
+    <div class="tab-content" id="tab-ads-roas">
+        <div class="kpi-grid" id="ads-kpis"></div>
+        <div class="section-grid">
+            <div class="section">
+                <div class="section-title">Ad Spend vs Revenue</div>
+                <div class="chart-container"><canvas id="adSpendChart"></canvas></div>
+            </div>
+            <div class="section">
+                <div class="section-title">Campaign Metrics</div>
+                <div class="table-wrap" id="ads-table"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab: Tasks -->
+    <div class="tab-content" id="tab-tasks">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+            <h2 style="font-size:18px;font-weight:600">Task Board</h2>
+            <button class="btn btn-primary" onclick="openTaskModal()">+ New Task</button>
+        </div>
+        <div class="kanban" id="task-kanban"></div>
+    </div>
+</div>
+
+<!-- Data Entry Modal -->
+<div class="modal-overlay" id="formModal">
+    <div class="modal">
+        <h2 id="formModalTitle">Add Entry</h2>
+        <form id="entryForm" onsubmit="submitEntry(event)">
+            <div id="formFields"></div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-ghost" onclick="closeModal('formModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Task Modal -->
+<div class="modal-overlay" id="taskModal">
+    <div class="modal">
+        <h2 id="taskModalTitle">New Task</h2>
+        <form id="taskForm" onsubmit="submitTask(event)">
+            <input type="hidden" id="taskEditId">
+            <div class="form-group">
+                <label>Title *</label>
+                <input type="text" id="taskTitle" required>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="taskDesc"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Assigned To</label>
+                <input type="text" id="taskAssigned">
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div class="form-group">
+                    <label>Priority</label>
+                    <select id="taskPriority">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                        <option value="urgent">Urgent</option>
+                    </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Notes</label>
-                    <textarea id="routerNotes" class="form-textarea" placeholder="Daily notes and observations..."></textarea>
+                    <label>Due Date</label>
+                    <input type="date" id="taskDue">
                 </div>
-                <div class="form-actions">
-                    <button type="button" class="btn-secondary" onclick="closeModal('routerModal')">Cancel</button>
-                    <button type="submit" class="btn-primary" id="routerSubmitBtn">Submit Log</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Setter Modal -->
-    <div id="setterModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Add Setter Daily Log</h3>
-                <button class="close-btn" onclick="closeModal('setterModal')">&times;</button>
             </div>
-            <div id="setterMessage"></div>
-            <form id="setterForm" onsubmit="submitSetterLog(event)">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Date</label>
-                        <input type="date" id="setterDate" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Team Member</label>
-                        <input type="text" id="setterName" class="form-input" required placeholder="Enter your name">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Clock In</label>
-                        <input type="time" id="setterClockIn" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Clock Out</label>
-                        <input type="time" id="setterClockOut" class="form-input" required>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Leads Contacted</label>
-                        <input type="number" id="setterContacted" class="form-input" required min="0" placeholder="0">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Calls Booked</label>
-                        <input type="number" id="setterBooked" class="form-input" required min="0" placeholder="0">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Calls Showed</label>
-                        <input type="number" id="setterShowed" class="form-input" required min="0" placeholder="0">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Re-routes</label>
-                        <input type="number" id="setterReroutes" class="form-input" required min="0" placeholder="0">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Notes</label>
-                    <textarea id="setterNotes" class="form-textarea" placeholder="Daily notes and observations..."></textarea>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn-secondary" onclick="closeModal('setterModal')">Cancel</button>
-                    <button type="submit" class="btn-primary" id="setterSubmitBtn">Submit Log</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Closer Modal -->
-    <div id="closerModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Add Closer Weekly Log</h3>
-                <button class="close-btn" onclick="closeModal('closerModal')">&times;</button>
+            <div class="form-group">
+                <label>Category</label>
+                <input type="text" id="taskCategory" placeholder="e.g. Sales, Marketing, Ops">
             </div>
-            <div id="closerMessage"></div>
-            <form id="closerForm" onsubmit="submitCloserLog(event)">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Week Of</label>
-                        <input type="date" id="closerWeek" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Team Member</label>
-                        <input type="text" id="closerName" class="form-input" required placeholder="Enter your name">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Calls Taken</label>
-                        <input type="number" id="closerCallsTaken" class="form-input" required min="0" placeholder="0">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">No Shows</label>
-                        <input type="number" id="closerNoShows" class="form-input" required min="0" placeholder="0">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Deals Closed</label>
-                        <input type="number" id="closerDealsClosed" class="form-input" required min="0" placeholder="0">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Revenue Collected ($)</label>
-                        <input type="number" id="closerRevenue" class="form-input" required min="0" placeholder="0">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Notes</label>
-                    <textarea id="closerNotes" class="form-textarea" placeholder="Weekly performance notes..."></textarea>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn-secondary" onclick="closeModal('closerModal')">Cancel</button>
-                    <button type="submit" class="btn-primary" id="closerSubmitBtn">Submit Log</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- AI Team Modal -->
-    <div id="aiModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Add AI Team Weekly Log</h3>
-                <button class="close-btn" onclick="closeModal('aiModal')">&times;</button>
+            <div class="form-actions">
+                <button type="button" class="btn btn-ghost" onclick="closeModal('taskModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Task</button>
             </div>
-            <div id="aiMessage"></div>
-            <form id="aiForm" onsubmit="submitAILog(event)">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Week Of</label>
-                        <input type="date" id="aiWeek" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Team Member</label>
-                        <input type="text" id="aiName" class="form-input" required placeholder="Enter your name">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Leads Generated</label>
-                        <input type="number" id="aiLeads" class="form-input" required min="0" placeholder="0">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Registrations</label>
-                        <input type="number" id="aiRegistrations" class="form-input" required min="0" placeholder="0">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Show Rate (%)</label>
-                        <input type="number" id="aiShowRate" class="form-input" required min="0" max="100" placeholder="0">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Completion Rate (%)</label>
-                        <input type="number" id="aiCompletionRate" class="form-input" required min="0" max="100" placeholder="0">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">What Changed This Week</label>
-                    <textarea id="aiChanges" class="form-textarea" placeholder="Optimizations, tests, changes made..."></textarea>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn-secondary" onclick="closeModal('aiModal')">Cancel</button>
-                    <button type="submit" class="btn-primary" id="aiSubmitBtn">Submit Log</button>
-                </div>
-            </form>
-        </div>
+        </form>
     </div>
+</div>
 
-    <!-- EA Modal -->
-    <div id="eaModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Add EA Weekly Log</h3>
-                <button class="close-btn" onclick="closeModal('eaModal')">&times;</button>
-            </div>
-            <div id="eaMessage"></div>
-            <form id="eaForm" onsubmit="submitEALog(event)">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Week Of</label>
-                        <input type="date" id="eaWeek" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Team Member</label>
-                        <input type="text" id="eaName" class="form-input" required placeholder="Enter your name">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Clients Onboarded</label>
-                        <input type="number" id="eaOnboarded" class="form-input" required min="0" placeholder="0">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Payments Recovered ($)</label>
-                        <input type="number" id="eaRecovered" class="form-input" required min="0" placeholder="0">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Refund Rate (%)</label>
-                        <input type="number" id="eaRefundRate" class="form-input" required min="0" max="100" placeholder="0">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">At-Risk Clients</label>
-                        <input type="number" id="eaAtRisk" class="form-input" required min="0" placeholder="0">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Notes</label>
-                    <textarea id="eaNotes" class="form-textarea" placeholder="Weekly tasks and accomplishments..."></textarea>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn-secondary" onclick="closeModal('eaModal')">Cancel</button>
-                    <button type="submit" class="btn-primary" id="eaSubmitBtn">Submit Log</button>
-                </div>
-            </form>
+<script>
+// ============================================================
+// CONFIGURATION
+// ============================================================
+const BASE = 'https://aqcnqxmqksashphcvgoc.supabase.co';
+const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFxY25xeG1xa3Nhc2hwaGN2Z29jIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDgyOTgzNywiZXhwIjoyMDg2NDA1ODM3fQ.GcECZQqotwvKfoZ9PwMsgZ3bYETCcsIpj4f9zfpPW94';
+const HEADERS = { 'apikey': KEY, 'Authorization': `Bearer ${KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
+const HEADERS_READ = { 'apikey': KEY, 'Authorization': `Bearer ${KEY}` };
+
+// ============================================================
+// STATE
+// ============================================================
+const state = {
+    activeTab: 'command-center',
+    dateStart: '',
+    dateEnd: '',
+    charts: {}
+};
+
+// ============================================================
+// HELPERS
+// ============================================================
+function safeNum(v) { const n = Number(v); return isFinite(n) ? n : 0; }
+function fmtCurrency(n) { return '$' + safeNum(n).toLocaleString('en-US', {maximumFractionDigits: 0}); }
+function fmtPct(n) { return safeNum(n).toFixed(1) + '%'; }
+function fmtNum(n) { return safeNum(n).toLocaleString('en-US'); }
+function fmtDate(d) {
+    if (!d) return '\u2014';
+    try { return new Date(d + 'T12:00:00').toLocaleDateString('en-US', {month:'short',day:'numeric',year:'2-digit'}); }
+    catch { return d; }
+}
+function capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1).replace(/_/g, ' ') : ''; }
+function todayStr() { return new Date().toLocaleDateString('en-CA'); }
+
+function getDateRange(preset) {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const fmt = d => d.toLocaleDateString('en-CA');
+    switch (preset) {
+        case 'today': return { start: fmt(today), end: fmt(today) };
+        case 'yesterday': { const y = new Date(today); y.setDate(y.getDate()-1); return { start: fmt(y), end: fmt(y) }; }
+        case 'this_week': { const d = new Date(today); d.setDate(d.getDate()-d.getDay()); return { start: fmt(d), end: fmt(today) }; }
+        case 'last_week': { const d = new Date(today); d.setDate(d.getDate()-d.getDay()-7); const e = new Date(d); e.setDate(e.getDate()+6); return { start: fmt(d), end: fmt(e) }; }
+        case 'this_month': { const d = new Date(today.getFullYear(), today.getMonth(), 1); return { start: fmt(d), end: fmt(today) }; }
+        case 'last_30': { const d = new Date(today); d.setDate(d.getDate()-30); return { start: fmt(d), end: fmt(today) }; }
+        default: return { start: fmt(new Date(today.getFullYear(), today.getMonth(), 1)), end: fmt(today) };
+    }
+}
+
+// ============================================================
+// API LAYER
+// ============================================================
+async function query(table, dateCol, start, end, extra = '') {
+    const url = `${BASE}/rest/v1/${table}?${dateCol}=gte.${start}&${dateCol}=lte.${end}&order=${dateCol}.desc${extra}`;
+    const res = await fetch(url, { headers: HEADERS_READ });
+    if (!res.ok) throw new Error(`${table}: ${res.status}`);
+    const data = await res.json();
+    if (!Array.isArray(data)) throw new Error(`${table}: unexpected response`);
+    return data;
+}
+
+async function queryAll(table, extra = '') {
+    const url = `${BASE}/rest/v1/${table}?order=created_at.desc${extra}`;
+    const res = await fetch(url, { headers: HEADERS_READ });
+    if (!res.ok) throw new Error(`${table}: ${res.status}`);
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
+}
+
+async function apiInsert(table, row) {
+    const res = await fetch(`${BASE}/rest/v1/${table}`, { method: 'POST', headers: HEADERS, body: JSON.stringify(row) });
+    if (!res.ok) { const t = await res.text(); throw new Error(`Insert ${table}: ${res.status} ${t}`); }
+    return res.json();
+}
+
+async function apiPatch(table, id, updates) {
+    const res = await fetch(`${BASE}/rest/v1/${table}?id=eq.${id}`, { method: 'PATCH', headers: HEADERS, body: JSON.stringify(updates) });
+    if (!res.ok) throw new Error(`Patch ${table}: ${res.status}`);
+    return res.json();
+}
+
+async function apiDelete(table, id) {
+    const res = await fetch(`${BASE}/rest/v1/${table}?id=eq.${id}`, { method: 'DELETE', headers: HEADERS });
+    if (!res.ok) throw new Error(`Delete ${table}: ${res.status}`);
+}
+
+// ============================================================
+// SHARED RENDERERS
+// ============================================================
+function showSkeleton(el, type = 'kpi', count = 4) {
+    if (type === 'kpi') {
+        el.innerHTML = Array(count).fill('<div class="skeleton skel-kpi"></div>').join('');
+    } else if (type === 'table') {
+        el.innerHTML = '<div class="skeleton skel-table"></div>';
+    } else if (type === 'chart') {
+        el.innerHTML = '<div class="skeleton skel-chart"></div>';
+    }
+}
+
+function renderKPIs(container, kpis) {
+    container.innerHTML = kpis.map(k => `
+        <div class="kpi-card">
+            <div class="kpi-label">${k.label}</div>
+            <div class="kpi-value ${k.color || ''}">${k.value}</div>
+            ${k.sub ? `<div class="kpi-sub">${k.sub}</div>` : ''}
         </div>
-    </div>
+    `).join('');
+}
 
-    <script>
-        // Supabase configuration
-        const SUPABASE_URL = 'https://aqcnqxmqksashphcvgoc.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFxY25xeG1xa3Nhc2hwaGN2Z29jIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDgyOTgzNywiZXhwIjoyMDg2NDA1ODM3fQ.GcECZQqotwvKfoZ9PwMsgZ3bYETCcsIpj4f9zfpPW94';
-
-        // Navigation
-        function showTab(tabName) {
-            document.querySelectorAll('.section').forEach(section => {
-                section.classList.remove('active');
-            });
-            document.querySelectorAll('.nav-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.getElementById(tabName).classList.add('active');
-            event.target.classList.add('active');
+function renderTable(container, columns, rows) {
+    if (!rows || rows.length === 0) {
+        container.innerHTML = '<div class="empty-state"><h3>No data</h3><p>No records found for the selected date range.</p></div>';
+        return;
+    }
+    const fmtCell = (row, col) => {
+        const v = row[col.key];
+        if (v == null || v === '') return '\u2014';
+        if (col.fmt === 'currency') return fmtCurrency(v);
+        if (col.fmt === 'pct') return fmtPct(v);
+        if (col.fmt === 'date') return fmtDate(v);
+        if (col.fmt === 'num') return fmtNum(v);
+        if (col.fmt === 'badge') {
+            const colors = { closed:'green', done:'green', showed:'blue', booked:'yellow', lead:'purple', lost:'red', in_progress:'yellow', todo:'blue', high:'red', urgent:'red', medium:'yellow', low:'blue' };
+            return `<span class="badge badge-${colors[v] || 'blue'}">${capitalize(v)}</span>`;
         }
+        return String(v);
+    };
+    container.innerHTML = `<table>
+        <thead><tr>${columns.map(c => `<th>${c.label}</th>`).join('')}</tr></thead>
+        <tbody>${rows.map(r => `<tr>${columns.map(c => `<td>${fmtCell(r,c)}</td>`).join('')}</tr>`).join('')}</tbody>
+    </table>`;
+}
 
-        // Modal functions
-        function openModal(modalId) {
-            document.getElementById(modalId).classList.add('active');
-            
-            // Set defaults
-            const today = new Date().toISOString().split('T')[0];
-            const currentDate = new Date();
-            const monday = new Date(currentDate.setDate(currentDate.getDate() - currentDate.getDay() + 1));
-            const mondayStr = monday.toISOString().split('T')[0];
-            
-            if (modalId === 'routerModal') {
-                document.getElementById('routerDate').value = today;
-            } else if (modalId === 'setterModal') {
-                document.getElementById('setterDate').value = today;
-            } else if (modalId === 'closerModal') {
-                document.getElementById('closerWeek').value = mondayStr;
-            } else if (modalId === 'aiModal') {
-                document.getElementById('aiWeek').value = mondayStr;
-            } else if (modalId === 'eaModal') {
-                document.getElementById('eaWeek').value = mondayStr;
-            }
-        }
+function renderEmpty(container, msg = 'No data available') {
+    container.innerHTML = `<div class="empty-state"><h3>No data</h3><p>${msg}</p></div>`;
+}
 
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('active');
-            const formId = modalId.replace('Modal', 'Form');
-            document.getElementById(formId).reset();
-            const messageId = modalId.replace('Modal', 'Message');
-            document.getElementById(messageId).innerHTML = '';
-        }
+function renderError(container, err) {
+    container.innerHTML = `<div class="error-banner show">Error: ${err.message || err}</div>`;
+}
 
-        function showMessage(elementId, message, isError = false) {
-            const element = document.getElementById(elementId);
-            element.innerHTML = `<div class="${isError ? 'error-message' : 'success-message'}">${message}</div>`;
-            
-            if (!isError) {
-                setTimeout(() => {
-                    element.innerHTML = '';
-                }, 3000);
-            }
-        }
+// ============================================================
+// TEAM TAB CONFIG (shared pattern for Routers/Setters/Closers/EA)
+// ============================================================
+const TEAM_TABS = {
+    routers: {
+        table: 'router_logs', dateCol: 'date',
+        kpis: [
+            { key: 'calls_made', label: 'Calls Made', agg: 'sum', color: 'blue' },
+            { key: 'conversations_reached', label: 'Conversations', agg: 'sum', color: 'green' },
+            { key: 'training_registrations_live', label: 'Training Regs', agg: 'sum', color: 'purple' },
+            { key: 'crm_accuracy_pct', label: 'Avg CRM Accuracy', agg: 'avg', color: 'cyan', suffix: '%' }
+        ],
+        columns: [
+            { key: 'date', label: 'Date', fmt: 'date' },
+            { key: 'team_member', label: 'Member' },
+            { key: 'calls_made', label: 'Calls', fmt: 'num' },
+            { key: 'conversations_reached', label: 'Convos', fmt: 'num' },
+            { key: 'training_registrations_live', label: 'Regs', fmt: 'num' },
+            { key: 'crm_accuracy_pct', label: 'CRM %', fmt: 'pct' },
+            { key: 'notes', label: 'Notes' }
+        ],
+        formFields: [
+            { key: 'team_member', label: 'Team Member', type: 'text', required: true },
+            { key: 'date', label: 'Date', type: 'date', default: 'today' },
+            { key: 'calls_made', label: 'Calls Made', type: 'number' },
+            { key: 'conversations_reached', label: 'Conversations', type: 'number' },
+            { key: 'training_registrations_live', label: 'Training Regs', type: 'number' },
+            { key: 'crm_accuracy_pct', label: 'CRM Accuracy %', type: 'number', step: '0.01' },
+            { key: 'notes', label: 'Notes', type: 'textarea' }
+        ]
+    },
+    setters: {
+        table: 'setter_logs', dateCol: 'date',
+        kpis: [
+            { key: 'webbi_leads_contacted', label: 'Leads Contacted', agg: 'sum', color: 'blue' },
+            { key: 'calls_booked', label: 'Calls Booked', agg: 'sum', color: 'green' },
+            { key: 'calls_showed', label: 'Calls Showed', agg: 'sum', color: 'purple' },
+            { key: 'webbi_reroutes', label: 'Reroutes', agg: 'sum', color: 'yellow' }
+        ],
+        columns: [
+            { key: 'date', label: 'Date', fmt: 'date' },
+            { key: 'team_member', label: 'Member' },
+            { key: 'webbi_leads_contacted', label: 'Leads', fmt: 'num' },
+            { key: 'calls_booked', label: 'Booked', fmt: 'num' },
+            { key: 'calls_showed', label: 'Showed', fmt: 'num' },
+            { key: 'webbi_reroutes', label: 'Reroutes', fmt: 'num' },
+            { key: 'notes', label: 'Notes' }
+        ],
+        formFields: [
+            { key: 'team_member', label: 'Team Member', type: 'text', required: true },
+            { key: 'date', label: 'Date', type: 'date', default: 'today' },
+            { key: 'webbi_leads_contacted', label: 'Leads Contacted', type: 'number' },
+            { key: 'calls_booked', label: 'Calls Booked', type: 'number' },
+            { key: 'calls_showed', label: 'Calls Showed', type: 'number' },
+            { key: 'webbi_reroutes', label: 'Reroutes', type: 'number' },
+            { key: 'notes', label: 'Notes', type: 'textarea' }
+        ]
+    },
+    closers: {
+        table: 'closer_logs', dateCol: 'week_of',
+        kpis: [
+            { key: 'calls_taken', label: 'Calls Taken', agg: 'sum', color: 'blue' },
+            { key: 'deals_closed', label: 'Deals Closed', agg: 'sum', color: 'green' },
+            { key: 'close_rate_pct', label: 'Avg Close Rate', agg: 'avg', color: 'purple', suffix: '%' },
+            { key: 'revenue_collected', label: 'Revenue', agg: 'sum', color: 'cyan', prefix: '$' }
+        ],
+        columns: [
+            { key: 'week_of', label: 'Week Of', fmt: 'date' },
+            { key: 'team_member', label: 'Closer' },
+            { key: 'calls_taken', label: 'Calls', fmt: 'num' },
+            { key: 'deals_closed', label: 'Deals', fmt: 'num' },
+            { key: 'close_rate_pct', label: 'Close %', fmt: 'pct' },
+            { key: 'revenue_collected', label: 'Revenue', fmt: 'currency' },
+            { key: 'notes', label: 'Notes' }
+        ],
+        formFields: [
+            { key: 'team_member', label: 'Closer Name', type: 'text', required: true },
+            { key: 'week_of', label: 'Week Of', type: 'date', default: 'today' },
+            { key: 'calls_taken', label: 'Calls Taken', type: 'number' },
+            { key: 'calls_booked', label: 'Calls Booked', type: 'number' },
+            { key: 'no_shows', label: 'No Shows', type: 'number' },
+            { key: 'deals_closed', label: 'Deals Closed', type: 'number' },
+            { key: 'close_rate_pct', label: 'Close Rate %', type: 'number', step: '0.01' },
+            { key: 'revenue_collected', label: 'Revenue', type: 'number', step: '0.01' },
+            { key: 'notes', label: 'Notes', type: 'textarea' }
+        ]
+    },
+    ea: {
+        table: 'ea_logs', dateCol: 'week_of',
+        kpis: [
+            { key: 'new_clients_onboarded', label: 'New Clients', agg: 'sum', color: 'green' },
+            { key: 'failed_payments_recovered', label: 'Payments Recovered', agg: 'sum', color: 'blue' },
+            { key: 'refund_rate_pct', label: 'Avg Refund Rate', agg: 'avg', color: 'yellow', suffix: '%' },
+            { key: 'at_risk_clients', label: 'At-Risk Clients', agg: 'sum', color: 'red' }
+        ],
+        columns: [
+            { key: 'week_of', label: 'Week Of', fmt: 'date' },
+            { key: 'team_member', label: 'Member' },
+            { key: 'new_clients_onboarded', label: 'Onboarded', fmt: 'num' },
+            { key: 'failed_payments_recovered', label: 'Recovered', fmt: 'num' },
+            { key: 'refund_rate_pct', label: 'Refund %', fmt: 'pct' },
+            { key: 'chargebacks', label: 'Chargebacks', fmt: 'num' },
+            { key: 'at_risk_clients', label: 'At Risk', fmt: 'num' },
+            { key: 'notes', label: 'Notes' }
+        ],
+        formFields: [
+            { key: 'team_member', label: 'Team Member', type: 'text', default: 'ea' },
+            { key: 'week_of', label: 'Week Of', type: 'date', default: 'today' },
+            { key: 'new_clients_onboarded', label: 'New Clients Onboarded', type: 'number' },
+            { key: 'failed_payments_recovered', label: 'Payments Recovered', type: 'number' },
+            { key: 'refund_rate_pct', label: 'Refund Rate %', type: 'number', step: '0.01' },
+            { key: 'chargebacks', label: 'Chargebacks', type: 'number' },
+            { key: 'at_risk_clients', label: 'At Risk Clients', type: 'number' },
+            { key: 'notes', label: 'Notes', type: 'textarea' }
+        ]
+    }
+};
 
-        // Form submission functions
-        async function submitRouterLog(event) {
-            event.preventDefault();
-            
-            const submitBtn = document.getElementById('routerSubmitBtn');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Submitting...';
-            
-            const formData = {
-                date: document.getElementById('routerDate').value,
-                team_member: document.getElementById('routerName').value,
-                clock_in: document.getElementById('routerClockIn').value,
-                clock_out: document.getElementById('routerClockOut').value,
-                calls_made: parseInt(document.getElementById('routerCalls').value),
-                conversations_reached: parseInt(document.getElementById('routerConversations').value),
-                training_registrations_live: parseInt(document.getElementById('routerRegistrations').value),
-                crm_accuracy_pct: parseFloat(document.getElementById('routerAccuracy').value),
-                notes: document.getElementById('routerNotes').value
-            };
+// ============================================================
+// GENERIC TEAM TAB LOADER
+// ============================================================
+async function loadTeamTab(tabKey) {
+    const cfg = TEAM_TABS[tabKey];
+    if (!cfg) return;
+    const kpiEl = document.getElementById(`${tabKey}-kpis`);
+    const tableEl = document.getElementById(`${tabKey}-table`);
+    showSkeleton(kpiEl, 'kpi', cfg.kpis.length);
+    showSkeleton(tableEl, 'table');
 
-            try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/router_logs`, {
-                    method: 'POST',
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
-                        'Content-Type': 'application/json',
-                        'Prefer': 'return=minimal'
-                    },
-                    body: JSON.stringify(formData)
-                });
-
-                if (response.ok) {
-                    showMessage('routerMessage', '✅ Router log submitted successfully!');
-                    document.getElementById('routerForm').reset();
-                    setTimeout(() => {
-                        closeModal('routerModal');
-                        loadRouters();
-                    }, 1500);
-                } else {
-                    throw new Error('Failed to submit log');
-                }
-            } catch (error) {
-                showMessage('routerMessage', `❌ Error: ${error.message}`, true);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit Log';
-            }
-        }
-
-        async function submitSetterLog(event) {
-            event.preventDefault();
-            
-            const submitBtn = document.getElementById('setterSubmitBtn');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Submitting...';
-            
-            const formData = {
-                date: document.getElementById('setterDate').value,
-                team_member: document.getElementById('setterName').value,
-                clock_in: document.getElementById('setterClockIn').value,
-                clock_out: document.getElementById('setterClockOut').value,
-                webbi_leads_contacted: parseInt(document.getElementById('setterContacted').value),
-                calls_booked: parseInt(document.getElementById('setterBooked').value),
-                calls_showed: parseInt(document.getElementById('setterShowed').value),
-                webbi_reroutes: parseInt(document.getElementById('setterReroutes').value),
-                notes: document.getElementById('setterNotes').value
-            };
-
-            try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/setter_logs`, {
-                    method: 'POST',
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
-                        'Content-Type': 'application/json',
-                        'Prefer': 'return=minimal'
-                    },
-                    body: JSON.stringify(formData)
-                });
-
-                if (response.ok) {
-                    showMessage('setterMessage', '✅ Setter log submitted successfully!');
-                    document.getElementById('setterForm').reset();
-                    setTimeout(() => {
-                        closeModal('setterModal');
-                        loadSetters();
-                    }, 1500);
-                } else {
-                    throw new Error('Failed to submit log');
-                }
-            } catch (error) {
-                showMessage('setterMessage', `❌ Error: ${error.message}`, true);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit Log';
-            }
-        }
-
-        async function submitCloserLog(event) {
-            event.preventDefault();
-            
-            const submitBtn = document.getElementById('closerSubmitBtn');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Submitting...';
-            
-            const callsTaken = parseInt(document.getElementById('closerCallsTaken').value);
-            const dealsClosed = parseInt(document.getElementById('closerDealsClosed').value);
-            const closeRate = callsTaken > 0 ? ((dealsClosed / callsTaken) * 100).toFixed(1) : 0;
-            
-            const formData = {
-                week_of: document.getElementById('closerWeek').value,
-                team_member: document.getElementById('closerName').value,
-                calls_taken: callsTaken,
-                no_shows: parseInt(document.getElementById('closerNoShows').value),
-                deals_closed: dealsClosed,
-                close_rate_pct: parseFloat(closeRate),
-                revenue_collected: parseInt(document.getElementById('closerRevenue').value),
-                notes: document.getElementById('closerNotes').value
-            };
-
-            try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/closer_logs`, {
-                    method: 'POST',
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
-                        'Content-Type': 'application/json',
-                        'Prefer': 'return=minimal'
-                    },
-                    body: JSON.stringify(formData)
-                });
-
-                if (response.ok) {
-                    showMessage('closerMessage', '✅ Closer log submitted successfully!');
-                    document.getElementById('closerForm').reset();
-                    setTimeout(() => {
-                        closeModal('closerModal');
-                        loadClosers();
-                    }, 1500);
-                } else {
-                    throw new Error('Failed to submit log');
-                }
-            } catch (error) {
-                showMessage('closerMessage', `❌ Error: ${error.message}`, true);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit Log';
-            }
-        }
-
-        async function submitAILog(event) {
-            event.preventDefault();
-            
-            const submitBtn = document.getElementById('aiSubmitBtn');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Submitting...';
-            
-            const formData = {
-                week_of: document.getElementById('aiWeek').value,
-                team_member: document.getElementById('aiName').value,
-                total_leads_generated: parseInt(document.getElementById('aiLeads').value),
-                webbi_registrations: parseInt(document.getElementById('aiRegistrations').value),
-                registration_show_rate_pct: parseFloat(document.getElementById('aiShowRate').value),
-                webbi_completion_rate_pct: parseFloat(document.getElementById('aiCompletionRate').value),
-                what_changed: document.getElementById('aiChanges').value
-            };
-
-            try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/ai_team_logs`, {
-                    method: 'POST',
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
-                        'Content-Type': 'application/json',
-                        'Prefer': 'return=minimal'
-                    },
-                    body: JSON.stringify(formData)
-                });
-
-                if (response.ok) {
-                    showMessage('aiMessage', '✅ AI team log submitted successfully!');
-                    document.getElementById('aiForm').reset();
-                    setTimeout(() => {
-                        closeModal('aiModal');
-                        loadAITeam();
-                    }, 1500);
-                } else {
-                    throw new Error('Failed to submit log');
-                }
-            } catch (error) {
-                showMessage('aiMessage', `❌ Error: ${error.message}`, true);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit Log';
-            }
-        }
-
-        async function submitEALog(event) {
-            event.preventDefault();
-            
-            const submitBtn = document.getElementById('eaSubmitBtn');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Submitting...';
-            
-            const formData = {
-                week_of: document.getElementById('eaWeek').value,
-                team_member: document.getElementById('eaName').value,
-                new_clients_onboarded: parseInt(document.getElementById('eaOnboarded').value),
-                failed_payments_recovered: parseInt(document.getElementById('eaRecovered').value),
-                refund_rate_pct: parseFloat(document.getElementById('eaRefundRate').value),
-                at_risk_clients: parseInt(document.getElementById('eaAtRisk').value),
-                notes: document.getElementById('eaNotes').value
-            };
-
-            try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/ea_logs`, {
-                    method: 'POST',
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
-                        'Content-Type': 'application/json',
-                        'Prefer': 'return=minimal'
-                    },
-                    body: JSON.stringify(formData)
-                });
-
-                if (response.ok) {
-                    showMessage('eaMessage', '✅ EA log submitted successfully!');
-                    document.getElementById('eaForm').reset();
-                    setTimeout(() => {
-                        closeModal('eaModal');
-                        loadEA();
-                    }, 1500);
-                } else {
-                    throw new Error('Failed to submit log');
-                }
-            } catch (error) {
-                showMessage('eaMessage', `❌ Error: ${error.message}`, true);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit Log';
-            }
-        }
-
-        // Data loading functions
-        async function loadRouters() {
-            try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/router_logs?order=date.desc&limit=20`, {
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`
-                    }
-                });
-                
-                const logs = await response.json();
-
-                const totalCalls = logs.reduce((sum, log) => sum + (log.calls_made || 0), 0);
-                const totalConversations = logs.reduce((sum, log) => sum + (log.conversations_reached || 0), 0);
-                const totalRegistrations = logs.reduce((sum, log) => sum + (log.training_registrations_live || 0), 0);
-                const avgAccuracy = logs.length > 0 ? 
-                    logs.reduce((sum, log) => sum + (log.crm_accuracy_pct || 0), 0) / logs.length : 0;
-
-                document.getElementById('router-calls').textContent = totalCalls.toLocaleString();
-                document.getElementById('router-conversations').textContent = totalConversations.toLocaleString();
-                document.getElementById('router-registrations').textContent = totalRegistrations.toLocaleString();
-                document.getElementById('router-accuracy').textContent = avgAccuracy.toFixed(1) + '%';
-
-                const tbody = document.getElementById('routers-tbody');
-                tbody.innerHTML = logs.map(log => `
-                    <tr>
-                        <td>${log.date}</td>
-                        <td>${log.team_member}</td>
-                        <td>${log.clock_in}</td>
-                        <td>${log.clock_out}</td>
-                        <td>${log.calls_made}</td>
-                        <td>${log.conversations_reached}</td>
-                        <td>${log.training_registrations_live || 0}</td>
-                        <td>${log.crm_accuracy_pct}%</td>
-                        <td>${(log.notes || '').substring(0, 50)}...</td>
-                    </tr>
-                `).join('');
-
-            } catch (error) {
-                console.error('Error loading router logs:', error);
-                // Set fallback data if API fails
-                document.getElementById('router-calls').textContent = '587';
-                document.getElementById('router-conversations').textContent = '117';
-                document.getElementById('router-registrations').textContent = '0';
-                document.getElementById('router-accuracy').textContent = '99.0%';
-                document.getElementById('routers-tbody').innerHTML = '<tr><td colspan="9" class="empty-state">Unable to load router data</td></tr>';
-            }
-        }
-
-        function setPeriod(period) {
-            document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-        }
-
-        function setRouterPeriod(period) {
-            const today = new Date().toISOString().split('T')[0];
-            const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-            const monthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-            
-            if (period === 'today') {
-                document.getElementById('routerStartDate').value = today;
-                document.getElementById('routerEndDate').value = today;
-            } else if (period === 'week') {
-                document.getElementById('routerStartDate').value = weekAgo;
-                document.getElementById('routerEndDate').value = today;
-            } else if (period === 'month') {
-                document.getElementById('routerStartDate').value = monthAgo;
-                document.getElementById('routerEndDate').value = today;
-            }
-            loadRouters();
-        }
-
-        function setSetterPeriod(period) { 
-            setRouterPeriod(period); 
-        }
-
-        function updateWeekData() {
-            loadRouters();
-        }
-
-        async function loadSetters() {
-            try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/setter_logs?order=date.desc&limit=20`, {
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`
-                    }
-                });
-                
-                const logs = await response.json();
-
-                const totalContacted = logs.reduce((sum, log) => sum + (log.webbi_leads_contacted || 0), 0);
-                const totalBooked = logs.reduce((sum, log) => sum + (log.calls_booked || 0), 0);
-                const totalShowed = logs.reduce((sum, log) => sum + (log.calls_showed || 0), 0);
-                const totalReroutes = logs.reduce((sum, log) => sum + (log.webbi_reroutes || 0), 0);
-
-                document.getElementById('setter-contacted').textContent = totalContacted.toLocaleString();
-                document.getElementById('setter-booked').textContent = totalBooked.toLocaleString();
-                document.getElementById('setter-showed').textContent = totalShowed.toLocaleString();
-                document.getElementById('setter-reroutes').textContent = totalReroutes.toLocaleString();
-
-                const tbody = document.getElementById('setters-tbody');
-                tbody.innerHTML = logs.map(log => `
-                    <tr>
-                        <td>${log.date}</td>
-                        <td>${log.team_member}</td>
-                        <td>${log.clock_in}</td>
-                        <td>${log.clock_out}</td>
-                        <td>${log.webbi_leads_contacted}</td>
-                        <td>${log.calls_booked}</td>
-                        <td>${log.calls_showed}</td>
-                        <td>${log.webbi_reroutes}</td>
-                        <td>${(log.notes || '').substring(0, 30)}...</td>
-                    </tr>
-                `).join('');
-
-            } catch (error) {
-                console.error('Error loading setter logs:', error);
-                // Set fallback data if API fails
-                document.getElementById('setter-contacted').textContent = '303';
-                document.getElementById('setter-booked').textContent = '17';
-                document.getElementById('setter-showed').textContent = '15';
-                document.getElementById('setter-reroutes').textContent = '20';
-                document.getElementById('setters-tbody').innerHTML = '<tr><td colspan="9" class="empty-state">Unable to load setter data</td></tr>';
-            }
-        }
-
-        async function loadClosers() {
-            try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/closer_logs?order=week_of.desc&limit=20`, {
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`
-                    }
-                });
-                
-                const logs = await response.json();
-
-                const totalCalls = logs.reduce((sum, log) => sum + (log.calls_taken || 0), 0);
-                const totalClosed = logs.reduce((sum, log) => sum + (log.deals_closed || 0), 0);
-                const totalRevenue = logs.reduce((sum, log) => sum + (log.revenue_collected || 0), 0);
-                const avgCloseRate = totalCalls > 0 ? ((totalClosed / totalCalls) * 100) : 0;
-
-                document.getElementById('closer-calls').textContent = totalCalls.toLocaleString();
-                document.getElementById('closer-closed').textContent = totalClosed.toLocaleString();
-                document.getElementById('closer-rate').textContent = avgCloseRate.toFixed(1) + '%';
-                document.getElementById('closer-revenue').textContent = '$' + totalRevenue.toLocaleString();
-
-                const tbody = document.getElementById('closers-tbody');
-                tbody.innerHTML = logs.map(log => `
-                    <tr>
-                        <td>${log.week_of}</td>
-                        <td>${log.team_member}</td>
-                        <td>${log.calls_taken}</td>
-                        <td>${log.no_shows}</td>
-                        <td>${log.deals_closed}</td>
-                        <td>${log.close_rate_pct || 'N/A'}%</td>
-                        <td>$${(log.revenue_collected || 0).toLocaleString()}</td>
-                        <td>${(log.notes || '').substring(0, 40)}...</td>
-                    </tr>
-                `).join('');
-
-            } catch (error) {
-                console.error('Error loading closer logs:', error);
-                // Set fallback data if API fails
-                document.getElementById('closer-calls').textContent = '43';
-                document.getElementById('closer-closed').textContent = '9';
-                document.getElementById('closer-rate').textContent = '20.9%';
-                document.getElementById('closer-revenue').textContent = '$28,699';
-                document.getElementById('closers-tbody').innerHTML = '<tr><td colspan="8" class="empty-state">Unable to load closer data</td></tr>';
-            }
-        }
-
-        async function loadAITeam() {
-            try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/ai_team_logs?order=week_of.desc&limit=20`, {
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`
-                    }
-                });
-                
-                const logs = await response.json();
-
-                if (logs.length > 0) {
-                    const latest = logs[0];
-                    document.getElementById('ai-leads').textContent = (latest.total_leads_generated || 0).toLocaleString();
-                    document.getElementById('ai-registrations').textContent = (latest.webbi_registrations || 0).toLocaleString();
-                    document.getElementById('ai-showrate').textContent = (latest.registration_show_rate_pct || 0) + '%';
-                    document.getElementById('ai-completion').textContent = (latest.webbi_completion_rate_pct || 0) + '%';
-                } else {
-                    document.getElementById('ai-leads').textContent = '0';
-                    document.getElementById('ai-registrations').textContent = '0';
-                    document.getElementById('ai-showrate').textContent = '0%';
-                    document.getElementById('ai-completion').textContent = '0%';
-                }
-
-                const tbody = document.getElementById('ai-tbody');
-                tbody.innerHTML = logs.length > 0 ? logs.map(log => `
-                    <tr>
-                        <td>${log.week_of}</td>
-                        <td>${log.team_member}</td>
-                        <td>${(log.total_leads_generated || 0).toLocaleString()}</td>
-                        <td>${(log.webbi_registrations || 0).toLocaleString()}</td>
-                        <td>${log.registration_show_rate_pct || 'N/A'}%</td>
-                        <td>${log.webbi_completion_rate_pct || 'N/A'}%</td>
-                        <td>${(log.what_changed || '').substring(0, 50)}...</td>
-                    </tr>
-                `).join('') : '<tr><td colspan="7" class="empty-state">No AI logs found.</td></tr>';
-
-            } catch (error) {
-                console.error('Error loading AI team logs:', error);
-                // Set fallback data if API fails
-                document.getElementById('ai-leads').textContent = '2,068';
-                document.getElementById('ai-registrations').textContent = '310';
-                document.getElementById('ai-showrate').textContent = '65.5%';
-                document.getElementById('ai-completion').textContent = '42.3%';
-                document.getElementById('ai-tbody').innerHTML = '<tr><td colspan="7" class="empty-state">Unable to load AI team data</td></tr>';
-            }
-        }
-
-        async function loadEA() {
-            try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/ea_logs?order=week_of.desc&limit=20`, {
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`
-                    }
-                });
-                
-                const logs = await response.json();
-
-                if (logs.length > 0) {
-                    const latest = logs[0];
-                    document.getElementById('ea-onboarded').textContent = latest.new_clients_onboarded || 0;
-                    document.getElementById('ea-recovered').textContent = '$' + (latest.failed_payments_recovered || 0).toLocaleString();
-                    document.getElementById('ea-refunds').textContent = (latest.refund_rate_pct || 0) + '%';
-                    document.getElementById('ea-atrisk').textContent = latest.at_risk_clients || 0;
-                } else {
-                    document.getElementById('ea-onboarded').textContent = '0';
-                    document.getElementById('ea-recovered').textContent = '$0';
-                    document.getElementById('ea-refunds').textContent = '0%';
-                    document.getElementById('ea-atrisk').textContent = '0';
-                }
-
-                const tbody = document.getElementById('executive-tbody');
-                tbody.innerHTML = logs.length > 0 ? logs.map(log => `
-                    <tr>
-                        <td>${log.week_of}</td>
-                        <td>${log.team_member}</td>
-                        <td>${log.new_clients_onboarded}</td>
-                        <td>$${(log.failed_payments_recovered || 0).toLocaleString()}</td>
-                        <td>${log.refund_rate_pct || 0}%</td>
-                        <td>${log.at_risk_clients}</td>
-                        <td>${(log.notes || '').substring(0, 30)}...</td>
-                    </tr>
-                `).join('') : '<tr><td colspan="7" class="empty-state">No EA logs found.</td></tr>';
-
-            } catch (error) {
-                console.error('Error loading EA logs:', error);
-                // Set fallback data if API fails
-                document.getElementById('ea-onboarded').textContent = '12';
-                document.getElementById('ea-recovered').textContent = '$2,400';
-                document.getElementById('ea-refunds').textContent = '5.2%';
-                document.getElementById('ea-atrisk').textContent = '3';
-                document.getElementById('executive-tbody').innerHTML = '<tr><td colspan="7" class="empty-state">Unable to load EA data</td></tr>';
-            }
-        }
-
-        function setCloserPeriod(period) { 
-            setRouterPeriod(period); 
-            loadClosers();
-        }
-
-        function setAIPeriod(period) { 
-            setRouterPeriod(period); 
-            loadAITeam();
-        }
-
-        function setEAPeriod(period) { 
-            setRouterPeriod(period); 
-            loadEA();
-        }
-
-        function setROASPeriod(period) { 
-            setRouterPeriod(period); 
-        }
-
-        function updateOverviewKPIs() {
-            // Update overview mini-KPIs from loaded data
-            const routerCalls = document.getElementById('router-calls')?.textContent || '0';
-            const routerConvos = document.getElementById('router-conversations')?.textContent || '0';
-            const setterContacted = document.getElementById('setter-contacted')?.textContent || '0';
-            const setterBooked = document.getElementById('setter-booked')?.textContent || '0';
-            const closerCalls = document.getElementById('closer-calls')?.textContent || '0';
-            const closerDeals = document.getElementById('closer-closed')?.textContent || '0';
-            const closerRevenue = document.getElementById('closer-revenue')?.textContent || '$0';
-            const aiLeads = document.getElementById('ai-leads')?.textContent || '0';
-            const aiRegs = document.getElementById('ai-registrations')?.textContent || '0';
-
-            // Only update if data is loaded (not "Loading...")
-            if (routerCalls !== 'Loading...' && routerCalls !== '0') {
-                document.getElementById('overview-router-calls').textContent = routerCalls;
-                document.getElementById('overview-router-convos').textContent = routerConvos;
-                
-                const calls = parseInt(routerCalls.replace(/,/g, '')) || 0;
-                const convos = parseInt(routerConvos.replace(/,/g, '')) || 0;
-                const rate = calls > 0 ? ((convos / calls) * 100).toFixed(1) + '%' : '0%';
-                document.getElementById('overview-router-rate').textContent = rate;
-            }
-
-            if (setterContacted !== 'Loading...' && setterContacted !== '0') {
-                document.getElementById('overview-setter-contacted').textContent = setterContacted;
-                document.getElementById('overview-setter-booked').textContent = setterBooked;
-                
-                const contacted = parseInt(setterContacted.replace(/,/g, '')) || 0;
-                const booked = parseInt(setterBooked.replace(/,/g, '')) || 0;
-                const showRate = contacted > 0 ? ((booked / contacted) * 100).toFixed(1) + '%' : '0%';
-                document.getElementById('overview-setter-rate').textContent = showRate;
-            }
-
-            if (closerCalls !== 'Loading...' && closerCalls !== '0') {
-                document.getElementById('overview-closer-calls').textContent = closerCalls;
-                document.getElementById('overview-closer-deals').textContent = closerDeals;
-                document.getElementById('overview-closer-revenue').textContent = closerRevenue;
-                
-                document.getElementById('weekly-revenue').textContent = closerRevenue;
-                document.getElementById('weekly-deals').textContent = closerDeals;
-            }
-
-            if (aiLeads !== 'Loading...' && aiLeads !== '0') {
-                document.getElementById('overview-ai-leads').textContent = aiLeads;
-                document.getElementById('overview-ai-regs').textContent = aiRegs;
-                document.getElementById('weekly-leads').textContent = aiLeads;
-                
-                // Calculate cost per lead if we have spend data
-                document.getElementById('overview-ai-cpl').textContent = '$3.02';
-            }
-
-            document.getElementById('weekly-roas').textContent = '37:1';
-        }
-
-        async function refreshData() {
-            document.getElementById('lastUpdated').textContent = `Updated: ${new Date().toLocaleTimeString()}`;
-            
-            // Load all data
-            await Promise.all([
-                loadRouters(),
-                loadSetters(),
-                loadClosers(),
-                loadAITeam(),
-                loadEA()
-            ]);
-            
-            // Update overview KPIs after data is loaded
-            setTimeout(() => {
-                updateOverviewKPIs();
-            }, 500);
-        }
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            const today = new Date();
-            const currentWeek = new Date(today.setDate(today.getDate() - today.getDay())).toISOString().split('T')[0];
-            const todayStr = new Date().toISOString().split('T')[0];
-            const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-            
-            // Set default dates
-            document.getElementById('weekDate').value = currentWeek;
-            
-            // Router dates
-            document.getElementById('routerStartDate').value = weekAgo;
-            document.getElementById('routerEndDate').value = todayStr;
-            
-            // Setter dates
-            document.getElementById('setterStartDate').value = weekAgo;
-            document.getElementById('setterEndDate').value = todayStr;
-            
-            // Closer dates
-            document.getElementById('closerStartWeek').value = currentWeek;
-            document.getElementById('closerEndWeek').value = todayStr;
-            
-            // AI Team dates
-            document.getElementById('aiStartWeek').value = currentWeek;
-            document.getElementById('aiEndWeek').value = todayStr;
-            
-            // EA dates
-            document.getElementById('eaStartWeek').value = currentWeek;
-            document.getElementById('eaEndWeek').value = todayStr;
-            
-            // ROAS dates (if elements exist)
-            const roasStart = document.getElementById('roasStartDate');
-            const roasEnd = document.getElementById('roasEndDate');
-            if (roasStart && roasEnd) {
-                roasStart.value = weekAgo;
-                roasEnd.value = todayStr;
-            }
-            
-            refreshData();
+    try {
+        const data = await query(cfg.table, cfg.dateCol, state.dateStart, state.dateEnd);
+        // Compute KPIs
+        const kpis = cfg.kpis.map(k => {
+            const vals = data.map(r => safeNum(r[k.key])).filter(v => v !== 0 || data.some(r => r[k.key] != null));
+            let value;
+            if (k.agg === 'sum') value = vals.reduce((a, b) => a + b, 0);
+            else if (k.agg === 'avg') value = vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
+            else value = vals.length;
+            let display = k.prefix ? k.prefix + fmtNum(Math.round(value)) : (k.suffix ? fmtPct(value) : fmtNum(Math.round(value)));
+            if (k.prefix === '$') display = fmtCurrency(value);
+            return { label: k.label, value: display, color: k.color, sub: `${data.length} entries` };
         });
-    </script>
+        renderKPIs(kpiEl, kpis);
+        renderTable(tableEl, cfg.columns, data);
+    } catch (err) {
+        renderError(kpiEl, err);
+        renderError(tableEl, err);
+    }
+}
+
+// ============================================================
+// TAB: COMMAND CENTER
+// ============================================================
+async function loadCommandCenter() {
+    const kpiEl = document.getElementById('cc-kpis');
+    const summaryEl = document.getElementById('cc-team-summary');
+    showSkeleton(kpiEl, 'kpi', 6);
+    summaryEl.innerHTML = '<div class="skeleton skel-table"></div>';
+
+    const { start, end } = { start: state.dateStart, end: state.dateEnd };
+
+    const results = await Promise.allSettled([
+        query('deals_closed', 'date', start, end),
+        query('closer_logs', 'week_of', start, end),
+        query('ad_metrics', 'week_start', start, end),
+        queryAll('sales_pipeline', '&stage=neq.closed&stage=neq.lost'),
+        query('router_logs', 'date', start, end),
+        query('setter_logs', 'date', start, end),
+        query('ai_team_logs', 'week_of', start, end),
+        query('ea_logs', 'week_of', start, end),
+        query('webinar_metrics', 'logged_date', start, end),
+    ]);
+
+    const [dealsR, closerR, adsR, pipeR, routerR, setterR, aiR, eaR, webinarR] = results.map(r => r.status === 'fulfilled' ? r.value : []);
+
+    // Revenue
+    const totalRevenue = (dealsR || []).reduce((s, d) => s + safeNum(d.cash_collected), 0);
+    const dealCount = (dealsR || []).length;
+
+    // Close Rate
+    const totalCallsTaken = (closerR || []).reduce((s, r) => s + safeNum(r.calls_taken), 0);
+    const totalDealsClosed = (closerR || []).reduce((s, r) => s + safeNum(r.deals_closed), 0);
+    const closeRate = totalCallsTaken > 0 ? (totalDealsClosed / totalCallsTaken) * 100 : 0;
+
+    // ROAS
+    const adSpend = (adsR || []).reduce((s, a) => s + safeNum(a.spend), 0);
+    const adSources = ['facebook', 'meta', 'webinar', 'ad'];
+    const adRevenue = (dealsR || []).filter(d => adSources.includes((d.lead_source || '').toLowerCase())).reduce((s, d) => s + safeNum(d.cash_collected), 0);
+    const roas = adSpend > 0 ? adRevenue / adSpend : 0;
+
+    // Pipeline
+    const pipelineActive = (pipeR || []).length;
+    const followUpsDue = (pipeR || []).filter(p => p.follow_up_date && p.follow_up_date <= todayStr()).length;
+
+    // Funnel
+    const leads = (aiR || []).reduce((s, r) => s + safeNum(r.total_leads_generated), 0);
+    const webAttendees = (webinarR || []).reduce((s, w) => s + safeNum(w.attendees), 0);
+
+    renderKPIs(kpiEl, [
+        { label: 'Revenue', value: fmtCurrency(totalRevenue), color: 'green', sub: `${dealCount} deals` },
+        { label: 'ROAS', value: roas > 0 ? roas.toFixed(1) + 'x' : 'N/A', color: 'blue', sub: adSpend > 0 ? `${fmtCurrency(adSpend)} spend` : 'No ad data' },
+        { label: 'Close Rate', value: fmtPct(closeRate), color: 'purple', sub: `${totalDealsClosed}/${totalCallsTaken} calls` },
+        { label: 'Pipeline Active', value: fmtNum(pipelineActive), color: 'yellow', sub: followUpsDue > 0 ? `${followUpsDue} follow-ups due` : 'No follow-ups due' },
+        { label: 'Leads Generated', value: fmtNum(leads), color: 'cyan', sub: 'AI team' },
+        { label: 'Webinar Attendees', value: fmtNum(webAttendees), color: 'blue', sub: `${(webinarR || []).length} sessions` }
+    ]);
+
+    // Revenue trend chart
+    renderRevenueTrendChart('ccRevenueChart', dealsR || []);
+
+    // Pipeline chart
+    const stages = {};
+    (pipeR || []).forEach(p => { stages[p.stage] = (stages[p.stage] || 0) + 1; });
+    renderPipelineChart('ccPipelineChart', stages);
+
+    // Team summary
+    const teamData = [
+        { role: 'Routers', count: (routerR || []).length, highlight: `${(routerR || []).reduce((s,r) => s+safeNum(r.calls_made),0)} calls` },
+        { role: 'Setters', count: (setterR || []).length, highlight: `${(setterR || []).reduce((s,r) => s+safeNum(r.calls_booked),0)} booked` },
+        { role: 'Closers', count: (closerR || []).length, highlight: `${fmtCurrency((closerR || []).reduce((s,r) => s+safeNum(r.revenue_collected),0))} rev` },
+        { role: 'AI Team', count: (aiR || []).length, highlight: `${(aiR || []).reduce((s,r) => s+safeNum(r.webbi_registrations),0)} regs` },
+        { role: 'EA', count: (eaR || []).length, highlight: `${(eaR || []).reduce((s,r) => s+safeNum(r.new_clients_onboarded),0)} onboarded` }
+    ];
+    if (teamData.every(t => t.count === 0)) {
+        renderEmpty(summaryEl, 'No team activity for this period.');
+    } else {
+        summaryEl.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px">
+            ${teamData.map(t => `<div class="kpi-card" style="padding:12px">
+                <div class="kpi-label">${t.role}</div>
+                <div style="font-size:15px;font-weight:600">${t.highlight}</div>
+                <div class="kpi-sub">${t.count} entries</div>
+            </div>`).join('')}
+        </div>`;
+    }
+}
+
+// ============================================================
+// TAB: REVENUE
+// ============================================================
+async function loadRevenue() {
+    const kpiEl = document.getElementById('rev-kpis');
+    const tableEl = document.getElementById('rev-table');
+    const lbEl = document.getElementById('rev-leaderboard');
+    const srcEl = document.getElementById('rev-sources');
+    const splitEl = document.getElementById('rev-payment-split');
+    showSkeleton(kpiEl, 'kpi', 4);
+    [tableEl, lbEl, srcEl, splitEl].forEach(e => e.innerHTML = '<div class="skeleton skel-table" style="height:120px"></div>');
+
+    const { start, end } = { start: state.dateStart, end: state.dateEnd };
+
+    const results = await Promise.allSettled([
+        query('deals_closed', 'date', start, end),
+        query('closed_deals', 'deal_date', start, end).catch(() => []),
+    ]);
+
+    let deals = results[0].status === 'fulfilled' ? results[0].value : [];
+    const deals2 = results[1].status === 'fulfilled' ? results[1].value : [];
+
+    // Merge and dedup by client_name + closer + date
+    if (deals2.length > 0) {
+        const seen = new Set(deals.map(d => `${d.client_name}|${d.closer}|${d.date}`));
+        deals2.forEach(d => {
+            const key = `${d.client_name || d.prospect_name}|${d.closer}|${d.deal_date || d.date}`;
+            if (!seen.has(key)) {
+                deals.push({
+                    date: d.deal_date || d.date,
+                    closer: d.closer,
+                    client_name: d.client_name || d.prospect_name,
+                    cash_collected: d.cash_collected || d.amount || 0,
+                    total_value: d.total_value || d.cash_collected || d.amount || 0,
+                    lead_source: d.lead_source || d.source,
+                    package: d.package
+                });
+                seen.add(key);
+            }
+        });
+    }
+
+    const totalRev = deals.reduce((s, d) => s + safeNum(d.cash_collected), 0);
+    const totalValue = deals.reduce((s, d) => s + safeNum(d.total_value || d.cash_collected), 0);
+    const avgDeal = deals.length > 0 ? totalRev / deals.length : 0;
+
+    // By closer
+    const byCloser = {};
+    deals.forEach(d => {
+        const c = d.closer || 'Unknown';
+        if (!byCloser[c]) byCloser[c] = { rev: 0, count: 0 };
+        byCloser[c].rev += safeNum(d.cash_collected);
+        byCloser[c].count++;
+    });
+
+    // By source
+    const bySource = {};
+    deals.forEach(d => {
+        const s = d.lead_source || 'Unknown';
+        if (!bySource[s]) bySource[s] = { rev: 0, count: 0 };
+        bySource[s].rev += safeNum(d.cash_collected);
+        bySource[s].count++;
+    });
+
+    // PIF vs Finance
+    const pifDeals = deals.filter(d => {
+        const pkg = (d.package || '').toLowerCase();
+        return pkg.includes('pif') || pkg.includes('paid in full') || pkg.includes('full');
+    });
+    const financeDeals = deals.filter(d => {
+        const pkg = (d.package || '').toLowerCase();
+        return !pkg.includes('pif') && !pkg.includes('paid in full') && !pkg.includes('full') && pkg !== '';
+    });
+    const unknownDeals = deals.filter(d => !d.package || d.package === '');
+
+    renderKPIs(kpiEl, [
+        { label: 'Total Revenue', value: fmtCurrency(totalRev), color: 'green', sub: `${deals.length} deals` },
+        { label: 'Total Contract Value', value: fmtCurrency(totalValue), color: 'blue' },
+        { label: 'Avg Deal Size', value: fmtCurrency(avgDeal), color: 'purple' },
+        { label: 'Cash Collected Rate', value: totalValue > 0 ? fmtPct((totalRev/totalValue)*100) : 'N/A', color: 'cyan' }
+    ]);
+
+    // Leaderboard
+    const sorted = Object.entries(byCloser).sort((a, b) => b[1].rev - a[1].rev);
+    if (sorted.length === 0) {
+        renderEmpty(lbEl, 'No deals to rank.');
+    } else {
+        lbEl.innerHTML = sorted.map(([name, stats], i) => {
+            const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+            return `<div class="leaderboard-item">
+                <div class="leaderboard-rank ${rankClass}">${i+1}</div>
+                <div class="leaderboard-info">
+                    <div class="leaderboard-name">${capitalize(name)}</div>
+                    <div class="leaderboard-stats">${stats.count} deals</div>
+                </div>
+                <div class="leaderboard-value">${fmtCurrency(stats.rev)}</div>
+            </div>`;
+        }).join('');
+    }
+
+    // Sources
+    const srcSorted = Object.entries(bySource).sort((a, b) => b[1].rev - a[1].rev);
+    if (srcSorted.length === 0) {
+        renderEmpty(srcEl, 'No source data.');
+    } else {
+        srcEl.innerHTML = srcSorted.map(([src, stats]) => `
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.03);font-size:13px">
+                <span>${capitalize(src)}</span>
+                <span style="color:var(--green);font-weight:600">${fmtCurrency(stats.rev)} <span style="color:var(--text-muted);font-weight:400">(${stats.count})</span></span>
+            </div>
+        `).join('');
+    }
+
+    // Payment split
+    splitEl.innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
+            <div class="kpi-card" style="padding:12px">
+                <div class="kpi-label">PIF</div>
+                <div style="font-size:18px;font-weight:700;color:var(--green)">${fmtCurrency(pifDeals.reduce((s,d)=>s+safeNum(d.cash_collected),0))}</div>
+                <div class="kpi-sub">${pifDeals.length} deals</div>
+            </div>
+            <div class="kpi-card" style="padding:12px">
+                <div class="kpi-label">Finance</div>
+                <div style="font-size:18px;font-weight:700;color:var(--blue)">${fmtCurrency(financeDeals.reduce((s,d)=>s+safeNum(d.cash_collected),0))}</div>
+                <div class="kpi-sub">${financeDeals.length} deals</div>
+            </div>
+            <div class="kpi-card" style="padding:12px">
+                <div class="kpi-label">Unspecified</div>
+                <div style="font-size:18px;font-weight:700;color:var(--text-muted)">${fmtCurrency(unknownDeals.reduce((s,d)=>s+safeNum(d.cash_collected),0))}</div>
+                <div class="kpi-sub">${unknownDeals.length} deals</div>
+            </div>
+        </div>
+    `;
+
+    // Revenue trend chart
+    renderRevenueTrendChart('revTrendChart', deals);
+
+    // Deals table
+    renderTable(tableEl, [
+        { key: 'date', label: 'Date', fmt: 'date' },
+        { key: 'closer', label: 'Closer' },
+        { key: 'client_name', label: 'Client' },
+        { key: 'cash_collected', label: 'Cash Collected', fmt: 'currency' },
+        { key: 'total_value', label: 'Total Value', fmt: 'currency' },
+        { key: 'lead_source', label: 'Source', fmt: 'badge' },
+        { key: 'package', label: 'Package' }
+    ], deals);
+}
+
+// ============================================================
+// TAB: PIPELINE
+// ============================================================
+async function loadPipeline() {
+    const kpiEl = document.getElementById('pipe-kpis');
+    const kanbanEl = document.getElementById('pipe-kanban');
+    const alertEl = document.getElementById('pipe-follow-up-alert');
+    showSkeleton(kpiEl, 'kpi', 4);
+    kanbanEl.innerHTML = '<div class="skeleton skel-table" style="height:300px"></div>';
+
+    try {
+        const data = await queryAll('sales_pipeline', '&order=updated_at.desc');
+        const stages = ['lead', 'booked', 'showed', 'closed', 'lost'];
+        const byStage = {};
+        stages.forEach(s => byStage[s] = []);
+        data.forEach(p => {
+            const s = p.stage || 'lead';
+            if (byStage[s]) byStage[s].push(p);
+            else byStage['lead'].push(p);
+        });
+
+        const active = data.filter(p => !['closed','lost'].includes(p.stage));
+        const totalValue = active.reduce((s, p) => s + safeNum(p.cash_available), 0);
+        const followUps = data.filter(p => p.follow_up_date && p.follow_up_date <= todayStr() && !['closed','lost'].includes(p.stage));
+
+        renderKPIs(kpiEl, [
+            { label: 'Total Prospects', value: fmtNum(data.length), color: 'blue' },
+            { label: 'Active Pipeline', value: fmtNum(active.length), color: 'green', sub: `${fmtCurrency(totalValue)} est. value` },
+            { label: 'Follow-Ups Due', value: fmtNum(followUps.length), color: followUps.length > 0 ? 'red' : 'green' },
+            { label: 'Win Rate', value: data.length > 0 ? fmtPct((byStage.closed.length / data.length) * 100) : 'N/A', color: 'purple' }
+        ]);
+
+        if (followUps.length > 0) alertEl.textContent = `${followUps.length} follow-up(s) overdue!`;
+        else alertEl.textContent = '';
+
+        const stageColors = { lead: 'purple', booked: 'yellow', showed: 'blue', closed: 'green', lost: 'red' };
+        kanbanEl.innerHTML = stages.map(stage => `
+            <div class="kanban-col">
+                <div class="kanban-col-title" style="color:var(--${stageColors[stage]})">
+                    ${capitalize(stage)} <span class="count">${byStage[stage].length}</span>
+                </div>
+                ${byStage[stage].length === 0 ? '<div style="color:var(--text-muted);font-size:11px;text-align:center;padding:20px">Empty</div>' :
+                byStage[stage].map(p => `
+                    <div class="pipeline-card">
+                        <strong>${p.prospect_name || 'Unknown'}</strong>
+                        ${p.closer ? `<div class="detail">Closer: ${capitalize(p.closer)}</div>` : ''}
+                        ${p.cash_available ? `<div class="detail">${fmtCurrency(p.cash_available)} available</div>` : ''}
+                        ${p.follow_up_date ? `<div class="detail" style="${p.follow_up_date <= todayStr() ? 'color:var(--accent)' : ''}">${p.follow_up_date <= todayStr() ? 'OVERDUE: ' : 'Follow-up: '}${fmtDate(p.follow_up_date)}</div>` : ''}
+                        ${p.location ? `<div class="detail">${p.location}</div>` : ''}
+                    </div>
+                `).join('')}
+            </div>
+        `).join('');
+    } catch (err) {
+        renderError(kpiEl, err);
+        renderError(kanbanEl, err);
+    }
+}
+
+// ============================================================
+// TAB: CLOSERS (extended with radar chart)
+// ============================================================
+async function loadClosers() {
+    await loadTeamTab('closers');
+
+    // Also load call reviews for radar chart
+    const radarCanvas = document.getElementById('closerRadarChart');
+    const breakdownEl = document.getElementById('closers-breakdown');
+    breakdownEl.innerHTML = '<div class="skeleton skel-table" style="height:120px"></div>';
+
+    try {
+        const reviews = await query('call_reviews', 'call_date', state.dateStart, state.dateEnd);
+        if (!reviews || reviews.length === 0) {
+            renderEmpty(breakdownEl, 'No call reviews for this period.');
+            return;
+        }
+
+        // Aggregate by closer
+        const byCloser = {};
+        const scoreFields = ['score_rapport','score_discovery','score_pain_building','score_objection_handling','score_close_strength','score_revenue_protection'];
+        reviews.forEach(r => {
+            const c = r.closer || 'Unknown';
+            if (!byCloser[c]) byCloser[c] = { count: 0, scores: {} };
+            byCloser[c].count++;
+            scoreFields.forEach(f => {
+                if (r[f] != null) {
+                    if (!byCloser[c].scores[f]) byCloser[c].scores[f] = [];
+                    byCloser[c].scores[f].push(safeNum(r[f]));
+                }
+            });
+        });
+
+        // Radar chart with avg scores across all closers
+        const labels = ['Rapport','Discovery','Pain Building','Objection Handling','Close Strength','Revenue Protection'];
+        const datasets = Object.entries(byCloser).map(([name, data], i) => {
+            const colors = ['rgba(17,108,227,','rgba(16,202,240,','rgba(33,150,243,','rgba(177,182,254,','rgba(21,182,209,','rgba(31,161,254,'];
+            const color = colors[i % colors.length];
+            return {
+                label: capitalize(name),
+                data: scoreFields.map(f => {
+                    const vals = data.scores[f] || [];
+                    return vals.length > 0 ? (vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1) : 0;
+                }),
+                backgroundColor: color + '0.1)',
+                borderColor: color + '0.8)',
+                borderWidth: 2,
+                pointRadius: 3
+            };
+        });
+
+        renderRadarChart(radarCanvas, labels, datasets);
+
+        // Breakdown list
+        breakdownEl.innerHTML = Object.entries(byCloser).map(([name, data]) => {
+            const avgScores = scoreFields.map(f => {
+                const vals = data.scores[f] || [];
+                return vals.length ? (vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1) : 'N/A';
+            });
+            const overall = avgScores.filter(s => s !== 'N/A');
+            const avg = overall.length ? (overall.reduce((a,b)=>a+safeNum(b),0)/overall.length).toFixed(1) : 'N/A';
+            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.03)">
+                <div>
+                    <div style="font-size:13px;font-weight:500">${capitalize(name)}</div>
+                    <div style="font-size:11px;color:var(--text-muted)">${data.count} reviews</div>
+                </div>
+                <div style="font-size:18px;font-weight:700;color:var(--blue)">${avg}/10</div>
+            </div>`;
+        }).join('');
+    } catch (err) {
+        renderError(breakdownEl, err);
+    }
+}
+
+// ============================================================
+// TAB: AI & WEBINAR
+// ============================================================
+async function loadAIWebinar() {
+    const kpiEl = document.getElementById('ai-kpis');
+    const funnelEl = document.getElementById('ai-funnel');
+    const aiTableEl = document.getElementById('ai-table');
+    const webTableEl = document.getElementById('webinar-table');
+    showSkeleton(kpiEl, 'kpi', 4);
+    [funnelEl, aiTableEl, webTableEl].forEach(e => e.innerHTML = '<div class="skeleton skel-table" style="height:100px"></div>');
+
+    const { start, end } = { start: state.dateStart, end: state.dateEnd };
+
+    const results = await Promise.allSettled([
+        query('ai_team_logs', 'week_of', start, end),
+        query('webinar_metrics', 'logged_date', start, end),
+        query('deals_closed', 'date', start, end),
+    ]);
+
+    const [aiData, webData, dealData] = results.map(r => r.status === 'fulfilled' ? r.value : []);
+
+    const leads = aiData.reduce((s, r) => s + safeNum(r.total_leads_generated), 0);
+    const regs = aiData.reduce((s, r) => s + safeNum(r.webbi_registrations), 0);
+    const shows = webData.reduce((s, w) => s + safeNum(w.attendees), 0);
+    const closes = dealData.length;
+
+    renderKPIs(kpiEl, [
+        { label: 'Leads Generated', value: fmtNum(leads), color: 'blue' },
+        { label: 'Registrations', value: fmtNum(regs), color: 'purple' },
+        { label: 'Webinar Attendees', value: fmtNum(shows), color: 'green' },
+        { label: 'Deals Closed', value: fmtNum(closes), color: 'cyan' }
+    ]);
+
+    // Funnel visualization
+    const funnelSteps = [
+        { label: 'Leads', value: leads, color: 'var(--blue)' },
+        { label: 'Registrations', value: regs, color: 'var(--purple)', rate: leads > 0 ? ((regs/leads)*100).toFixed(1)+'%' : '' },
+        { label: 'Shows', value: shows, color: 'var(--green)', rate: regs > 0 ? ((shows/regs)*100).toFixed(1)+'%' : '' },
+        { label: 'Closes', value: closes, color: 'var(--cyan)', rate: shows > 0 ? ((closes/shows)*100).toFixed(1)+'%' : '' }
+    ];
+    const maxVal = Math.max(...funnelSteps.map(s => s.value), 1);
+    funnelEl.innerHTML = funnelSteps.map(step => {
+        const width = Math.max((step.value / maxVal) * 100, 5);
+        return `<div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px">
+                <span>${step.label}</span>
+                <span style="font-weight:600">${fmtNum(step.value)} ${step.rate ? `<span style="color:var(--text-muted)">(${step.rate})</span>` : ''}</span>
+            </div>
+            <div style="height:24px;background:rgba(255,255,255,0.03);border-radius:4px;overflow:hidden">
+                <div style="height:100%;width:${width}%;background:${step.color};border-radius:4px;transition:width .5s"></div>
+            </div>
+        </div>`;
+    }).join('');
+
+    // Webinar chart
+    renderWebinarChart(webData);
+
+    // Tables
+    renderTable(aiTableEl, [
+        { key: 'week_of', label: 'Week Of', fmt: 'date' },
+        { key: 'team_member', label: 'Member' },
+        { key: 'total_leads_generated', label: 'Leads', fmt: 'num' },
+        { key: 'webbi_registrations', label: 'Registrations', fmt: 'num' },
+        { key: 'registration_show_rate_pct', label: 'Show Rate', fmt: 'pct' },
+        { key: 'webbi_completion_rate_pct', label: 'Completion', fmt: 'pct' },
+        { key: 'notes', label: 'Notes' }
+    ], aiData);
+
+    renderTable(webTableEl, [
+        { key: 'logged_date', label: 'Date', fmt: 'date' },
+        { key: 'visitors', label: 'Visitors', fmt: 'num' },
+        { key: 'registrants', label: 'Registrants', fmt: 'num' },
+        { key: 'attendees', label: 'Attendees', fmt: 'num' },
+        { key: 'show_rate', label: 'Show Rate', fmt: 'pct' },
+        { key: 'completion_rate', label: 'Completion', fmt: 'pct' },
+        { key: 'offer_clicks', label: 'Offer Clicks', fmt: 'num' }
+    ], webData);
+}
+
+// ============================================================
+// TAB: ADS & ROAS
+// ============================================================
+async function loadAdsROAS() {
+    const kpiEl = document.getElementById('ads-kpis');
+    const tableEl = document.getElementById('ads-table');
+    showSkeleton(kpiEl, 'kpi', 4);
+    tableEl.innerHTML = '<div class="skeleton skel-table"></div>';
+
+    const { start, end } = { start: state.dateStart, end: state.dateEnd };
+
+    const results = await Promise.allSettled([
+        query('ad_metrics', 'week_start', start, end),
+        query('deals_closed', 'date', start, end),
+    ]);
+
+    const [adsData, dealsData] = results.map(r => r.status === 'fulfilled' ? r.value : []);
+
+    const totalSpend = adsData.reduce((s, a) => s + safeNum(a.spend), 0);
+    const totalClicks = adsData.reduce((s, a) => s + safeNum(a.clicks), 0);
+    const totalImpressions = adsData.reduce((s, a) => s + safeNum(a.impressions), 0);
+    const totalConversions = adsData.reduce((s, a) => s + safeNum(a.conversions), 0);
+    const avgCTR = totalImpressions > 0 ? (totalClicks / totalImpressions) * 100 : 0;
+
+    // Calculate real ROAS from ad-sourced deals
+    const adSources = ['facebook', 'meta', 'webinar', 'ad'];
+    const adRevenue = dealsData.filter(d => adSources.includes((d.lead_source || '').toLowerCase())).reduce((s, d) => s + safeNum(d.cash_collected), 0);
+    const roas = totalSpend > 0 ? adRevenue / totalSpend : 0;
+
+    renderKPIs(kpiEl, [
+        { label: 'Total Ad Spend', value: fmtCurrency(totalSpend), color: 'red', sub: `${adsData.length} weeks of data` },
+        { label: 'ROAS', value: roas > 0 ? roas.toFixed(2) + 'x' : 'N/A', color: roas >= 3 ? 'green' : roas >= 1 ? 'yellow' : 'red', sub: `${fmtCurrency(adRevenue)} ad-sourced revenue` },
+        { label: 'Avg CTR', value: fmtPct(avgCTR), color: 'blue', sub: `${fmtNum(totalClicks)} clicks / ${fmtNum(totalImpressions)} impressions` },
+        { label: 'Conversions', value: fmtNum(totalConversions), color: 'purple', sub: totalClicks > 0 ? `${((totalConversions/totalClicks)*100).toFixed(1)}% conv rate` : '' }
+    ]);
+
+    // Chart
+    renderAdSpendChart(adsData, dealsData);
+
+    // Table
+    renderTable(tableEl, [
+        { key: 'week_start', label: 'Week', fmt: 'date' },
+        { key: 'spend', label: 'Spend', fmt: 'currency' },
+        { key: 'clicks', label: 'Clicks', fmt: 'num' },
+        { key: 'impressions', label: 'Impressions', fmt: 'num' },
+        { key: 'ctr', label: 'CTR', fmt: 'pct' },
+        { key: 'conversions', label: 'Conversions', fmt: 'num' },
+        { key: 'roas', label: 'ROAS' },
+        { key: 'notes', label: 'Notes' }
+    ], adsData);
+}
+
+// ============================================================
+// TAB: TASKS
+// ============================================================
+async function loadTasks() {
+    const kanbanEl = document.getElementById('task-kanban');
+    kanbanEl.innerHTML = '<div class="skeleton skel-table" style="height:300px"></div>';
+
+    try {
+        const tasks = await queryAll('dashboard_tasks', '&order=created_at.desc');
+        const cols = { todo: [], in_progress: [], done: [] };
+        tasks.forEach(t => {
+            const s = t.status || 'todo';
+            if (cols[s]) cols[s].push(t);
+            else cols.todo.push(t);
+        });
+
+        const colConfig = [
+            { key: 'todo', label: 'To Do', color: 'var(--blue)' },
+            { key: 'in_progress', label: 'In Progress', color: 'var(--yellow)' },
+            { key: 'done', label: 'Done', color: 'var(--green)' }
+        ];
+
+        kanbanEl.innerHTML = colConfig.map(col => `
+            <div class="kanban-col">
+                <div class="kanban-col-title" style="color:${col.color}">
+                    ${col.label} <span class="count">${cols[col.key].length}</span>
+                </div>
+                ${cols[col.key].length === 0 ? '<div style="color:var(--text-muted);font-size:11px;text-align:center;padding:20px">No tasks</div>' :
+                cols[col.key].map(t => {
+                    const priorityClass = `priority-${t.priority || 'medium'}`;
+                    const isOverdue = t.due_date && t.due_date < todayStr() && t.status !== 'done';
+                    return `<div class="kanban-card" onclick="openTaskModal('${t.id}')">
+                        <div style="display:flex;align-items:center;gap:6px">
+                            <span class="priority-dot ${priorityClass}"></span>
+                            <h4>${t.title}</h4>
+                        </div>
+                        ${t.description ? `<p>${t.description.substring(0, 80)}${t.description.length > 80 ? '...' : ''}</p>` : ''}
+                        <div class="meta">
+                            ${t.assigned_to ? `<span class="badge badge-blue">${t.assigned_to}</span>` : ''}
+                            ${t.category ? `<span class="badge badge-purple">${t.category}</span>` : ''}
+                            ${t.due_date ? `<span class="badge ${isOverdue ? 'badge-red' : 'badge-green'}">${isOverdue ? 'OVERDUE ' : ''}${fmtDate(t.due_date)}</span>` : ''}
+                        </div>
+                        <div style="display:flex;gap:4px;margin-top:8px">
+                            ${t.status !== 'todo' ? `<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();moveTask('${t.id}','${t.status === 'done' ? 'in_progress' : 'todo'}')">Back</button>` : ''}
+                            ${t.status !== 'done' ? `<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();moveTask('${t.id}','${t.status === 'todo' ? 'in_progress' : 'done'}')">Next</button>` : ''}
+                            <button class="btn btn-ghost btn-sm" style="margin-left:auto;color:var(--accent)" onclick="event.stopPropagation();deleteTask('${t.id}')">Del</button>
+                        </div>
+                    </div>`;
+                }).join('')}
+            </div>
+        `).join('');
+    } catch (err) {
+        kanbanEl.innerHTML = `<div class="error-banner show" style="display:block">
+            <p>Could not load tasks: ${err.message}</p>
+            <p style="margin-top:8px;color:var(--text-secondary);font-size:11px">If the dashboard_tasks table doesn't exist yet, run the CREATE TABLE SQL in your Supabase SQL Editor.</p>
+        </div>`;
+    }
+}
+
+async function moveTask(id, newStatus) {
+    try {
+        await apiPatch('dashboard_tasks', id, { status: newStatus, updated_at: new Date().toISOString() });
+        loadTasks();
+    } catch (err) { alert('Failed to move task: ' + err.message); }
+}
+
+async function deleteTask(id) {
+    if (!confirm('Delete this task?')) return;
+    try {
+        await apiDelete('dashboard_tasks', id);
+        loadTasks();
+    } catch (err) { alert('Failed to delete task: ' + err.message); }
+}
+
+// ============================================================
+// CHART HELPERS (Chart.js)
+// ============================================================
+const CHART_DEFAULTS = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#B1B6FE', font: { family: 'Inter', size: 11 } } } },
+    scales: {
+        x: { ticks: { color: '#6B7094', font: { size: 10 } }, grid: { color: 'rgba(17,108,227,0.08)' } },
+        y: { ticks: { color: '#6B7094', font: { size: 10 } }, grid: { color: 'rgba(17,108,227,0.08)' } }
+    }
+};
+
+function destroyChart(key) {
+    if (state.charts[key]) { state.charts[key].destroy(); delete state.charts[key]; }
+}
+
+function renderRevenueTrendChart(canvasId, deals) {
+    destroyChart(canvasId);
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+
+    // Group by week
+    const byWeek = {};
+    deals.forEach(d => {
+        const dt = new Date(d.date + 'T12:00:00');
+        const weekStart = new Date(dt);
+        weekStart.setDate(dt.getDate() - dt.getDay());
+        const key = weekStart.toLocaleDateString('en-CA');
+        byWeek[key] = (byWeek[key] || 0) + safeNum(d.cash_collected);
+    });
+
+    const sorted = Object.entries(byWeek).sort((a, b) => a[0].localeCompare(b[0]));
+    if (sorted.length === 0) {
+        canvas.parentElement.innerHTML = '<div class="empty-state"><p>No revenue data to chart.</p></div>';
+        return;
+    }
+
+    state.charts[canvasId] = new Chart(canvas, {
+        type: 'line',
+        data: {
+            labels: sorted.map(([k]) => fmtDate(k)),
+            datasets: [{
+                label: 'Revenue',
+                data: sorted.map(([,v]) => v),
+                borderColor: 'rgba(16,202,240,0.9)',
+                backgroundColor: 'rgba(17,108,227,0.15)',
+                fill: true,
+                tension: 0.4,
+                pointRadius: 4,
+                pointBackgroundColor: 'rgba(16,202,240,1)',
+                pointBorderColor: 'rgba(17,108,227,0.4)',
+                pointBorderWidth: 2
+            }]
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            scales: {
+                ...CHART_DEFAULTS.scales,
+                y: { ...CHART_DEFAULTS.scales.y, ticks: { ...CHART_DEFAULTS.scales.y.ticks, callback: v => '$' + (v/1000).toFixed(0) + 'k' } }
+            }
+        }
+    });
+}
+
+function renderPipelineChart(canvasId, stages) {
+    destroyChart(canvasId);
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+
+    const labels = Object.keys(stages);
+    if (labels.length === 0) {
+        canvas.parentElement.innerHTML = '<div class="empty-state"><p>No pipeline data.</p></div>';
+        return;
+    }
+
+    const colors = { lead: '#B1B6FE', booked: '#ffa502', showed: '#2196F3', closed: '#2ed573', lost: '#ff4757' };
+
+    state.charts[canvasId] = new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: labels.map(capitalize),
+            datasets: [{
+                label: 'Prospects',
+                data: labels.map(l => stages[l]),
+                backgroundColor: labels.map(l => colors[l] || '#5b7fff'),
+                borderRadius: 6
+            }]
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            indexAxis: 'y',
+            plugins: { ...CHART_DEFAULTS.plugins, legend: { display: false } }
+        }
+    });
+}
+
+function renderRadarChart(canvas, labels, datasets) {
+    destroyChart('closerRadar');
+    if (!canvas || datasets.length === 0) return;
+
+    state.charts['closerRadar'] = new Chart(canvas, {
+        type: 'radar',
+        data: { labels, datasets },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    min: 0, max: 10,
+                    ticks: { stepSize: 2, color: '#6B7094', backdropColor: 'transparent', font: { size: 9 } },
+                    grid: { color: 'rgba(17,108,227,0.1)' },
+                    pointLabels: { color: '#B1B6FE', font: { size: 10 } }
+                }
+            },
+            plugins: { legend: { labels: { color: '#B1B6FE', font: { family: 'Inter', size: 11 } } } }
+        }
+    });
+}
+
+function renderWebinarChart(webData) {
+    destroyChart('webinarChart');
+    const canvas = document.getElementById('webinarChart');
+    if (!canvas || !webData || webData.length === 0) return;
+
+    const sorted = [...webData].sort((a, b) => (a.logged_date || '').localeCompare(b.logged_date || ''));
+
+    state.charts['webinarChart'] = new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: sorted.map(w => fmtDate(w.logged_date)),
+            datasets: [
+                { label: 'Registrants', data: sorted.map(w => safeNum(w.registrants)), backgroundColor: 'rgba(17,108,227,0.5)', borderRadius: 4, borderColor: 'rgba(17,108,227,0.8)', borderWidth: 1 },
+                { label: 'Attendees', data: sorted.map(w => safeNum(w.attendees)), backgroundColor: 'rgba(16,202,240,0.5)', borderRadius: 4, borderColor: 'rgba(16,202,240,0.8)', borderWidth: 1 }
+            ]
+        },
+        options: CHART_DEFAULTS
+    });
+}
+
+function renderAdSpendChart(adsData, dealsData) {
+    destroyChart('adSpendChart');
+    const canvas = document.getElementById('adSpendChart');
+    if (!canvas || !adsData || adsData.length === 0) return;
+
+    const sorted = [...adsData].sort((a, b) => (a.week_start || '').localeCompare(b.week_start || ''));
+
+    state.charts['adSpendChart'] = new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: sorted.map(a => fmtDate(a.week_start)),
+            datasets: [
+                { label: 'Ad Spend', data: sorted.map(a => safeNum(a.spend)), backgroundColor: 'rgba(17,108,227,0.5)', borderRadius: 4, borderColor: 'rgba(17,108,227,0.8)', borderWidth: 1 },
+                { label: 'Clicks', data: sorted.map(a => safeNum(a.clicks)), backgroundColor: 'rgba(16,202,240,0.5)', borderRadius: 4, borderColor: 'rgba(16,202,240,0.8)', borderWidth: 1 }
+            ]
+        },
+        options: {
+            ...CHART_DEFAULTS,
+            scales: {
+                ...CHART_DEFAULTS.scales,
+                y: { ...CHART_DEFAULTS.scales.y, ticks: { ...CHART_DEFAULTS.scales.y.ticks, callback: v => '$' + v.toLocaleString() } }
+            }
+        }
+    });
+}
+
+// ============================================================
+// FORM MODAL (Data Entry)
+// ============================================================
+let currentFormTab = null;
+
+function openFormModal(tabKey) {
+    currentFormTab = tabKey;
+    const cfg = TEAM_TABS[tabKey];
+    if (!cfg) return;
+    document.getElementById('formModalTitle').textContent = `Add ${capitalize(tabKey).replace(/s$/, '')} Entry`;
+    const container = document.getElementById('formFields');
+    container.innerHTML = cfg.formFields.map(f => {
+        const val = f.default === 'today' ? todayStr() : (f.default || '');
+        if (f.type === 'textarea') {
+            return `<div class="form-group"><label>${f.label}</label><textarea name="${f.key}" placeholder="${f.label}">${val}</textarea></div>`;
+        }
+        return `<div class="form-group"><label>${f.label}${f.required ? ' *' : ''}</label><input type="${f.type}" name="${f.key}" value="${val}" ${f.required ? 'required' : ''} ${f.step ? `step="${f.step}"` : ''} placeholder="${f.label}"></div>`;
+    }).join('');
+    document.getElementById('formModal').classList.add('show');
+}
+
+async function submitEntry(e) {
+    e.preventDefault();
+    const cfg = TEAM_TABS[currentFormTab];
+    if (!cfg) return;
+    const form = e.target;
+    const data = {};
+    cfg.formFields.forEach(f => {
+        const el = form.querySelector(`[name="${f.key}"]`);
+        if (!el) return;
+        const v = el.value.trim();
+        if (v === '') return;
+        data[f.key] = f.type === 'number' ? Number(v) : v;
+    });
+
+    try {
+        await apiInsert(cfg.table, data);
+        closeModal('formModal');
+        loadTab(currentFormTab);
+    } catch (err) {
+        alert('Error saving: ' + err.message);
+    }
+}
+
+// ============================================================
+// TASK MODAL
+// ============================================================
+let taskCache = {};
+
+function openTaskModal(editId) {
+    const titleEl = document.getElementById('taskModalTitle');
+    const form = document.getElementById('taskForm');
+    form.reset();
+    document.getElementById('taskEditId').value = '';
+
+    if (editId && taskCache[editId]) {
+        const t = taskCache[editId];
+        titleEl.textContent = 'Edit Task';
+        document.getElementById('taskEditId').value = editId;
+        document.getElementById('taskTitle').value = t.title || '';
+        document.getElementById('taskDesc').value = t.description || '';
+        document.getElementById('taskAssigned').value = t.assigned_to || '';
+        document.getElementById('taskPriority').value = t.priority || 'medium';
+        document.getElementById('taskDue').value = t.due_date || '';
+        document.getElementById('taskCategory').value = t.category || '';
+    } else {
+        titleEl.textContent = 'New Task';
+    }
+    document.getElementById('taskModal').classList.add('show');
+}
+
+async function submitTask(e) {
+    e.preventDefault();
+    const editId = document.getElementById('taskEditId').value;
+    const data = {
+        title: document.getElementById('taskTitle').value.trim(),
+        description: document.getElementById('taskDesc').value.trim() || null,
+        assigned_to: document.getElementById('taskAssigned').value.trim() || null,
+        priority: document.getElementById('taskPriority').value,
+        due_date: document.getElementById('taskDue').value || null,
+        category: document.getElementById('taskCategory').value.trim() || null,
+        updated_at: new Date().toISOString()
+    };
+
+    try {
+        if (editId) {
+            await apiPatch('dashboard_tasks', editId, data);
+        } else {
+            data.status = 'todo';
+            data.created_by = 'dashboard';
+            await apiInsert('dashboard_tasks', data);
+        }
+        closeModal('taskModal');
+        loadTasks();
+    } catch (err) {
+        alert('Error saving task: ' + err.message);
+    }
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove('show');
+}
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(el => {
+    el.addEventListener('click', e => { if (e.target === el) el.classList.remove('show'); });
+});
+
+// ============================================================
+// NAVIGATION & DATE CONTROLS
+// ============================================================
+const TAB_LOADERS = {
+    'command-center': loadCommandCenter,
+    'revenue': loadRevenue,
+    'pipeline': loadPipeline,
+    'routers': () => loadTeamTab('routers'),
+    'setters': () => loadTeamTab('setters'),
+    'closers': loadClosers,
+    'ai-webinar': loadAIWebinar,
+    'ea': () => loadTeamTab('ea'),
+    'ads-roas': loadAdsROAS,
+    'tasks': loadTasks
+};
+
+function switchTab(tabId) {
+    state.activeTab = tabId;
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+    const tabEl = document.getElementById('tab-' + tabId);
+    if (tabEl) tabEl.classList.add('active');
+    document.querySelector(`.nav-btn[data-tab="${tabId}"]`)?.classList.add('active');
+
+    // Hide date controls for non-date tabs
+    const noDateTabs = ['pipeline', 'tasks'];
+    document.getElementById('dateControls').style.display = noDateTabs.includes(tabId) ? 'none' : 'flex';
+
+    loadTab(tabId);
+}
+
+function loadTab(tabId) {
+    const loader = TAB_LOADERS[tabId];
+    if (loader) loader();
+    document.getElementById('lastUpdated').textContent = 'Updated ' + new Date().toLocaleTimeString();
+}
+
+function refreshCurrentTab() {
+    loadTab(state.activeTab);
+}
+
+// Navigation click handlers
+document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+});
+
+// Date preset handlers
+document.querySelectorAll('.date-preset').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.date-preset').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const range = getDateRange(btn.dataset.range);
+        state.dateStart = range.start;
+        state.dateEnd = range.end;
+        document.getElementById('dateStart').value = range.start;
+        document.getElementById('dateEnd').value = range.end;
+        loadTab(state.activeTab);
+    });
+});
+
+// Custom date inputs
+document.getElementById('dateStart').addEventListener('change', onCustomDate);
+document.getElementById('dateEnd').addEventListener('change', onCustomDate);
+
+function onCustomDate() {
+    const s = document.getElementById('dateStart').value;
+    const e = document.getElementById('dateEnd').value;
+    if (s && e) {
+        document.querySelectorAll('.date-preset').forEach(b => b.classList.remove('active'));
+        state.dateStart = s;
+        state.dateEnd = e;
+        loadTab(state.activeTab);
+    }
+}
+
+// ============================================================
+// TASK CACHE (for edit modal)
+// ============================================================
+const _origLoadTasks = loadTasks;
+// Wrap loadTasks to cache task data
+const wrappedLoadTasks = async function() {
+    const kanbanEl = document.getElementById('task-kanban');
+    kanbanEl.innerHTML = '<div class="skeleton skel-table" style="height:300px"></div>';
+    try {
+        const tasks = await queryAll('dashboard_tasks', '&order=created_at.desc');
+        taskCache = {};
+        tasks.forEach(t => taskCache[t.id] = t);
+        // Re-render (inlined from loadTasks to avoid recursion)
+        const cols = { todo: [], in_progress: [], done: [] };
+        tasks.forEach(t => {
+            const s = t.status || 'todo';
+            if (cols[s]) cols[s].push(t);
+            else cols.todo.push(t);
+        });
+        const colConfig = [
+            { key: 'todo', label: 'To Do', color: 'var(--blue)' },
+            { key: 'in_progress', label: 'In Progress', color: 'var(--yellow)' },
+            { key: 'done', label: 'Done', color: 'var(--green)' }
+        ];
+        kanbanEl.innerHTML = colConfig.map(col => `
+            <div class="kanban-col">
+                <div class="kanban-col-title" style="color:${col.color}">
+                    ${col.label} <span class="count">${cols[col.key].length}</span>
+                </div>
+                ${cols[col.key].length === 0 ? '<div style="color:var(--text-muted);font-size:11px;text-align:center;padding:20px">No tasks</div>' :
+                cols[col.key].map(t => {
+                    const priorityClass = 'priority-' + (t.priority || 'medium');
+                    const isOverdue = t.due_date && t.due_date < todayStr() && t.status !== 'done';
+                    return `<div class="kanban-card" onclick="openTaskModal('${t.id}')">
+                        <div style="display:flex;align-items:center;gap:6px">
+                            <span class="priority-dot ${priorityClass}"></span>
+                            <h4>${t.title || 'Untitled'}</h4>
+                        </div>
+                        ${t.description ? '<p>' + (t.description.length > 80 ? t.description.substring(0,80)+'...' : t.description) + '</p>' : ''}
+                        <div class="meta">
+                            ${t.assigned_to ? '<span class="badge badge-blue">'+t.assigned_to+'</span>' : ''}
+                            ${t.category ? '<span class="badge badge-purple">'+t.category+'</span>' : ''}
+                            ${t.due_date ? '<span class="badge '+(isOverdue?'badge-red':'badge-green')+'">'+(isOverdue?'OVERDUE ':'')+fmtDate(t.due_date)+'</span>' : ''}
+                        </div>
+                        <div style="display:flex;gap:4px;margin-top:8px">
+                            ${t.status !== 'todo' ? '<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();moveTask(\''+t.id+'\',\''+(t.status === 'done' ? 'in_progress' : 'todo')+'\')">Back</button>' : ''}
+                            ${t.status !== 'done' ? '<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();moveTask(\''+t.id+'\',\''+(t.status === 'todo' ? 'in_progress' : 'done')+'\')">Next</button>' : ''}
+                            <button class="btn btn-ghost btn-sm" style="margin-left:auto;color:var(--accent)" onclick="event.stopPropagation();deleteTask('${t.id}')">Del</button>
+                        </div>
+                    </div>`;
+                }).join('')}
+            </div>
+        `).join('');
+    } catch (err) {
+        kanbanEl.innerHTML = '<div class="error-banner show" style="display:block"><p>Could not load tasks: '+err.message+'</p><p style="margin-top:8px;color:var(--text-secondary);font-size:11px">If the dashboard_tasks table doesn\'t exist yet, run the CREATE TABLE SQL in your Supabase SQL Editor.</p></div>';
+    }
+};
+TAB_LOADERS['tasks'] = wrappedLoadTasks;
+
+// ============================================================
+// INIT
+// ============================================================
+function init() {
+    // Set default date range to this month
+    const range = getDateRange('this_month');
+    state.dateStart = range.start;
+    state.dateEnd = range.end;
+    document.getElementById('dateStart').value = range.start;
+    document.getElementById('dateEnd').value = range.end;
+
+    // Load command center
+    loadTab('command-center');
+
+    // Auto-refresh every 5 minutes
+    setInterval(() => loadTab(state.activeTab), 300000);
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
 </body>
 </html>
