@@ -121,7 +121,7 @@ tr:hover td{background:rgba(255,255,255,0.02)}
 .badge-yellow{background:rgba(255,165,2,0.12);color:var(--yellow);border:1px solid rgba(255,165,2,0.2)}
 .badge-red{background:rgba(255,71,87,0.12);color:#ff6b7a;border:1px solid rgba(255,71,87,0.2)}
 .badge-blue{background:rgba(204,34,34,0.15);color:var(--cyan);border:1px solid rgba(204,34,34,0.25)}
-.badge-purple{background:rgba(177,182,254,0.1);color:var(--purple);border:1px solid rgba(177,182,254,0.2)}
+.badge-purple{background:rgba(204,34,34,0.1);color:var(--purple);border:1px solid rgba(204,34,34,0.2)}
 
 /* Skeleton Shimmer */
 @keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
@@ -1095,7 +1095,7 @@ async function loadClosers() {
         // Radar chart with avg scores across all closers
         const labels = ['Rapport','Discovery','Pain Building','Objection Handling','Close Strength','Revenue Protection'];
         const datasets = Object.entries(byCloser).map(([name, data], i) => {
-            const colors = ['rgba(204,34,34,','rgba(16,202,240,','rgba(33,150,243,','rgba(177,182,254,','rgba(21,182,209,','rgba(31,161,254,'];
+            const colors = ['rgba(204,34,34,','rgba(232,53,53,','rgba(255,76,76,','rgba(180,40,40,','rgba(255,100,100,','rgba(150,25,25,'];
             const color = colors[i % colors.length];
             return {
                 label: capitalize(name),
@@ -1383,12 +1383,12 @@ function renderRevenueTrendChart(canvasId, deals) {
             datasets: [{
                 label: 'Revenue',
                 data: sorted.map(([,v]) => v),
-                borderColor: 'rgba(16,202,240,0.9)',
+                borderColor: 'rgba(232,53,53,0.9)',
                 backgroundColor: 'rgba(204,34,34,0.15)',
                 fill: true,
                 tension: 0.4,
                 pointRadius: 4,
-                pointBackgroundColor: 'rgba(16,202,240,1)',
+                pointBackgroundColor: 'rgba(232,53,53,1)',
                 pointBorderColor: 'rgba(204,34,34,0.4)',
                 pointBorderWidth: 2
             }]
@@ -1423,7 +1423,7 @@ function renderPipelineChart(canvasId, stages) {
             datasets: [{
                 label: 'Prospects',
                 data: labels.map(l => stages[l]),
-                backgroundColor: labels.map(l => colors[l] || '#5b7fff'),
+                backgroundColor: labels.map(l => colors[l] || '#CC2222'),
                 borderRadius: 6
             }]
         },
@@ -1471,7 +1471,7 @@ function renderWebinarChart(webData) {
             labels: sorted.map(w => fmtDate(w.logged_date)),
             datasets: [
                 { label: 'Registrants', data: sorted.map(w => safeNum(w.registrants)), backgroundColor: 'rgba(204,34,34,0.5)', borderRadius: 4, borderColor: 'rgba(204,34,34,0.8)', borderWidth: 1 },
-                { label: 'Attendees', data: sorted.map(w => safeNum(w.attendees)), backgroundColor: 'rgba(16,202,240,0.5)', borderRadius: 4, borderColor: 'rgba(16,202,240,0.8)', borderWidth: 1 }
+                { label: 'Attendees', data: sorted.map(w => safeNum(w.attendees)), backgroundColor: 'rgba(232,53,53,0.5)', borderRadius: 4, borderColor: 'rgba(232,53,53,0.8)', borderWidth: 1 }
             ]
         },
         options: CHART_DEFAULTS
@@ -1491,7 +1491,7 @@ function renderAdSpendChart(adsData, dealsData) {
             labels: sorted.map(a => fmtDate(a.week_start)),
             datasets: [
                 { label: 'Ad Spend', data: sorted.map(a => safeNum(a.spend)), backgroundColor: 'rgba(204,34,34,0.5)', borderRadius: 4, borderColor: 'rgba(204,34,34,0.8)', borderWidth: 1 },
-                { label: 'Clicks', data: sorted.map(a => safeNum(a.clicks)), backgroundColor: 'rgba(16,202,240,0.5)', borderRadius: 4, borderColor: 'rgba(16,202,240,0.8)', borderWidth: 1 }
+                { label: 'Clicks', data: sorted.map(a => safeNum(a.clicks)), backgroundColor: 'rgba(232,53,53,0.5)', borderRadius: 4, borderColor: 'rgba(232,53,53,0.8)', borderWidth: 1 }
             ]
         },
         options: {
