@@ -697,7 +697,6 @@ const TEAM_TABS = {
             { key: 'calls_booked', label: 'Calls Booked', type: 'number' },
             { key: 'no_shows', label: 'No Shows', type: 'number' },
             { key: 'deals_closed', label: 'Deals Closed', type: 'number' },
-            { key: 'close_rate_pct', label: 'Close Rate %', type: 'number', step: '0.01' },
             { key: 'revenue_collected', label: 'Revenue', type: 'number', step: '0.01' },
             { key: 'notes', label: 'Notes', type: 'textarea' }
         ]
@@ -1538,6 +1537,11 @@ async function submitEntry(e) {
         if (v === '') return;
         data[f.key] = f.type === 'number' ? Number(v) : v;
     });
+
+    // Auto-calculate close rate for closers
+    if (cfg.table === 'closer_logs' && data.calls_taken && data.deals_closed) {
+        data.close_rate_pct = Number(((data.deals_closed / data.calls_taken) * 100).toFixed(1));
+    }
 
     try {
         await apiInsert(cfg.table, data);
