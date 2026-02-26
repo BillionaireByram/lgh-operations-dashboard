@@ -691,7 +691,7 @@ const TEAM_TABS = {
             { key: 'notes', label: 'Notes' }
         ],
         formFields: [
-            { key: 'team_member', label: 'Closer Name', type: 'text', required: true },
+            { key: 'team_member', label: 'Closer Name', type: 'select', required: true, options: ['AK', 'Derrick Furlow'] },
             { key: 'week_of', label: 'Date', type: 'date', default: 'today' },
             { key: 'calls_taken', label: 'Calls Taken', type: 'number' },
             { key: 'calls_booked', label: 'Calls Booked', type: 'number' },
@@ -896,10 +896,12 @@ async function loadRevenue() {
     const totalValue = deals.reduce((s, d) => s + safeNum(d.total_value || d.cash_collected), 0);
     const avgDeal = deals.length > 0 ? totalRev / deals.length : 0;
 
-    // By closer
+    // By closer (with name normalization)
+    const CLOSER_MAP = { 'andrew (ak)': 'AK', 'andrew (a.k.)': 'AK', 'ak': 'AK', 'andrew': 'AK', 'derrick furlow': 'Derrick Furlow', 'derrick': 'Derrick Furlow', 'unknown': null };
+    const mapCloser = (name) => { const key = (name || '').toLowerCase().trim(); return CLOSER_MAP[key] !== undefined ? CLOSER_MAP[key] : name; };
     const byCloser = {};
     deals.forEach(d => {
-        const c = d.closer || 'Unknown';
+        const c = mapCloser(d.closer) || 'Unknown';
         if (!byCloser[c]) byCloser[c] = { rev: 0, count: 0 };
         byCloser[c].rev += safeNum(d.cash_collected);
         byCloser[c].count++;
@@ -1076,11 +1078,15 @@ async function loadClosers() {
             return;
         }
 
+        // Normalize closer names
+        const CLOSER_NAMES = { 'andrew (ak)': 'AK', 'andrew (a.k.)': 'AK', 'ak': 'AK', 'andrew': 'AK', 'derrick furlow': 'Derrick Furlow', 'derrick': 'Derrick Furlow', 'unknown': null };
+        const normCloser = (name) => { const key = (name || '').toLowerCase().trim(); return CLOSER_NAMES[key] !== undefined ? CLOSER_NAMES[key] : name; };
+
         // Aggregate by closer
         const byCloser = {};
         const scoreFields = ['score_rapport','score_discovery','score_pain_building','score_objection_handling','score_close_strength','score_revenue_protection'];
         reviews.forEach(r => {
-            const c = r.closer || 'Unknown';
+            const c = normCloser(r.closer) || 'Unknown';
             if (!byCloser[c]) byCloser[c] = { count: 0, scores: {} };
             byCloser[c].count++;
             scoreFields.forEach(f => {
@@ -1516,6 +1522,10 @@ function openFormModal(tabKey) {
     const container = document.getElementById('formFields');
     container.innerHTML = cfg.formFields.map(f => {
         const val = f.default === 'today' ? todayStr() : (f.default || '');
+        if (f.type === 'select' && f.options) {
+            const opts = f.options.map(o => `<option value="${o}"${o === val ? ' selected' : ''}>${o}</option>`).join('');
+            return `<div class="form-group"><label>${f.label}${f.required ? ' *' : ''}</label><select name="${f.key}" ${f.required ? 'required' : ''}><option value="">Select...</option>${opts}</select></div>`;
+        }
         if (f.type === 'textarea') {
             return `<div class="form-group"><label>${f.label}</label><textarea name="${f.key}" placeholder="${f.label}">${val}</textarea></div>`;
         }
