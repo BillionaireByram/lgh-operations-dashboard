@@ -630,6 +630,8 @@ const TEAM_TABS = {
         columns: [
             { key: 'date', label: 'Date', fmt: 'date' },
             { key: 'team_member', label: 'Member' },
+            { key: 'clock_in', label: 'Clock In' },
+            { key: 'clock_out', label: 'Clock Out' },
             { key: 'calls_made', label: 'Calls', fmt: 'num' },
             { key: 'conversations_reached', label: 'Convos', fmt: 'num' },
             { key: 'training_registrations_live', label: 'Regs', fmt: 'num' },
@@ -639,6 +641,8 @@ const TEAM_TABS = {
         formFields: [
             { key: 'team_member', label: 'Team Member', type: 'text', required: true },
             { key: 'date', label: 'Date', type: 'date', default: 'today' },
+            { key: 'clock_in', label: 'Clock In', type: 'time', required: true },
+            { key: 'clock_out', label: 'Clock Out', type: 'time', required: true },
             { key: 'calls_made', label: 'Calls Made', type: 'number' },
             { key: 'conversations_reached', label: 'Conversations', type: 'number' },
             { key: 'training_registrations_live', label: 'Training Regs', type: 'number' },
@@ -657,6 +661,8 @@ const TEAM_TABS = {
         columns: [
             { key: 'date', label: 'Date', fmt: 'date' },
             { key: 'team_member', label: 'Member' },
+            { key: 'clock_in', label: 'Clock In' },
+            { key: 'clock_out', label: 'Clock Out' },
             { key: 'webbi_leads_contacted', label: 'Leads', fmt: 'num' },
             { key: 'calls_booked', label: 'Booked', fmt: 'num' },
             { key: 'calls_showed', label: 'Showed', fmt: 'num' },
@@ -666,6 +672,8 @@ const TEAM_TABS = {
         formFields: [
             { key: 'team_member', label: 'Team Member', type: 'text', required: true },
             { key: 'date', label: 'Date', type: 'date', default: 'today' },
+            { key: 'clock_in', label: 'Clock In', type: 'time', required: true },
+            { key: 'clock_out', label: 'Clock Out', type: 'time', required: true },
             { key: 'webbi_leads_contacted', label: 'Leads Contacted', type: 'number' },
             { key: 'calls_booked', label: 'Calls Booked', type: 'number' },
             { key: 'calls_showed', label: 'Calls Showed', type: 'number' },
