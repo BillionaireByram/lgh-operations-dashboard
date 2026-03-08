@@ -1,1792 +1,1806 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LGH Operations OS</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-<style>
-/* Deploy: 2026-02-26 14:39 EST — Flat Dark Theme */
-:root {
-    /* LGH Brand — Flat Dark + Crimson Red */
-    --bg-primary: #0a0a0a;
-    --bg-secondary: #161616;
-    --bg-card: #141414;
-    --bg-card-hover: #1a1a1a;
-    --bg-input: #1a1a1a;
-    --text-primary: #f0f0f0;
-    --text-secondary: #a0a0a0;
-    --text-muted: #666;
-    --accent: #CC2222;
-    --accent-hover: #E83535;
-    --accent-glow: rgba(204,34,34,0.3);
-    --green: #2ed573;
-    --yellow: #ffa502;
-    --blue: #CC2222;
-    --purple: #FFB3B3;
-    --cyan: #E83535;
-    --electric: #CC2222;
-    --steel: #CC2222;
-    --sky: #D43030;
-    --glass-bg: transparent;
-    --glass-border: transparent;
-    --glass-shadow: none;
-    --glass-glow: none;
-    --border: #222;
-    --gradient-btn: linear-gradient(135deg, #CC2222 0%, #E83535 100%);
-    --gradient-btn-hover: linear-gradient(135deg, #E83535 0%, #FF4C4C 100%);
-    --radius: 10px;
-    --radius-sm: 6px;
-    --radius-lg: 14px;
-}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-primary);color:var(--text-primary);min-height:100vh;line-height:1.5;background-image:radial-gradient(ellipse at 50% 0%,rgba(204,34,34,0.12) 0%,transparent 40%)}
-a{color:var(--cyan);text-decoration:none}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LGH Operations Command Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --red: #E31837;
+            --red-dark: #B8132C;
+            --red-glow: rgba(227,24,55,0.35);
+            --black: #0A0A0A;
+            --gold: #f9cf25;
+            --green: #22c55e;
+            --white: #ffffff;
+            --muted: rgba(255,255,255,0.45);
+            --card-bg: rgba(255,255,255,0.03);
+            --card-border: rgba(255,255,255,0.08);
+        }
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--black);
+            color: var(--white);
+            min-height: 100vh;
+        }
+        nav {
+            background: rgba(10,10,10,0.97);
+            border-bottom: 1px solid rgba(227,24,55,0.25);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+        }
+        .nav-inner {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+            gap: 1rem;
+        }
+        .nav-brand {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.35rem;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .nav-brand .accent {
+            color: var(--red);
+        }
+        .live-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--red);
+            animation: blink 2s infinite;
+            display: inline-block;
+        }
+        @keyframes blink {
+            0%,100%{opacity:1;box-shadow:0 0 0 0 var(--red-glow)}
+            50%{opacity:.6;box-shadow:0 0 0 5px transparent}
+        }
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        .last-upd {
+            color: var(--muted);
+            font-size: 0.7rem;
+        }
+        .period-tabs {
+            display: flex;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            padding: 3px;
+            gap: 2px;
+        }
+        .ptab {
+            padding: 0.28rem 0.85rem;
+            border-radius: 6px;
+            border: none;
+            background: transparent;
+            color: var(--muted);
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all .2s;
+            font-family: 'Inter',sans-serif;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+        }
+        .ptab.active {
+            background: var(--red);
+            color: #fff;
+            box-shadow: 0 0 12px var(--red-glow);
+        }
+        .ptab:hover:not(.active) {
+            color: #fff;
+            background: rgba(255,255,255,.08);
+        }
+        .btn {
+            padding: .4rem 1rem;
+            border-radius: 8px;
+            border: none;
+            font-size: .78rem;
+            font-weight: 800;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            font-family: 'Inter',sans-serif;
+            transition: all .2s;
+        }
+        .btn-red {
+            background: linear-gradient(135deg,#E31837,#B8132C);
+            color: #fff;
+            box-shadow: 0 0 16px var(--red-glow);
+        }
+        .btn-red:hover {
+            box-shadow: 0 0 26px rgba(227,24,55,.55);
+            transform: translateY(-1px);
+        }
+        .btn-ghost {
+            background: rgba(255,255,255,.06);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,.12);
+        }
+        .btn-ghost:hover {
+            background: rgba(255,255,255,.1);
+        }
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 0 1.5rem 3rem;
+        }
+        section {
+            margin-top: 2.25rem;
+        }
+        .sec-hdr {
+            font-family: 'Bebas Neue',sans-serif;
+            font-size: 1.45rem;
+            letter-spacing: .05em;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+        }
+        .sec-hdr::after {
+            content:'';
+            flex:1;
+            height:1px;
+            background: linear-gradient(to right, rgba(227,24,55,.35), transparent);
+        }
+        .badge-red {
+            font-family:'Inter',sans-serif;
+            font-size:.68rem;
+            font-weight:700;
+            background:rgba(227,24,55,.12);
+            border:1px solid rgba(227,24,55,.3);
+            color:var(--red);
+            padding:.18rem .5rem;
+            border-radius:4px;
+            text-transform:uppercase;
+            letter-spacing:.04em;
+        }
+        .hero-grid {
+            display: grid;
+            grid-template-columns: repeat(5,1fr);
+            gap: 1rem;
+            margin-bottom: .875rem;
+        }
+        .hero-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 1.5rem 1.25rem;
+            text-align: center;
+            transition: border-color .2s, transform .2s;
+        }
+        .hero-card:hover {
+            border-color: rgba(227,24,55,.45);
+            transform: translateY(-2px);
+        }
+        .hc-label {
+            font-size: .68rem;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: var(--muted);
+            margin-bottom: .6rem;
+        }
+        .hc-value {
+            font-family: 'Bebas Neue',sans-serif;
+            font-size: 3rem;
+            line-height: 1;
+        }
+        .hc-sub {
+            font-size: .7rem;
+            color: var(--muted);
+            margin-top: .35rem;
+        }
+        .hero-card.accent {
+            border-color: rgba(227,24,55,.35);
+            background: rgba(227,24,55,.05);
+        }
+        .hero-card.accent .hc-value {
+            color: var(--red);
+        }
+        .hero-card.gold {
+            border-color: rgba(249,207,37,.25);
+        }
+        .hero-card.gold .hc-value {
+            color: var(--gold);
+        }
+        .rev-bar {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 1.1rem 1.4rem;
+        }
+        .rev-bar-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: .65rem;
+        }
+        .rev-bar-label {
+            font-size: .75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            color: var(--muted);
+        }
+        .rev-bar-vals .cur {
+            font-weight: 700;
+        }
+        .rev-bar-vals .tgt {
+            color: var(--muted);
+        }
+        .rev-bar-vals .pct {
+            color: var(--gold);
+            font-weight: 700;
+            margin-left: .4rem;
+        }
+        .prog-track {
+            height: 7px;
+            background: rgba(255,255,255,.07);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .prog-fill {
+            height: 100%;
+            background: linear-gradient(to right,var(--red),var(--red-dark));
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+        .dept-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill,minmax(270px,1fr));
+            gap: 1rem;
+        }
+        .dept-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 1.25rem;
+            transition: border-color .2s;
+        }
+        .dept-card:hover {
+            border-color: rgba(227,24,55,.35);
+        }
+        .dept-title {
+            font-family: 'Bebas Neue',sans-serif;
+            font-size: 1.05rem;
+            letter-spacing: .05em;
+            margin-bottom: .875rem;
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+        }
+        .dept-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: .5rem;
+        }
+        .ds-label {
+            font-size: .63rem;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: var(--muted);
+            margin-bottom: .15rem;
+        }
+        .ds-value {
+            font-size: 1.35rem;
+            font-weight: 700;
+        }
+        .dv-red { color: var(--red); }
+        .dv-gold { color: var(--gold); }
+        .dv-green { color: var(--green); }
+        .span2 { grid-column: 1 / -1; }
+        .fin-grid {
+            display: grid;
+            grid-template-columns: repeat(4,1fr);
+            gap: 1rem;
+        }
+        .fin-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 1.25rem;
+            text-align: center;
+            transition: border-color .2s;
+        }
+        .fin-card:hover {
+            border-color: rgba(227,24,55,.35);
+        }
+        .fc-label {
+            font-size: .68rem;
+            text-transform: uppercase;
+            letter-spacing: .07em;
+            color: var(--muted);
+            margin-bottom: .5rem;
+        }
+        .fc-value {
+            font-family: 'Bebas Neue',sans-serif;
+            font-size: 2.1rem;
+        }
+        .fc-sub {
+            font-size: .7rem;
+            color: var(--muted);
+            margin-top: .25rem;
+        }
+        .constraint-btns {
+            display: flex;
+            gap: .65rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+        .cbtn {
+            padding: .55rem 1.1rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,.1);
+            background: rgba(255,255,255,.04);
+            color: var(--muted);
+            font-size: .82rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all .2s;
+            font-family: 'Inter',sans-serif;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+        }
+        .cbtn:hover {
+            border-color: var(--red);
+            color: #fff;
+        }
+        .cbtn.active {
+            background: rgba(227,24,55,.14);
+            border-color: var(--red);
+            color: #fff;
+            box-shadow: 0 0 12px var(--red-glow);
+        }
+        .constraint-active {
+            background: rgba(227,24,55,.07);
+            border: 1px solid rgba(227,24,55,.25);
+            border-radius: 12px;
+            padding: .875rem 1.25rem;
+            display: none;
+            align-items: center;
+            gap: .75rem;
+        }
+        .ca-label {
+            font-size: .68rem;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: var(--muted);
+        }
+        .ca-value {
+            font-family: 'Bebas Neue',sans-serif;
+            font-size: 1.25rem;
+            color: var(--red);
+        }
+        .constraint-note {
+            color: var(--muted);
+            font-size: .75rem;
+            margin-top: .6rem;
+        }
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill,minmax(148px,1fr));
+            gap: .75rem;
+        }
+        .team-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            transition: border-color .2s;
+            cursor: pointer;
+            position: relative;
+        }
+        .team-card:hover {
+            border-color: rgba(227,24,55,.35);
+        }
+        .team-card .delete-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,.1);
+            background: rgba(255,255,255,.05);
+            color: var(--muted);
+            font-size: .7rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .2s;
+            opacity: 0;
+            z-index: 2;
+        }
+        .team-card:hover .delete-btn {
+            opacity: 1;
+        }
+        .team-card .delete-btn:hover {
+            background: rgba(227,24,55,.2);
+            border-color: var(--red);
+            color: var(--red);
+        }
+        .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg,var(--red),var(--red-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: .88rem;
+            margin: 0 auto .55rem;
+        }
+        .t-name {
+            font-size: .82rem;
+            font-weight: 600;
+        }
+        .t-role {
+            font-size: .67rem;
+            color: var(--muted);
+            margin-top: .15rem;
+        }
+        .t-contact {
+            font-size: .62rem;
+            color: rgba(255,255,255,.28);
+            margin-top: .25rem;
+        }
+        .sdot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--green);
+            margin-right: 3px;
+            vertical-align: middle;
+        }
+        .sdot.off {
+            background: rgba(255,255,255,.2);
+        }
+        .tasks-hdr {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .tasks-hdr .sec-hdr {
+            margin-bottom: 0;
+            flex: 1;
+        }
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: .5rem;
+        }
+        .task-row {
+            display: flex;
+            align-items: center;
+            gap: .875rem;
+            padding: .8rem 1rem;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            transition: border-color .2s;
+        }
+        .task-row:hover {
+            border-color: rgba(227,24,55,.25);
+        }
+        .task-bar {
+            width: 4px;
+            height: 30px;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+        .tb-high { background: var(--red); }
+        .tb-medium { background: var(--gold); }
+        .tb-low { background: rgba(255,255,255,.2); }
+        .task-status {
+            padding: .18rem .5rem;
+            border-radius: 6px;
+            font-size: .63rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all .2s;
+            border: 1px solid;
+        }
+        .ts-pending {
+            background: rgba(227,24,55,.12);
+            color: var(--red);
+            border-color: rgba(227,24,55,.3);
+        }
+        .ts-in_progress {
+            background: rgba(249,207,37,.12);
+            color: var(--gold);
+            border-color: rgba(249,207,37,.3);
+        }
+        .ts-done {
+            background: rgba(34,197,94,.12);
+            color: var(--green);
+            border-color: rgba(34,197,94,.3);
+        }
+        .task-title {
+            flex: 1;
+            font-size: .87rem;
+            font-weight: 500;
+        }
+        .task-who {
+            font-size: .7rem;
+            color: var(--muted);
+        }
+        .task-due {
+            font-size: .68rem;
+            color: var(--muted);
+            white-space: nowrap;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.87);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .overlay.open {
+            display: flex;
+        }
+        .modal {
+            background: #111;
+            border: 1px solid rgba(227,24,55,.28);
+            border-radius: 20px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 520px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal.modal-wide {
+            max-width: 720px;
+        }
+        .modal-title {
+            font-family: 'Bebas Neue',sans-serif;
+            font-size: 1.55rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-x {
+            background: none;
+            border: none;
+            color: var(--muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: .25rem;
+        }
+        .modal-x:hover {
+            color: #fff;
+        }
+        .fg {
+            margin-bottom: .875rem;
+        }
+        .fl {
+            font-size: .72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            color: var(--muted);
+            display: block;
+            margin-bottom: .35rem;
+        }
+        .fc {
+            width: 100%;
+            background: rgba(255,255,255,.05);
+            border: 1px solid rgba(255,255,255,.12);
+            border-radius: 8px;
+            padding: .58rem .85rem;
+            color: #fff;
+            font-size: .87rem;
+            font-family: 'Inter',sans-serif;
+            outline: none;
+            transition: border-color .2s;
+        }
+        .fc:focus {
+            border-color: var(--red);
+        }
+        .fc option {
+            background: #1a1a1a;
+        }
+        .fg2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: .72rem;
+            background: linear-gradient(135deg,var(--red),var(--red-dark));
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-weight: 800;
+            font-size: .88rem;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            cursor: pointer;
+            font-family: 'Inter',sans-serif;
+            box-shadow: 0 0 20px var(--red-glow);
+            margin-top: .5rem;
+            transition: all .2s;
+        }
+        .btn-submit:hover:not(:disabled) {
+            box-shadow: 0 0 32px rgba(227,24,55,.55);
+            transform: translateY(-1px);
+        }
+        .btn-submit:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+        .form-msg {
+            font-size: .78rem;
+            margin-top: .5rem;
+            text-align: center;
+            min-height: 1.2em;
+        }
+        .msg-ok { color: var(--green); }
+        .msg-err { color: var(--red); }
+        .msg-warn { color: var(--gold); }
+        .empty {
+            color: var(--muted);
+            font-size: .83rem;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .spinning {
+            color: var(--muted);
+            font-size: .83rem;
+            text-align: center;
+            padding: 2rem;
+            animation: fade 1.4s infinite;
+        }
+        @keyframes fade {
+            0%,100%{opacity:1}
+            50%{opacity:.35}
+        }
 
-/* Scrollbar */
-::-webkit-scrollbar{width:6px;height:6px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:#333;border-radius:3px}
-::-webkit-scrollbar-thumb:hover{background:#444}
+        /* ─── Member Detail Modal ─── */
+        .member-detail-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,.08);
+        }
+        .member-detail-header .avatar {
+            margin: 0;
+            width: 56px;
+            height: 56px;
+            font-size: 1.1rem;
+        }
+        .member-detail-info .md-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+        .member-detail-info .md-role {
+            font-size: .78rem;
+            color: var(--muted);
+            margin-top: .15rem;
+        }
+        .member-detail-info .md-phone {
+            font-size: .72rem;
+            color: rgba(255,255,255,.3);
+            margin-top: .15rem;
+        }
+        .kpi-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: .75rem;
+            margin-bottom: 1.5rem;
+        }
+        .kpi-item {
+            background: rgba(255,255,255,.04);
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 10px;
+            padding: .75rem;
+            text-align: center;
+        }
+        .kpi-item .kpi-val {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.6rem;
+            color: var(--red);
+        }
+        .kpi-item .kpi-lbl {
+            font-size: .62rem;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: var(--muted);
+            margin-top: .15rem;
+        }
+        .report-list-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.1rem;
+            letter-spacing: .04em;
+            margin-bottom: .75rem;
+            color: var(--muted);
+        }
+        .report-entry {
+            background: rgba(255,255,255,.03);
+            border: 1px solid rgba(255,255,255,.06);
+            border-radius: 10px;
+            padding: .85rem 1rem;
+            margin-bottom: .5rem;
+        }
+        .report-entry-date {
+            font-size: .7rem;
+            color: var(--gold);
+            font-weight: 700;
+            margin-bottom: .4rem;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+        .report-entry-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .5rem .85rem;
+        }
+        .report-entry-stats span {
+            font-size: .78rem;
+            color: rgba(255,255,255,.7);
+        }
+        .report-entry-stats span strong {
+            color: #fff;
+        }
+        .btn-add-member {
+            padding: .32rem .85rem;
+            border-radius: 8px;
+            border: 1px solid rgba(227,24,55,.35);
+            background: rgba(227,24,55,.1);
+            color: var(--red);
+            font-size: .72rem;
+            font-weight: 800;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            font-family: 'Inter',sans-serif;
+            transition: all .2s;
+            white-space: nowrap;
+        }
+        .btn-add-member:hover {
+            background: rgba(227,24,55,.2);
+            box-shadow: 0 0 12px var(--red-glow);
+        }
 
-/* Header */
-.header{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;background:linear-gradient(180deg,#1a1210 0%,#111 100%);border-bottom:1px solid #222;position:sticky;top:0;z-index:100}
-.logo{font-size:18px;font-weight:700;letter-spacing:-0.03em}
-.logo span{background:var(--gradient-btn);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.header-right{display:flex;align-items:center;gap:12px}
-.last-updated{font-size:12px;color:var(--text-muted)}
-
-/* Buttons */
-.btn{border:none;padding:8px 16px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit;display:inline-flex;align-items:center;gap:6px}
-.btn-primary{background:var(--gradient-btn);color:#fff}
-.btn-primary:hover{background:var(--gradient-btn-hover);transform:translateY(-1px)}
-.btn-ghost{background:#1a1a1a;color:var(--text-secondary);border:1px solid #333}
-.btn-ghost:hover{background:#222;color:var(--text-primary);border-color:#444}
-.btn-sm{padding:5px 10px;font-size:11px}
-.btn-success{background:linear-gradient(135deg,#2ed573,#E83535);color:#000}
-.btn-warning{background:var(--yellow);color:#000}
-.btn-danger{background:linear-gradient(135deg,#ff4757,#ff6b7a);color:#fff}
-
-/* Navigation */
-.nav{display:flex;gap:2px;padding:8px 24px;background:#111;border-bottom:1px solid #222;overflow-x:auto;-webkit-overflow-scrolling:touch}
-.nav::-webkit-scrollbar{display:none}
-.nav-btn{padding:8px 16px;border:none;background:transparent;color:var(--text-muted);font-size:12px;font-weight:500;cursor:pointer;border-radius:20px;white-space:nowrap;transition:all .2s;font-family:inherit;border:1px solid transparent}
-.nav-btn:hover{color:var(--text-secondary);background:#1a1a1a}
-.nav-btn.active{color:#fff;background:var(--accent);border:1px solid var(--accent);border-radius:20px}
-
-/* Controls Bar */
-.controls{display:flex;justify-content:space-between;align-items:center;padding:12px 24px;gap:12px;flex-wrap:wrap}
-.date-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.date-preset{padding:6px 12px;border:1px solid #333;background:transparent;color:var(--text-secondary);border-radius:20px;font-size:11px;cursor:pointer;font-family:inherit;transition:all .2s}
-.date-preset:hover{background:#1a1a1a;color:var(--text-primary);border-color:#444}
-.date-preset.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-input[type="date"]{background:#1a1a1a;border:1px solid #333;color:var(--text-primary);padding:6px 10px;border-radius:var(--radius-sm);font-size:12px;font-family:inherit}
-input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.5}
-
-/* Main Content */
-.main{padding:16px 24px 40px;max-width:1440px;margin:0 auto}
-.tab-content{display:none}
-.tab-content.active{display:block}
-
-/* Cards & KPIs */
-.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:20px}
-.kpi-card{background:#141414;border:1px solid #222;border-radius:var(--radius);padding:18px;transition:all .25s}
-.kpi-card:hover{background:#1a1a1a;border-color:#333;transform:translateY(-1px)}
-.kpi-label{font-size:11px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px}
-.kpi-value{font-size:28px;font-weight:700;letter-spacing:-0.03em;line-height:1.1}
-.kpi-sub{font-size:11px;color:var(--text-muted);margin-top:4px}
-.kpi-value.green{color:var(--green)}
-.kpi-value.red{color:var(--accent)}
-.kpi-value.blue{color:var(--blue)}
-.kpi-value.yellow{color:var(--yellow)}
-.kpi-value.purple{color:var(--purple)}
-.kpi-value.cyan{color:var(--cyan)}
-
-/* Section */
-.section{background:#111;border:1px solid #222;border-radius:var(--radius);padding:20px;margin-bottom:16px}
-.section-title{font-size:14px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
-.section-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-
-/* Tables */
-.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
-table{width:100%;border-collapse:collapse;font-size:12px}
-th{text-align:left;padding:10px 12px;color:var(--text-muted);font-weight:500;text-transform:uppercase;letter-spacing:0.05em;font-size:10px;border-bottom:1px solid var(--border);white-space:nowrap}
-td{padding:10px 12px;border-bottom:1px solid #1a1a1a;white-space:nowrap}
-tr:hover td{background:#111}
-.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600}
-.badge-green{background:rgba(46,213,115,0.12);color:var(--green);border:1px solid rgba(46,213,115,0.2)}
-.badge-yellow{background:rgba(255,165,2,0.12);color:var(--yellow);border:1px solid rgba(255,165,2,0.2)}
-.badge-red{background:rgba(255,71,87,0.12);color:#ff6b7a;border:1px solid rgba(255,71,87,0.2)}
-.badge-blue{background:rgba(204,34,34,0.12);color:var(--cyan);border:1px solid rgba(204,34,34,0.2)}
-.badge-purple{background:rgba(204,34,34,0.08);color:var(--purple);border:1px solid rgba(204,34,34,0.15)}
-
-/* Skeleton Shimmer */
-@keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
-.skeleton{background:linear-gradient(90deg,#141414 25%,#1a1a1a 50%,#141414 75%);background-size:800px 100%;animation:shimmer 1.5s ease-in-out infinite;border-radius:var(--radius-sm);border:1px solid #222}
-.skel-kpi{height:100px;border-radius:var(--radius)}
-.skel-table{height:200px;border-radius:var(--radius)}
-.skel-chart{height:250px;border-radius:var(--radius)}
-.skel-line{height:14px;margin-bottom:8px;width:60%}
-
-/* Empty & Error States */
-.empty-state{text-align:center;padding:40px 20px;color:var(--text-muted)}
-.empty-state h3{font-size:16px;margin-bottom:6px;color:var(--text-secondary)}
-.empty-state p{font-size:13px}
-.error-banner{background:rgba(255,71,87,0.08);border:1px solid rgba(255,71,87,0.2);border-radius:var(--radius-sm);padding:10px 16px;color:#ff6b7a;font-size:12px;margin-bottom:12px;display:none}
-.error-banner.show{display:flex;align-items:center;gap:8px}
-
-/* Charts */
-.chart-container{position:relative;height:260px;margin-top:8px}
-.chart-container canvas{max-height:260px}
-
-/* Modal */
-.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:200;align-items:center;justify-content:center}
-.modal-overlay.show{display:flex}
-.modal{background:#161616;border:1px solid #333;border-radius:var(--radius-lg);padding:24px;width:90%;max-width:480px;max-height:90vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.5)}
-.modal h2{font-size:18px;margin-bottom:16px;font-weight:600}
-.form-group{margin-bottom:12px}
-.form-group label{display:block;font-size:11px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px}
-.form-group input,.form-group select,.form-group textarea{width:100%;background:#1a1a1a;border:1px solid #333;color:var(--text-primary);padding:8px 12px;border-radius:var(--radius-sm);font-size:13px;font-family:inherit;transition:border-color .2s}
-.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--accent)}
-.form-group textarea{min-height:60px;resize:vertical}
-.form-group select option{background:#161616}
-.form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
-
-/* Kanban */
-.kanban{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
-.kanban-col{background:#111;border:1px solid #222;border-radius:var(--radius);padding:12px;min-height:200px}
-.kanban-col-title{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
-.kanban-col-title .count{background:#1a1a1a;padding:2px 8px;border-radius:10px;font-size:10px}
-.kanban-card{background:#141414;border:1px solid #222;border-radius:var(--radius-sm);padding:12px;margin-bottom:8px;cursor:pointer;transition:all .2s}
-.kanban-card:hover{background:#1a1a1a;border-color:#333}
-.kanban-card h4{font-size:13px;font-weight:500;margin-bottom:4px}
-.kanban-card p{font-size:11px;color:var(--text-muted)}
-.kanban-card .meta{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
-.priority-dot{width:6px;height:6px;border-radius:50%;display:inline-block}
-.priority-low{background:var(--steel)}
-.priority-medium{background:var(--yellow)}
-.priority-high{background:#ff4757}
-.priority-urgent{background:#ff0040;box-shadow:0 0 6px rgba(255,0,64,0.4)}
-
-/* Pipeline Kanban */
-.pipeline-card{background:#141414;border:1px solid #222;border-radius:var(--radius-sm);padding:10px;margin-bottom:6px;font-size:12px;transition:all .2s}
-.pipeline-card:hover{border-color:#333}
-.pipeline-card strong{font-weight:500}
-.pipeline-card .detail{color:var(--text-muted);font-size:11px;margin-top:2px}
-
-/* Leaderboard */
-.leaderboard-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #1a1a1a}
-.leaderboard-rank{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:#1a1a1a;flex-shrink:0}
-.leaderboard-rank.gold{background:rgba(255,215,0,0.15);color:#ffd700}
-.leaderboard-rank.silver{background:rgba(192,192,192,0.15);color:#c0c0c0}
-.leaderboard-rank.bronze{background:rgba(205,127,50,0.15);color:#cd7f32}
-.leaderboard-info{flex:1;min-width:0}
-.leaderboard-name{font-size:13px;font-weight:500}
-.leaderboard-stats{font-size:11px;color:var(--text-muted)}
-.leaderboard-value{font-size:15px;font-weight:700;color:var(--green)}
-
-/* Responsive */
-@media(max-width:768px){
-    .header{padding:12px 16px}
-    .nav{padding:6px 16px}
-    .main{padding:12px 16px 32px}
-    .controls{padding:10px 16px}
-    .kpi-grid{grid-template-columns:repeat(2,1fr)}
-    .section-grid{grid-template-columns:1fr}
-    .kpi-value{font-size:22px}
-    .kanban{grid-template-columns:1fr}
-}
-@media(max-width:480px){
-    .kpi-grid{grid-template-columns:1fr 1fr;gap:8px}
-    .kpi-card{padding:12px}
-    .kpi-value{font-size:20px}
-}
-</style>
+        @media(max-width:900px) {
+            .hero-grid {
+                grid-template-columns: repeat(3,1fr);
+            }
+            .fin-grid {
+                grid-template-columns: repeat(2,1fr);
+            }
+        }
+        @media(max-width:600px) {
+            .hero-grid {
+                grid-template-columns: repeat(2,1fr);
+            }
+            .hero-grid .hero-card:last-child {
+                grid-column: 1/-1;
+            }
+            .fin-grid {
+                grid-template-columns: repeat(2,1fr);
+            }
+            .fg2 {
+                grid-template-columns: 1fr;
+            }
+            .last-upd {
+                display: none;
+            }
+            nav .nav-inner {
+                height: auto;
+                padding: .7rem 1rem;
+                flex-wrap: wrap;
+                gap: .5rem;
+            }
+        }
+    </style>
 </head>
 <body>
-
-<!-- Header -->
-<div class="header">
-    <div class="logo">LGH <span>Operations OS</span></div>
-    <div class="header-right">
-        <span class="last-updated" id="lastUpdated">Loading...</span>
-        <button class="btn btn-primary" onclick="refreshCurrentTab()">Refresh</button>
-    </div>
-</div>
-
-<!-- Navigation -->
-<nav class="nav" id="nav">
-    <button class="nav-btn active" data-tab="command-center">Command Center</button>
-    <button class="nav-btn" data-tab="revenue">Revenue</button>
-    <button class="nav-btn" data-tab="pipeline">Pipeline</button>
-    <button class="nav-btn" data-tab="routers">Routers</button>
-    <button class="nav-btn" data-tab="setters">Setters</button>
-    <button class="nav-btn" data-tab="closers">Closers</button>
-    <button class="nav-btn" data-tab="ai-webinar">AI & Webinar</button>
-    <button class="nav-btn" data-tab="ea">EA</button>
-    <button class="nav-btn" data-tab="ads-roas">Ads & ROAS</button>
-    <button class="nav-btn" data-tab="tasks">Tasks</button>
-</nav>
-
-<!-- Date Controls -->
-<div class="controls" id="dateControls">
-    <div class="date-controls">
-        <button class="date-preset" data-range="today">Today</button>
-        <button class="date-preset" data-range="yesterday">Yesterday</button>
-        <button class="date-preset" data-range="this_week">This Week</button>
-        <button class="date-preset" data-range="last_week">Last Week</button>
-        <button class="date-preset active" data-range="this_month">This Month</button>
-        <button class="date-preset" data-range="last_30">Last 30 Days</button>
-        <input type="date" id="dateStart" title="Start date">
-        <input type="date" id="dateEnd" title="End date">
-    </div>
-</div>
-
-<!-- Error Banner -->
-<div class="main">
-    <div class="error-banner" id="globalError"></div>
-
-    <!-- Tab: Command Center -->
-    <div class="tab-content active" id="tab-command-center">
-        <div class="kpi-grid" id="cc-kpis"></div>
-        <div class="section-grid">
-            <div class="section">
-                <div class="section-title">Revenue Trend</div>
-                <div class="chart-container"><canvas id="ccRevenueChart"></canvas></div>
+    <nav>
+        <div class="nav-inner">
+            <div class="nav-brand">
+                <span class="live-dot"></span>
+                <span><span class="accent">LGH</span> OPERATIONS</span>
             </div>
-            <div class="section">
-                <div class="section-title">Pipeline Health</div>
-                <div class="chart-container"><canvas id="ccPipelineChart"></canvas></div>
+            <div class="nav-right">
+                <div class="period-tabs">
+                    <button class="ptab active" data-p="today" onclick="setPeriod('today')">Today</button>
+                    <button class="ptab active" data-p="week" onclick="setPeriod('week')">Week</button>
+                    <button class="ptab" data-p="month" onclick="setPeriod('month')">Month</button>
+                </div>
+                <span id="period-lbl" class="badge-red">THIS WEEK</span>
+                <button class="btn btn-red" onclick="document.getElementById('agents-link').click()">AI AGENTS</button>
+                <a id="agents-link" href="/agents" style="display:none;"></a>
+                <button class="btn btn-red" onclick="openReport()">Submit Report</button>
+                <button class="btn btn-ghost" onclick="load()">Refresh</button>
+                <div class="last-upd" id="last-upd">Updated just now</div>
             </div>
         </div>
-        <div class="section">
-            <div class="section-title">Team Activity Summary</div>
-            <div id="cc-team-summary"></div>
-        </div>
-    </div>
+    </nav>
 
-    <!-- Tab: Revenue -->
-    <div class="tab-content" id="tab-revenue">
-        <div class="kpi-grid" id="rev-kpis"></div>
-        <div class="section-grid">
-            <div class="section">
-                <div class="section-title">Revenue Trend</div>
-                <div class="chart-container"><canvas id="revTrendChart"></canvas></div>
+    <div class="container">
+        <!-- CEO SCOREBOARD -->
+        <section>
+            <h2 class="sec-hdr">CEO SCOREBOARD <span class="badge-red" id="period-lbl-2">THIS WEEK</span></h2>
+            <div id="hero-grid" class="hero-grid">
+                <div class="spinning">Loading...</div>
             </div>
-            <div class="section">
-                <div class="section-title">Closer Leaderboard</div>
-                <div id="rev-leaderboard"></div>
+            <div class="rev-bar">
+                <div class="rev-bar-top">
+                    <span class="rev-bar-label">Weekly Revenue Progress</span>
+                    <span class="rev-bar-vals"><span class="cur" id="rv-cur">$0</span> / <span class="tgt">$50,000</span> <span class="pct" id="rv-pct">0%</span></span>
+                </div>
+                <div class="prog-track">
+                    <div class="prog-fill" id="rv-fill" style="width: 0%"></div>
+                </div>
             </div>
-        </div>
-        <div class="section-grid">
-            <div class="section">
-                <div class="section-title">Lead Source Breakdown</div>
-                <div id="rev-sources"></div>
-            </div>
-            <div class="section">
-                <div class="section-title">Payment Type Split</div>
-                <div id="rev-payment-split"></div>
-            </div>
-        </div>
-        <div class="section">
-            <div class="section-title">Recent Deals</div>
-            <div class="table-wrap" id="rev-table"></div>
-        </div>
-    </div>
+        </section>
 
-    <!-- Tab: Pipeline -->
-    <div class="tab-content" id="tab-pipeline">
-        <div class="kpi-grid" id="pipe-kpis"></div>
-        <div class="section">
-            <div class="section-title">
-                Sales Pipeline
-                <span id="pipe-follow-up-alert" style="color:var(--yellow);font-size:12px"></span>
+        <!-- DEPARTMENTS -->
+        <section>
+            <h2 class="sec-hdr">DEPARTMENTS</h2>
+            <div id="dept-grid" class="dept-grid">
+                <div class="spinning">Loading...</div>
             </div>
-            <div class="kanban" id="pipe-kanban"></div>
-        </div>
+        </section>
+
+        <!-- FINANCIAL HEALTH -->
+        <section>
+            <h2 class="sec-hdr">FINANCIAL HEALTH</h2>
+            <div id="fin-grid" class="fin-grid">
+                <div class="spinning">Loading...</div>
+            </div>
+        </section>
+
+        <!-- CONSTRAINT TRACKER -->
+        <section>
+            <h2 class="sec-hdr">CONSTRAINT TRACKER</h2>
+            <div class="constraint-btns">
+                <button class="cbtn" data-c="Leads" onclick="setConstraint('Leads')">Leads</button>
+                <button class="cbtn" data-c="Sets" onclick="setConstraint('Sets')">Sets</button>
+                <button class="cbtn" data-c="Shows" onclick="setConstraint('Shows')">Shows</button>
+                <button class="cbtn" data-c="Closes" onclick="setConstraint('Closes')">Closes</button>
+                <button class="cbtn" data-c="Fulfillment" onclick="setConstraint('Fulfillment')">Fulfillment</button>
+            </div>
+            <div class="constraint-active" id="con-active">
+                <span class="ca-label">Active Constraint This Week</span>
+                <span class="ca-value" id="con-val">&mdash;</span>
+            </div>
+            <div class="constraint-note" id="con-note"></div>
+        </section>
+
+        <!-- TEAM ROSTER -->
+        <section>
+            <div class="tasks-hdr">
+                <h2 class="sec-hdr">TEAM ROSTER</h2>
+                <button class="btn-add-member" onclick="openAddMember()">+ Add Member</button>
+            </div>
+            <div id="team-grid" class="team-grid">
+                <div class="spinning">Loading...</div>
+            </div>
+        </section>
+
+        <!-- TASKS -->
+        <section>
+            <div class="tasks-hdr">
+                <h2 class="sec-hdr">TASKS</h2>
+                <button class="btn btn-red" onclick="openTask()">+ Add Task</button>
+            </div>
+            <div id="task-list" class="task-list">
+                <div class="spinning">Loading...</div>
+            </div>
+        </section>
     </div>
 
-    <!-- Tab: Routers -->
-    <div class="tab-content" id="tab-routers">
-        <div class="kpi-grid" id="routers-kpis"></div>
-        <div class="section">
-            <div class="section-title">
-                Router Logs
-                <button class="btn btn-ghost btn-sm" onclick="openFormModal('routers')">+ Add Entry</button>
+    <!-- SUBMIT DAILY REPORT MODAL -->
+    <div id="report-overlay" class="overlay">
+        <div class="modal">
+            <div class="modal-title">
+                Submit Daily Report
+                <button class="modal-x" onclick="closeReport()">&#10005;</button>
             </div>
-            <div class="table-wrap" id="routers-table"></div>
-        </div>
-    </div>
-
-    <!-- Tab: Setters -->
-    <div class="tab-content" id="tab-setters">
-        <div class="kpi-grid" id="setters-kpis"></div>
-        <div class="section">
-            <div class="section-title">
-                Setter Logs
-                <button class="btn btn-ghost btn-sm" onclick="openFormModal('setters')">+ Add Entry</button>
+            <div class="fg">
+                <label class="fl">Your Name</label>
+                <select class="fc" id="r-name" onchange="onNameChange()">
+                    <option value="">Select your name...</option>
+                </select>
             </div>
-            <div class="table-wrap" id="setters-table"></div>
+            <div class="fg">
+                <label class="fl">Role</label>
+                <input type="text" class="fc" id="r-role" disabled>
+            </div>
+            <div id="r-fields"></div>
+            <button class="btn-submit" id="r-submit" onclick="submitReport()" disabled>Submit Report</button>
+            <div id="r-msg" class="form-msg"></div>
         </div>
     </div>
 
-    <!-- Tab: Closers -->
-    <div class="tab-content" id="tab-closers">
-        <div class="kpi-grid" id="closers-kpis"></div>
-        <div class="section-grid">
-            <div class="section">
-                <div class="section-title">Call Review Scores</div>
-                <div class="chart-container"><canvas id="closerRadarChart"></canvas></div>
+    <!-- ADD TASK MODAL -->
+    <div id="task-overlay" class="overlay">
+        <div class="modal">
+            <div class="modal-title">
+                Add Task
+                <button class="modal-x" onclick="closeTask()">&#10005;</button>
             </div>
-            <div class="section">
-                <div class="section-title">Per-Closer Breakdown</div>
-                <div id="closers-breakdown"></div>
+            <div class="fg">
+                <label class="fl">Title</label>
+                <input type="text" class="fc" id="t-title" placeholder="Task description">
             </div>
-        </div>
-        <div class="section">
-            <div class="section-title">
-                Closer Logs
-                <button class="btn btn-ghost btn-sm" onclick="openFormModal('closers')">+ Add Entry</button>
-            </div>
-            <div class="table-wrap" id="closers-table"></div>
-        </div>
-    </div>
-
-    <!-- Tab: AI & Webinar -->
-    <div class="tab-content" id="tab-ai-webinar">
-        <div class="kpi-grid" id="ai-kpis"></div>
-        <div class="section-grid">
-            <div class="section">
-                <div class="section-title">Funnel Conversion</div>
-                <div id="ai-funnel"></div>
-            </div>
-            <div class="section">
-                <div class="section-title">Webinar Performance</div>
-                <div class="chart-container"><canvas id="webinarChart"></canvas></div>
-            </div>
-        </div>
-        <div class="section">
-            <div class="section-title">AI Team Logs</div>
-            <div class="table-wrap" id="ai-table"></div>
-        </div>
-        <div class="section">
-            <div class="section-title">Webinar Metrics</div>
-            <div class="table-wrap" id="webinar-table"></div>
-        </div>
-    </div>
-
-    <!-- Tab: EA -->
-    <div class="tab-content" id="tab-ea">
-        <div class="kpi-grid" id="ea-kpis"></div>
-        <div class="section">
-            <div class="section-title">
-                EA Logs
-                <button class="btn btn-ghost btn-sm" onclick="openFormModal('ea')">+ Add Entry</button>
-            </div>
-            <div class="table-wrap" id="ea-table"></div>
-        </div>
-    </div>
-
-    <!-- Tab: Ads & ROAS -->
-    <div class="tab-content" id="tab-ads-roas">
-        <div class="kpi-grid" id="ads-kpis"></div>
-        <div class="section-grid">
-            <div class="section">
-                <div class="section-title">Ad Spend vs Revenue</div>
-                <div class="chart-container"><canvas id="adSpendChart"></canvas></div>
-            </div>
-            <div class="section">
-                <div class="section-title">Campaign Metrics</div>
-                <div class="table-wrap" id="ads-table"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tab: Tasks -->
-    <div class="tab-content" id="tab-tasks">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-            <h2 style="font-size:18px;font-weight:600">Task Board</h2>
-            <button class="btn btn-primary" onclick="openTaskModal()">+ New Task</button>
-        </div>
-        <div class="kanban" id="task-kanban"></div>
-    </div>
-</div>
-
-<!-- Data Entry Modal -->
-<div class="modal-overlay" id="formModal">
-    <div class="modal">
-        <h2 id="formModalTitle">Add Entry</h2>
-        <form id="entryForm" onsubmit="submitEntry(event)">
-            <div id="formFields"></div>
-            <div class="form-actions">
-                <button type="button" class="btn btn-ghost" onclick="closeModal('formModal')">Cancel</button>
-                <button type="submit" class="btn btn-primary">Save</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Task Modal -->
-<div class="modal-overlay" id="taskModal">
-    <div class="modal">
-        <h2 id="taskModalTitle">New Task</h2>
-        <form id="taskForm" onsubmit="submitTask(event)">
-            <input type="hidden" id="taskEditId">
-            <div class="form-group">
-                <label>Title *</label>
-                <input type="text" id="taskTitle" required>
-            </div>
-            <div class="form-group">
-                <label>Description</label>
-                <textarea id="taskDesc"></textarea>
-            </div>
-            <div class="form-group">
-                <label>Assigned To</label>
-                <input type="text" id="taskAssigned">
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                <div class="form-group">
-                    <label>Priority</label>
-                    <select id="taskPriority">
-                        <option value="low">Low</option>
-                        <option value="medium" selected>Medium</option>
-                        <option value="high">High</option>
-                        <option value="urgent">Urgent</option>
+            <div class="fg2">
+                <div class="fg">
+                    <label class="fl">Assigned To</label>
+                    <select class="fc" id="t-assigned">
+                        <option value="">Unassigned</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>Due Date</label>
-                    <input type="date" id="taskDue">
+                <div class="fg">
+                    <label class="fl">Priority</label>
+                    <select class="fc" id="t-priority">
+                        <option value="high">High</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="low">Low</option>
+                    </select>
                 </div>
             </div>
-            <div class="form-group">
-                <label>Category</label>
-                <input type="text" id="taskCategory" placeholder="e.g. Sales, Marketing, Ops">
+            <div class="fg">
+                <label class="fl">Due Date</label>
+                <input type="date" class="fc" id="t-due">
             </div>
-            <div class="form-actions">
-                <button type="button" class="btn btn-ghost" onclick="closeModal('taskModal')">Cancel</button>
-                <button type="submit" class="btn btn-primary">Save Task</button>
+            <div class="fg">
+                <label class="fl">Category</label>
+                <select class="fc" id="t-cat">
+                    <option value="sales">Sales</option>
+                    <option value="operations">Operations</option>
+                    <option value="marketing">Marketing</option>
+                    <option value="credit">Credit</option>
+                    <option value="general">General</option>
+                </select>
             </div>
-        </form>
+            <button class="btn-submit" onclick="submitTask()">Add Task</button>
+            <div id="t-msg" class="form-msg"></div>
+        </div>
     </div>
-</div>
 
-<script>
-// ============================================================
-// CONFIGURATION
-// ============================================================
-const BASE = 'https://aqcnqxmqksashphcvgoc.supabase.co';
-const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFxY25xeG1xa3Nhc2hwaGN2Z29jIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDgyOTgzNywiZXhwIjoyMDg2NDA1ODM3fQ.GcECZQqotwvKfoZ9PwMsgZ3bYETCcsIpj4f9zfpPW94';
-const HEADERS = { 'apikey': KEY, 'Authorization': `Bearer ${KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
-const HEADERS_READ = { 'apikey': KEY, 'Authorization': `Bearer ${KEY}` };
-
-// ============================================================
-// STATE
-// ============================================================
-const state = {
-    activeTab: 'command-center',
-    dateStart: '',
-    dateEnd: '',
-    charts: {}
-};
-
-// ============================================================
-// HELPERS
-// ============================================================
-function safeNum(v) { const n = Number(v); return isFinite(n) ? n : 0; }
-function fmtCurrency(n) { return '$' + safeNum(n).toLocaleString('en-US', {maximumFractionDigits: 0}); }
-function fmtPct(n) { return safeNum(n).toFixed(1) + '%'; }
-function fmtNum(n) { return safeNum(n).toLocaleString('en-US'); }
-function fmtDate(d) {
-    if (!d) return '\u2014';
-    try { return new Date(d + 'T12:00:00').toLocaleDateString('en-US', {month:'short',day:'numeric',year:'2-digit'}); }
-    catch { return d; }
-}
-function capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1).replace(/_/g, ' ') : ''; }
-function todayStr() { return new Date().toLocaleDateString('en-CA'); }
-
-function getDateRange(preset) {
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const fmt = d => d.toLocaleDateString('en-CA');
-    switch (preset) {
-        case 'today': return { start: fmt(today), end: fmt(today) };
-        case 'yesterday': { const y = new Date(today); y.setDate(y.getDate()-1); return { start: fmt(y), end: fmt(y) }; }
-        case 'this_week': { const d = new Date(today); d.setDate(d.getDate()-d.getDay()); return { start: fmt(d), end: fmt(today) }; }
-        case 'last_week': { const d = new Date(today); d.setDate(d.getDate()-d.getDay()-7); const e = new Date(d); e.setDate(e.getDate()+6); return { start: fmt(d), end: fmt(e) }; }
-        case 'this_month': { const d = new Date(today.getFullYear(), today.getMonth(), 1); return { start: fmt(d), end: fmt(today) }; }
-        case 'last_30': { const d = new Date(today); d.setDate(d.getDate()-30); return { start: fmt(d), end: fmt(today) }; }
-        default: return { start: fmt(new Date(today.getFullYear(), today.getMonth(), 1)), end: fmt(today) };
-    }
-}
-
-// ============================================================
-// API LAYER
-// ============================================================
-async function query(table, dateCol, start, end, extra = '') {
-    const url = `${BASE}/rest/v1/${table}?${dateCol}=gte.${start}&${dateCol}=lte.${end}&order=${dateCol}.desc${extra}`;
-    const res = await fetch(url, { headers: HEADERS_READ });
-    if (!res.ok) throw new Error(`${table}: ${res.status}`);
-    const data = await res.json();
-    if (!Array.isArray(data)) throw new Error(`${table}: unexpected response`);
-    return data;
-}
-
-async function queryAll(table, extra = '') {
-    const url = `${BASE}/rest/v1/${table}?order=created_at.desc${extra}`;
-    const res = await fetch(url, { headers: HEADERS_READ });
-    if (!res.ok) throw new Error(`${table}: ${res.status}`);
-    const data = await res.json();
-    return Array.isArray(data) ? data : [];
-}
-
-async function apiInsert(table, row) {
-    const res = await fetch(`${BASE}/rest/v1/${table}`, { method: 'POST', headers: HEADERS, body: JSON.stringify(row) });
-    if (!res.ok) { const t = await res.text(); throw new Error(`Insert ${table}: ${res.status} ${t}`); }
-    return res.json();
-}
-
-async function apiPatch(table, id, updates) {
-    const res = await fetch(`${BASE}/rest/v1/${table}?id=eq.${id}`, { method: 'PATCH', headers: HEADERS, body: JSON.stringify(updates) });
-    if (!res.ok) throw new Error(`Patch ${table}: ${res.status}`);
-    return res.json();
-}
-
-async function apiDelete(table, id) {
-    const res = await fetch(`${BASE}/rest/v1/${table}?id=eq.${id}`, { method: 'DELETE', headers: HEADERS });
-    if (!res.ok) throw new Error(`Delete ${table}: ${res.status}`);
-}
-
-// ============================================================
-// SHARED RENDERERS
-// ============================================================
-function showSkeleton(el, type = 'kpi', count = 4) {
-    if (type === 'kpi') {
-        el.innerHTML = Array(count).fill('<div class="skeleton skel-kpi"></div>').join('');
-    } else if (type === 'table') {
-        el.innerHTML = '<div class="skeleton skel-table"></div>';
-    } else if (type === 'chart') {
-        el.innerHTML = '<div class="skeleton skel-chart"></div>';
-    }
-}
-
-function renderKPIs(container, kpis) {
-    container.innerHTML = kpis.map(k => `
-        <div class="kpi-card">
-            <div class="kpi-label">${k.label}</div>
-            <div class="kpi-value ${k.color || ''}">${k.value}</div>
-            ${k.sub ? `<div class="kpi-sub">${k.sub}</div>` : ''}
+    <!-- ADD MEMBER MODAL -->
+    <div id="addmember-overlay" class="overlay">
+        <div class="modal">
+            <div class="modal-title">
+                Add Team Member
+                <button class="modal-x" onclick="closeAddMember()">&#10005;</button>
+            </div>
+            <div class="fg2">
+                <div class="fg">
+                    <label class="fl">First Name</label>
+                    <input type="text" class="fc" id="am-first" placeholder="First name">
+                </div>
+                <div class="fg">
+                    <label class="fl">Last Name</label>
+                    <input type="text" class="fc" id="am-last" placeholder="Last name">
+                </div>
+            </div>
+            <div class="fg">
+                <label class="fl">Role</label>
+                <select class="fc" id="am-role">
+                    <option value="">Select role...</option>
+                    <option value="Router">Router</option>
+                    <option value="Setter">Setter</option>
+                    <option value="Closer">Closer</option>
+                    <option value="Credit Repair">Credit Repair</option>
+                    <option value="EA/Ops">EA/Ops</option>
+                </select>
+            </div>
+            <div class="fg">
+                <label class="fl">Phone (optional)</label>
+                <input type="tel" class="fc" id="am-phone" placeholder="+1 (555) 123-4567">
+            </div>
+            <button class="btn-submit" onclick="submitAddMember()">Add Member</button>
+            <div id="am-msg" class="form-msg"></div>
         </div>
-    `).join('');
-}
+    </div>
 
-function renderTable(container, columns, rows) {
-    if (!rows || rows.length === 0) {
-        container.innerHTML = '<div class="empty-state"><h3>No data</h3><p>No records found for the selected date range.</p></div>';
-        return;
-    }
-    const fmtCell = (row, col) => {
-        const v = row[col.key];
-        if (v == null || v === '') return '\u2014';
-        if (col.fmt === 'currency') return fmtCurrency(v);
-        if (col.fmt === 'pct') return fmtPct(v);
-        if (col.fmt === 'date') return fmtDate(v);
-        if (col.fmt === 'num') return fmtNum(v);
-        if (col.fmt === 'badge') {
-            const colors = { closed:'green', done:'green', showed:'blue', booked:'yellow', lead:'purple', lost:'red', in_progress:'yellow', todo:'blue', high:'red', urgent:'red', medium:'yellow', low:'blue' };
-            return `<span class="badge badge-${colors[v] || 'blue'}">${capitalize(v)}</span>`;
-        }
-        return String(v);
-    };
-    container.innerHTML = `<table>
-        <thead><tr>${columns.map(c => `<th>${c.label}</th>`).join('')}</tr></thead>
-        <tbody>${rows.map(r => `<tr>${columns.map(c => `<td>${fmtCell(r,c)}</td>`).join('')}</tr>`).join('')}</tbody>
-    </table>`;
-}
+    <!-- MEMBER DETAIL MODAL -->
+    <div id="member-overlay" class="overlay">
+        <div class="modal modal-wide">
+            <div class="modal-title">
+                <span>Member Reports</span>
+                <button class="modal-x" onclick="closeMemberDetail()">&#10005;</button>
+            </div>
+            <div id="member-detail-content">
+                <div class="spinning">Loading...</div>
+            </div>
+        </div>
+    </div>
 
-function renderEmpty(container, msg = 'No data available') {
-    container.innerHTML = `<div class="empty-state"><h3>No data</h3><p>${msg}</p></div>`;
-}
+    <!-- PIN PROMPT MODAL -->
+    <div id="pin-overlay" class="overlay" style="z-index:300">
+        <div class="modal" style="max-width:340px;text-align:center">
+            <div class="modal-title" style="justify-content:center">
+                Enter PIN to Delete
+            </div>
+            <div class="fg">
+                <input type="password" class="fc" id="pin-input" placeholder="4-digit PIN" maxlength="4" style="text-align:center;font-size:1.3rem;letter-spacing:.3rem">
+            </div>
+            <div style="display:flex;gap:.75rem">
+                <button class="btn-submit" style="background:rgba(255,255,255,.08);box-shadow:none" onclick="closePin()">Cancel</button>
+                <button class="btn-submit" onclick="confirmPin()">Confirm</button>
+            </div>
+            <div id="pin-msg" class="form-msg"></div>
+        </div>
+    </div>
 
-function renderError(container, err) {
-    container.innerHTML = `<div class="error-banner show">Error: ${err.message || err}</div>`;
-}
+    <script>
+        const SU = 'https://wrrfrhuocbftgqqfpaoz.supabase.co';
+        const SK = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndycmZyaHVvY2JmdGdxcWZwYW96Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3Mjc1ODk3NSwiZXhwIjoyMDg4MzM0OTc1fQ.f51I6th0qv7WK0xGQEEJ7TcaSe-OEG_fg4bg_4iSSsY';
+        const H = {
+            apikey: SK,
+            Authorization: 'Bearer ' + SK,
+            'Content-Type': 'application/json',
+            Prefer: 'return=representation'
+        };
+        const WEEKLY_TARGET = 50000;
+        let period = 'week';
+        let teamData = [];
+        let pendingDeleteId = null;
 
-// ============================================================
-// TEAM TAB CONFIG (shared pattern for Routers/Setters/Closers/EA)
-// ============================================================
-const TEAM_TABS = {
-    routers: {
-        table: 'router_logs', dateCol: 'date',
-        kpis: [
-            { key: 'calls_made', label: 'Calls Made', agg: 'sum', color: 'blue' },
-            { key: 'conversations_reached', label: 'Conversations', agg: 'sum', color: 'green' },
-            { key: 'training_registrations_live', label: 'Training Regs', agg: 'sum', color: 'purple' },
-            { key: 'crm_accuracy_pct', label: 'Avg CRM Accuracy', agg: 'avg', color: 'cyan', suffix: '%' }
-        ],
-        columns: [
-            { key: 'date', label: 'Date', fmt: 'date' },
-            { key: 'team_member', label: 'Member' },
-            { key: 'clock_in', label: 'Clock In' },
-            { key: 'clock_out', label: 'Clock Out' },
-            { key: 'calls_made', label: 'Calls', fmt: 'num' },
-            { key: 'conversations_reached', label: 'Convos', fmt: 'num' },
-            { key: 'training_registrations_live', label: 'Regs', fmt: 'num' },
-            { key: 'crm_accuracy_pct', label: 'CRM %', fmt: 'pct' },
-            { key: 'notes', label: 'Notes' }
-        ],
-        formFields: [
-            { key: 'team_member', label: 'Team Member', type: 'text', required: true },
-            { key: 'date', label: 'Date', type: 'date', default: 'today' },
-            { key: 'clock_in', label: 'Clock In', type: 'time', required: true },
-            { key: 'clock_out', label: 'Clock Out', type: 'time', required: true },
-            { key: 'calls_made', label: 'Calls Made', type: 'number' },
-            { key: 'conversations_reached', label: 'Conversations', type: 'number' },
-            { key: 'training_registrations_live', label: 'Training Regs', type: 'number' },
-            { key: 'crm_accuracy_pct', label: 'CRM Accuracy %', type: 'number', step: '0.01' },
-            { key: 'notes', label: 'Notes', type: 'textarea' }
-        ]
-    },
-    setters: {
-        table: 'setter_logs', dateCol: 'date',
-        kpis: [
-            { key: 'webbi_leads_contacted', label: 'Leads Contacted', agg: 'sum', color: 'blue' },
-            { key: 'calls_booked', label: 'Calls Booked', agg: 'sum', color: 'green' },
-            { key: 'calls_showed', label: 'Calls Showed', agg: 'sum', color: 'purple' },
-            { key: 'webbi_reroutes', label: 'Reroutes', agg: 'sum', color: 'yellow' }
-        ],
-        columns: [
-            { key: 'date', label: 'Date', fmt: 'date' },
-            { key: 'team_member', label: 'Member' },
-            { key: 'clock_in', label: 'Clock In' },
-            { key: 'clock_out', label: 'Clock Out' },
-            { key: 'webbi_leads_contacted', label: 'Leads', fmt: 'num' },
-            { key: 'calls_booked', label: 'Booked', fmt: 'num' },
-            { key: 'calls_showed', label: 'Showed', fmt: 'num' },
-            { key: 'webbi_reroutes', label: 'Reroutes', fmt: 'num' },
-            { key: 'notes', label: 'Notes' }
-        ],
-        formFields: [
-            { key: 'team_member', label: 'Team Member', type: 'text', required: true },
-            { key: 'date', label: 'Date', type: 'date', default: 'today' },
-            { key: 'clock_in', label: 'Clock In', type: 'time', required: true },
-            { key: 'clock_out', label: 'Clock Out', type: 'time', required: true },
-            { key: 'webbi_leads_contacted', label: 'Leads Contacted', type: 'number' },
-            { key: 'calls_booked', label: 'Calls Booked', type: 'number' },
-            { key: 'calls_showed', label: 'Calls Showed', type: 'number' },
-            { key: 'webbi_reroutes', label: 'Reroutes', type: 'number' },
-            { key: 'notes', label: 'Notes', type: 'textarea' }
-        ]
-    },
-    closers: {
-        table: 'closer_logs', dateCol: 'week_of',
-        kpis: [
-            { key: 'calls_taken', label: 'Calls Taken', agg: 'sum', color: 'blue' },
-            { key: 'deals_closed', label: 'Deals Closed', agg: 'sum', color: 'green' },
-            { key: 'close_rate_pct', label: 'Avg Close Rate', agg: 'avg', color: 'purple', suffix: '%' },
-            { key: 'revenue_collected', label: 'Revenue', agg: 'sum', color: 'cyan', prefix: '$' }
-        ],
-        columns: [
-            { key: 'week_of', label: 'Date', fmt: 'date' },
-            { key: 'team_member', label: 'Closer' },
-            { key: 'calls_taken', label: 'Calls', fmt: 'num' },
-            { key: 'deals_closed', label: 'Deals', fmt: 'num' },
-            { key: 'close_rate_pct', label: 'Close %', fmt: 'pct' },
-            { key: 'revenue_collected', label: 'Revenue', fmt: 'currency' },
-            { key: 'notes', label: 'Notes' }
-        ],
-        formFields: [
-            { key: 'team_member', label: 'Closer Name', type: 'select', required: true, options: ['AK', 'Derrick Furlow'] },
-            { key: 'week_of', label: 'Date', type: 'date', default: 'today' },
-            { key: 'calls_taken', label: 'Calls Taken', type: 'number' },
-            { key: 'calls_booked', label: 'Calls Booked', type: 'number' },
-            { key: 'no_shows', label: 'No Shows', type: 'number' },
-            { key: 'deals_closed', label: 'Deals Closed', type: 'number' },
-            { key: 'revenue_collected', label: 'Revenue', type: 'number', step: '0.01' },
-            { key: 'notes', label: 'Notes', type: 'textarea' }
-        ]
-    },
-    ea: {
-        table: 'ea_logs', dateCol: 'week_of',
-        kpis: [
-            { key: 'new_clients_onboarded', label: 'New Clients', agg: 'sum', color: 'green' },
-            { key: 'failed_payments_recovered', label: 'Payments Recovered', agg: 'sum', color: 'blue' },
-            { key: 'refund_rate_pct', label: 'Avg Refund Rate', agg: 'avg', color: 'yellow', suffix: '%' },
-            { key: 'at_risk_clients', label: 'At-Risk Clients', agg: 'sum', color: 'red' }
-        ],
-        columns: [
-            { key: 'week_of', label: 'Date', fmt: 'date' },
-            { key: 'team_member', label: 'Member' },
-            { key: 'new_clients_onboarded', label: 'Onboarded', fmt: 'num' },
-            { key: 'failed_payments_recovered', label: 'Recovered', fmt: 'num' },
-            { key: 'refund_rate_pct', label: 'Refund %', fmt: 'pct' },
-            { key: 'chargebacks', label: 'Chargebacks', fmt: 'num' },
-            { key: 'at_risk_clients', label: 'At Risk', fmt: 'num' },
-            { key: 'notes', label: 'Notes' }
-        ],
-        formFields: [
-            { key: 'team_member', label: 'Team Member', type: 'text', default: 'ea' },
-            { key: 'week_of', label: 'Date', type: 'date', default: 'today' },
-            { key: 'new_clients_onboarded', label: 'New Clients Onboarded', type: 'number' },
-            { key: 'failed_payments_recovered', label: 'Payments Recovered', type: 'number' },
-            { key: 'refund_rate_pct', label: 'Refund Rate %', type: 'number', step: '0.01' },
-            { key: 'chargebacks', label: 'Chargebacks', type: 'number' },
-            { key: 'at_risk_clients', label: 'At Risk Clients', type: 'number' },
-            { key: 'notes', label: 'Notes', type: 'textarea' }
-        ]
-    }
-};
-
-// ============================================================
-// GENERIC TEAM TAB LOADER
-// ============================================================
-async function loadTeamTab(tabKey) {
-    const cfg = TEAM_TABS[tabKey];
-    if (!cfg) return;
-    const kpiEl = document.getElementById(`${tabKey}-kpis`);
-    const tableEl = document.getElementById(`${tabKey}-table`);
-    showSkeleton(kpiEl, 'kpi', cfg.kpis.length);
-    showSkeleton(tableEl, 'table');
-
-    try {
-        const data = await query(cfg.table, cfg.dateCol, state.dateStart, state.dateEnd);
-        // Compute KPIs
-        const kpis = cfg.kpis.map(k => {
-            const vals = data.map(r => safeNum(r[k.key])).filter(v => v !== 0 || data.some(r => r[k.key] != null));
-            let value;
-            if (k.agg === 'sum') value = vals.reduce((a, b) => a + b, 0);
-            else if (k.agg === 'avg') value = vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
-            else value = vals.length;
-            let display = k.prefix ? k.prefix + fmtNum(Math.round(value)) : (k.suffix ? fmtPct(value) : fmtNum(Math.round(value)));
-            if (k.prefix === '$') display = fmtCurrency(value);
-            return { label: k.label, value: display, color: k.color, sub: `${data.length} entries` };
-        });
-        renderKPIs(kpiEl, kpis);
-        renderTable(tableEl, cfg.columns, data);
-    } catch (err) {
-        renderError(kpiEl, err);
-        renderError(tableEl, err);
-    }
-}
-
-// ============================================================
-// TAB: COMMAND CENTER
-// ============================================================
-async function loadCommandCenter() {
-    const kpiEl = document.getElementById('cc-kpis');
-    const summaryEl = document.getElementById('cc-team-summary');
-    showSkeleton(kpiEl, 'kpi', 6);
-    summaryEl.innerHTML = '<div class="skeleton skel-table"></div>';
-
-    const { start, end } = { start: state.dateStart, end: state.dateEnd };
-
-    const results = await Promise.allSettled([
-        query('deals_closed', 'date', start, end),
-        query('closer_logs', 'week_of', start, end),
-        query('ad_metrics', 'week_start', start, end),
-        queryAll('sales_pipeline', '&stage=neq.closed&stage=neq.lost'),
-        query('router_logs', 'date', start, end),
-        query('setter_logs', 'date', start, end),
-        query('ai_team_logs', 'week_of', start, end),
-        query('ea_logs', 'week_of', start, end),
-        query('webinar_metrics', 'logged_date', start, end),
-    ]);
-
-    const [dealsR, closerR, adsR, pipeR, routerR, setterR, aiR, eaR, webinarR] = results.map(r => r.status === 'fulfilled' ? r.value : []);
-
-    // Revenue
-    const totalRevenue = (dealsR || []).reduce((s, d) => s + safeNum(d.cash_collected), 0);
-    const dealCount = (dealsR || []).length;
-
-    // Close Rate
-    const totalCallsTaken = (closerR || []).reduce((s, r) => s + safeNum(r.calls_taken), 0);
-    const totalDealsClosed = (closerR || []).reduce((s, r) => s + safeNum(r.deals_closed), 0);
-    const closeRate = totalCallsTaken > 0 ? (totalDealsClosed / totalCallsTaken) * 100 : 0;
-
-    // ROAS
-    const adSpend = (adsR || []).reduce((s, a) => s + safeNum(a.spend), 0);
-    const adSources = ['facebook', 'meta', 'webinar', 'ad'];
-    const adRevenue = (dealsR || []).filter(d => adSources.includes((d.lead_source || '').toLowerCase())).reduce((s, d) => s + safeNum(d.cash_collected), 0);
-    const roas = adSpend > 0 ? adRevenue / adSpend : 0;
-
-    // Pipeline
-    const pipelineActive = (pipeR || []).length;
-    const followUpsDue = (pipeR || []).filter(p => p.follow_up_date && p.follow_up_date <= todayStr()).length;
-
-    // Funnel
-    const leads = (aiR || []).reduce((s, r) => s + safeNum(r.total_leads_generated), 0);
-    const webAttendees = (webinarR || []).reduce((s, w) => s + safeNum(w.attendees), 0);
-
-    renderKPIs(kpiEl, [
-        { label: 'Revenue', value: fmtCurrency(totalRevenue), color: 'green', sub: `${dealCount} deals` },
-        { label: 'ROAS', value: roas > 0 ? roas.toFixed(1) + 'x' : 'N/A', color: 'blue', sub: adSpend > 0 ? `${fmtCurrency(adSpend)} spend` : 'No ad data' },
-        { label: 'Close Rate', value: fmtPct(closeRate), color: 'purple', sub: `${totalDealsClosed}/${totalCallsTaken} calls` },
-        { label: 'Pipeline Active', value: fmtNum(pipelineActive), color: 'yellow', sub: followUpsDue > 0 ? `${followUpsDue} follow-ups due` : 'No follow-ups due' },
-        { label: 'Leads Generated', value: fmtNum(leads), color: 'cyan', sub: 'AI team' },
-        { label: 'Webinar Attendees', value: fmtNum(webAttendees), color: 'blue', sub: `${(webinarR || []).length} sessions` }
-    ]);
-
-    // Revenue trend chart
-    renderRevenueTrendChart('ccRevenueChart', dealsR || []);
-
-    // Pipeline chart
-    const stages = {};
-    (pipeR || []).forEach(p => { stages[p.stage] = (stages[p.stage] || 0) + 1; });
-    renderPipelineChart('ccPipelineChart', stages);
-
-    // Team summary
-    const teamData = [
-        { role: 'Routers', count: (routerR || []).length, highlight: `${(routerR || []).reduce((s,r) => s+safeNum(r.calls_made),0)} calls` },
-        { role: 'Setters', count: (setterR || []).length, highlight: `${(setterR || []).reduce((s,r) => s+safeNum(r.calls_booked),0)} booked` },
-        { role: 'Closers', count: (closerR || []).length, highlight: `${fmtCurrency((closerR || []).reduce((s,r) => s+safeNum(r.revenue_collected),0))} rev` },
-        { role: 'AI Team', count: (aiR || []).length, highlight: `${(aiR || []).reduce((s,r) => s+safeNum(r.webbi_registrations),0)} regs` },
-        { role: 'EA', count: (eaR || []).length, highlight: `${(eaR || []).reduce((s,r) => s+safeNum(r.new_clients_onboarded),0)} onboarded` }
-    ];
-    if (teamData.every(t => t.count === 0)) {
-        renderEmpty(summaryEl, 'No team activity for this period.');
-    } else {
-        summaryEl.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px">
-            ${teamData.map(t => `<div class="kpi-card" style="padding:12px">
-                <div class="kpi-label">${t.role}</div>
-                <div style="font-size:15px;font-weight:600">${t.highlight}</div>
-                <div class="kpi-sub">${t.count} entries</div>
-            </div>`).join('')}
-        </div>`;
-    }
-}
-
-// ============================================================
-// TAB: REVENUE
-// ============================================================
-async function loadRevenue() {
-    const kpiEl = document.getElementById('rev-kpis');
-    const tableEl = document.getElementById('rev-table');
-    const lbEl = document.getElementById('rev-leaderboard');
-    const srcEl = document.getElementById('rev-sources');
-    const splitEl = document.getElementById('rev-payment-split');
-    showSkeleton(kpiEl, 'kpi', 4);
-    [tableEl, lbEl, srcEl, splitEl].forEach(e => e.innerHTML = '<div class="skeleton skel-table" style="height:120px"></div>');
-
-    const { start, end } = { start: state.dateStart, end: state.dateEnd };
-
-    const results = await Promise.allSettled([
-        query('deals_closed', 'date', start, end),
-        query('closed_deals', 'deal_date', start, end).catch(() => []),
-    ]);
-
-    let deals = results[0].status === 'fulfilled' ? results[0].value : [];
-    const deals2 = results[1].status === 'fulfilled' ? results[1].value : [];
-
-    // Merge and dedup by client_name + closer + date
-    if (deals2.length > 0) {
-        const seen = new Set(deals.map(d => `${d.client_name}|${d.closer}|${d.date}`));
-        deals2.forEach(d => {
-            const key = `${d.client_name || d.prospect_name}|${d.closer}|${d.deal_date || d.date}`;
-            if (!seen.has(key)) {
-                deals.push({
-                    date: d.deal_date || d.date,
-                    closer: d.closer,
-                    client_name: d.client_name || d.prospect_name,
-                    cash_collected: d.cash_collected || d.amount || 0,
-                    total_value: d.total_value || d.cash_collected || d.amount || 0,
-                    lead_source: d.lead_source || d.source,
-                    package: d.package
-                });
-                seen.add(key);
+        // --- Date helpers ---
+        function getRange() {
+            const now = new Date();
+            const today = now.toISOString().split('T')[0];
+            if (period === 'today') return { s: today, e: today };
+            if (period === 'week') {
+                const d = new Date(now);
+                const day = d.getDay();
+                d.setDate(d.getDate() - (day === 0 ? 6 : day - 1));
+                return { s: d.toISOString().split('T')[0], e: today };
             }
-        });
-    }
+            const ms = new Date(now.getFullYear(), now.getMonth(), 1);
+            return { s: ms.toISOString().split('T')[0], e: today };
+        }
 
-    const totalRev = deals.reduce((s, d) => s + safeNum(d.cash_collected), 0);
-    const totalValue = deals.reduce((s, d) => s + safeNum(d.total_value || d.cash_collected), 0);
-    const avgDeal = deals.length > 0 ? totalRev / deals.length : 0;
+        function getWeekOf() {
+            const d = new Date();
+            const day = d.getDay();
+            d.setDate(d.getDate() - (day === 0 ? 6 : day - 1));
+            return d.toISOString().split('T')[0];
+        }
 
-    // By closer (with name normalization)
-    const CLOSER_MAP = { 'andrew (ak)': 'AK', 'andrew (a.k.)': 'AK', 'ak': 'AK', 'andrew': 'AK', 'derrick furlow': 'Derrick Furlow', 'derrick': 'Derrick Furlow', 'unknown': null };
-    const mapCloser = (name) => { const key = (name || '').toLowerCase().trim(); return CLOSER_MAP[key] !== undefined ? CLOSER_MAP[key] : name; };
-    const byCloser = {};
-    deals.forEach(d => {
-        const c = mapCloser(d.closer) || 'Unknown';
-        if (!byCloser[c]) byCloser[c] = { rev: 0, count: 0 };
-        byCloser[c].rev += safeNum(d.cash_collected);
-        byCloser[c].count++;
-    });
+        // --- Supabase helpers ---
+        async function q(table, params) {
+            try {
+                const r = await fetch(`${SU}/rest/v1/${table}?${params}`, { headers: H });
+                if (!r.ok) return [];
+                return r.json();
+            } catch {
+                return [];
+            }
+        }
 
-    // By source
-    const bySource = {};
-    deals.forEach(d => {
-        const s = d.lead_source || 'Unknown';
-        if (!bySource[s]) bySource[s] = { rev: 0, count: 0 };
-        bySource[s].rev += safeNum(d.cash_collected);
-        bySource[s].count++;
-    });
+        async function ins(table, data) {
+            return fetch(`${SU}/rest/v1/${table}`, {
+                method: 'POST',
+                headers: H,
+                body: JSON.stringify(data)
+            });
+        }
 
-    // PIF vs Finance
-    const pifDeals = deals.filter(d => {
-        const pkg = (d.package || '').toLowerCase();
-        return pkg.includes('pif') || pkg.includes('paid in full') || pkg.includes('full');
-    });
-    const financeDeals = deals.filter(d => {
-        const pkg = (d.package || '').toLowerCase();
-        return !pkg.includes('pif') && !pkg.includes('paid in full') && !pkg.includes('full') && pkg !== '';
-    });
-    const unknownDeals = deals.filter(d => !d.package || d.package === '');
+        async function upd(table, id, data) {
+            return fetch(`${SU}/rest/v1/${table}?id=eq.${id}`, {
+                method: 'PATCH',
+                headers: H,
+                body: JSON.stringify(data)
+            });
+        }
 
-    renderKPIs(kpiEl, [
-        { label: 'Total Revenue', value: fmtCurrency(totalRev), color: 'green', sub: `${deals.length} deals` },
-        { label: 'Total Contract Value', value: fmtCurrency(totalValue), color: 'blue' },
-        { label: 'Avg Deal Size', value: fmtCurrency(avgDeal), color: 'purple' },
-        { label: 'Cash Collected Rate', value: totalValue > 0 ? fmtPct((totalRev/totalValue)*100) : 'N/A', color: 'cyan' }
-    ]);
+        async function del(table, id) {
+            return fetch(`${SU}/rest/v1/${table}?id=eq.${id}`, {
+                method: 'DELETE',
+                headers: H
+            });
+        }
 
-    // Leaderboard
-    const sorted = Object.entries(byCloser).sort((a, b) => b[1].rev - a[1].rev);
-    if (sorted.length === 0) {
-        renderEmpty(lbEl, 'No deals to rank.');
-    } else {
-        lbEl.innerHTML = sorted.map(([name, stats], i) => {
-            const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
-            return `<div class="leaderboard-item">
-                <div class="leaderboard-rank ${rankClass}">${i+1}</div>
-                <div class="leaderboard-info">
-                    <div class="leaderboard-name">${capitalize(name)}</div>
-                    <div class="leaderboard-stats">${stats.count} deals</div>
-                </div>
-                <div class="leaderboard-value">${fmtCurrency(stats.rev)}</div>
-            </div>`;
-        }).join('');
-    }
+        // --- Format helpers ---
+        function fmt(n) {
+            const v = Number(n) || 0;
+            if (v >= 1e6) return '$' + (v / 1e6).toFixed(1) + 'M';
+            if (v >= 1e3) return '$' + Math.round(v / 1e3) + 'K';
+            return '$' + v.toLocaleString();
+        }
 
-    // Sources
-    const srcSorted = Object.entries(bySource).sort((a, b) => b[1].rev - a[1].rev);
-    if (srcSorted.length === 0) {
-        renderEmpty(srcEl, 'No source data.');
-    } else {
-        srcEl.innerHTML = srcSorted.map(([src, stats]) => `
-            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.03);font-size:13px">
-                <span>${capitalize(src)}</span>
-                <span style="color:var(--green);font-weight:600">${fmtCurrency(stats.rev)} <span style="color:var(--text-muted);font-weight:400">(${stats.count})</span></span>
-            </div>
-        `).join('');
-    }
+        function n(v) {
+            return Number(v) || 0;
+        }
 
-    // Payment split
-    splitEl.innerHTML = `
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
-            <div class="kpi-card" style="padding:12px">
-                <div class="kpi-label">PIF</div>
-                <div style="font-size:18px;font-weight:700;color:var(--green)">${fmtCurrency(pifDeals.reduce((s,d)=>s+safeNum(d.cash_collected),0))}</div>
-                <div class="kpi-sub">${pifDeals.length} deals</div>
-            </div>
-            <div class="kpi-card" style="padding:12px">
-                <div class="kpi-label">Finance</div>
-                <div style="font-size:18px;font-weight:700;color:var(--blue)">${fmtCurrency(financeDeals.reduce((s,d)=>s+safeNum(d.cash_collected),0))}</div>
-                <div class="kpi-sub">${financeDeals.length} deals</div>
-            </div>
-            <div class="kpi-card" style="padding:12px">
-                <div class="kpi-label">Unspecified</div>
-                <div style="font-size:18px;font-weight:700;color:var(--text-muted)">${fmtCurrency(unknownDeals.reduce((s,d)=>s+safeNum(d.cash_collected),0))}</div>
-                <div class="kpi-sub">${unknownDeals.length} deals</div>
-            </div>
-        </div>
-    `;
+        function ini(name) {
+            return (name || '').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+        }
 
-    // Revenue trend chart
-    renderRevenueTrendChart('revTrendChart', deals);
+        function esc(s) {
+            return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        }
 
-    // Deals table
-    renderTable(tableEl, [
-        { key: 'date', label: 'Date', fmt: 'date' },
-        { key: 'closer', label: 'Closer' },
-        { key: 'client_name', label: 'Client' },
-        { key: 'cash_collected', label: 'Cash Collected', fmt: 'currency' },
-        { key: 'total_value', label: 'Total Value', fmt: 'currency' },
-        { key: 'lead_source', label: 'Source', fmt: 'badge' },
-        { key: 'package', label: 'Package' }
-    ], deals);
-}
+        // --- Period ---
+        function setPeriod(p) {
+            period = p;
+            document.querySelectorAll('.ptab').forEach(t => t.classList.toggle('active', t.dataset.p === p));
+            const lbl = { today: 'TODAY', week: 'THIS WEEK', month: 'THIS MONTH' };
+            document.getElementById('period-lbl').textContent = lbl[p];
+            load();
+        }
 
-// ============================================================
-// TAB: PIPELINE
-// ============================================================
-async function loadPipeline() {
-    const kpiEl = document.getElementById('pipe-kpis');
-    const kanbanEl = document.getElementById('pipe-kanban');
-    const alertEl = document.getElementById('pipe-follow-up-alert');
-    showSkeleton(kpiEl, 'kpi', 4);
-    kanbanEl.innerHTML = '<div class="skeleton skel-table" style="height:300px"></div>';
+        // --- Main load ---
+        async function load() {
+            document.getElementById('last-upd').textContent = 'Loading...';
+            const { s, e } = getRange();
+            const wof = getWeekOf();
+            const [qualLeads, setterLogs, closerLogs, closedDeals, routerLogs, webinarLogs, creditLogs, adMetrics, team, constraints, tasks] = await Promise.all([
+                q('lgh_qualifier_leads', `select=id,created_at&created_at=gte.${s}&created_at=lte.${e}T23:59:59`),
+                q('setter_logs', `select=*&date=gte.${s}&date=lte.${e}`),
+                q('closer_logs', `select=*&week_of=gte.${wof}`),
+                q('closed_deals', `select=*&closed_at=gte.${s}&closed_at=lte.${e}T23:59:59`),
+                q('router_logs', `select=*&date=gte.${s}&date=lte.${e}`),
+                q('webinar_logs', `select=*&date=gte.${s}&date=lte.${e}`),
+                q('credit_repair', `select=*&week_of=gte.${wof}`),
+                q('ad_metrics', `select=*&date=gte.${s}&date=lte.${e}`),
+                q('team_members', 'select=*&order=name.asc'),
+                q('constraints_tracker', 'select=*&order=created_at.desc&limit=1'),
+                q('dashboard_tasks', 'select=*&order=priority.asc,due_date.asc'),
+            ]);
+            teamData = team;
+            populateDropdowns(team);
 
-    try {
-        const data = await queryAll('sales_pipeline', '&order=updated_at.desc');
-        const stages = ['lead', 'booked', 'showed', 'closed', 'lost'];
-        const byStage = {};
-        stages.forEach(s => byStage[s] = []);
-        data.forEach(p => {
-            const s = p.stage || 'lead';
-            if (byStage[s]) byStage[s].push(p);
-            else byStage['lead'].push(p);
-        });
+            // -- CEO SCOREBOARD --
+            const leads = qualLeads.length;
+            const sets = setterLogs.reduce((a, r) => a + n(r.calls_booked), 0);
+            const shows = setterLogs.reduce((a, r) => a + n(r.calls_showed), 0);
+            const closes = closerLogs.reduce((a, r) => a + n(r.deals_closed), 0);
+            const cashCD = closedDeals.reduce((a, d) => a + n(d.cash_collected || d.amount), 0);
+            const cashCL = closerLogs.reduce((a, r) => a + n(r.revenue_collected), 0);
+            const cash = cashCD + cashCL;
+            const showPct = sets > 0 ? Math.round(shows / sets * 100) : 0;
+            const closePct = closes > 0 && sets > 0 ? Math.round(closes / sets * 100) : 0;
 
-        const active = data.filter(p => !['closed','lost'].includes(p.stage));
-        const totalValue = active.reduce((s, p) => s + safeNum(p.cash_available), 0);
-        const followUps = data.filter(p => p.follow_up_date && p.follow_up_date <= todayStr() && !['closed','lost'].includes(p.stage));
+            document.getElementById('hero-grid').innerHTML = `
+                <div class="hero-card"><div class="hc-label">Leads</div><div class="hc-value">${leads}</div><div class="hc-sub">Qualifier applicants</div></div>
+                <div class="hero-card"><div class="hc-label">Sets</div><div class="hc-value">${sets}</div><div class="hc-sub">Calls booked</div></div>
+                <div class="hero-card"><div class="hc-label">Shows</div><div class="hc-value">${shows}</div><div class="hc-sub">Show rate: ${showPct}%</div></div>
+                <div class="hero-card"><div class="hc-label">Closes</div><div class="hc-value">${closes}</div><div class="hc-sub">Close rate: ${closePct}%</div></div>
+                <div class="hero-card accent"><div class="hc-label">Cash Collected</div><div class="hc-value">${fmt(cash)}</div><div class="hc-sub">Period total</div></div>
+            `;
 
-        renderKPIs(kpiEl, [
-            { label: 'Total Prospects', value: fmtNum(data.length), color: 'blue' },
-            { label: 'Active Pipeline', value: fmtNum(active.length), color: 'green', sub: `${fmtCurrency(totalValue)} est. value` },
-            { label: 'Follow-Ups Due', value: fmtNum(followUps.length), color: followUps.length > 0 ? 'red' : 'green' },
-            { label: 'Win Rate', value: data.length > 0 ? fmtPct((byStage.closed.length / data.length) * 100) : 'N/A', color: 'purple' }
-        ]);
+            const pct = Math.min(100, Math.round(cash / WEEKLY_TARGET * 100));
+            document.getElementById('rv-cur').textContent = fmt(cash);
+            document.getElementById('rv-pct').textContent = pct + '%';
+            document.getElementById('rv-fill').style.width = pct + '%';
 
-        if (followUps.length > 0) alertEl.textContent = `${followUps.length} follow-up(s) overdue!`;
-        else alertEl.textContent = '';
+            // -- DEPARTMENTS --
+            const rCalls = routerLogs.reduce((a,r) => a + n(r.calls_made), 0);
+            const rRegs = routerLogs.reduce((a,r) => a + n(r.webbi_registrations), 0);
+            const rSets = routerLogs.reduce((a,r) => a + n(r.qualified_sets), 0);
+            const rCRM = routerLogs.length ? Math.round(routerLogs.reduce((a,r) => a + n(r.crm_accuracy_pct), 0) / routerLogs.length) : 0;
+            const sDials = setterLogs.reduce((a,r) => a + n(r.webbi_leads_contacted), 0);
+            const sReroute = setterLogs.reduce((a,r) => a + n(r.webbi_reroutes), 0);
+            const cCalls = closerLogs.reduce((a,r) => a + n(r.calls_taken), 0);
+            const cNS = closerLogs.reduce((a,r) => a + n(r.no_shows), 0);
+            const cRate = cCalls > 0 ? Math.round(closes / cCalls * 100) : 0;
+            const wRegs = webinarLogs.reduce((a,r) => a + n(r.registrations), 0);
+            const wShows = webinarLogs.reduce((a,r) => a + n(r.shows), 0);
+            const wSRate = wRegs > 0 ? Math.round(wShows / wRegs * 100) : 0;
+            const wWatch = webinarLogs.length ? Math.round(webinarLogs.reduce((a,r) => a + n(r.watch_time_pct), 0) / webinarLogs.length) : 0;
+            const wBooked = webinarLogs.reduce((a,r) => a + n(r.calls_booked), 0);
+            const wRev = webinarLogs.reduce((a,r) => a + n(r.revenue), 0);
+            const aSpend = adMetrics.reduce((a,r) => a + n(r.spend), 0);
+            const aLeads = adMetrics.reduce((a,r) => a + n(r.leads), 0);
+            const aCPL = aLeads > 0 ? Math.round(aSpend / aLeads) : 0;
+            const aCPQS = rSets > 0 && aSpend > 0 ? Math.round(aSpend / rSets) : 0;
+            const crNew = creditLogs.reduce((a,r) => a + n(r.new_clients), 0);
+            const crActive = creditLogs.reduce((a,r) => a + n(r.active_clients), 0);
+            const crFund = creditLogs.reduce((a,r) => a + n(r.funding_ready), 0);
+            const crStall = creditLogs.reduce((a,r) => a + n(r.stalled_clients), 0);
+            const crSweep = creditLogs.reduce((a,r) => a + n(r.sweeps_started), 0);
 
-        const stageColors = { lead: 'purple', booked: 'yellow', showed: 'blue', closed: 'green', lost: 'red' };
-        kanbanEl.innerHTML = stages.map(stage => `
-            <div class="kanban-col">
-                <div class="kanban-col-title" style="color:var(--${stageColors[stage]})">
-                    ${capitalize(stage)} <span class="count">${byStage[stage].length}</span>
-                </div>
-                ${byStage[stage].length === 0 ? '<div style="color:var(--text-muted);font-size:11px;text-align:center;padding:20px">Empty</div>' :
-                byStage[stage].map(p => `
-                    <div class="pipeline-card">
-                        <strong>${p.prospect_name || 'Unknown'}</strong>
-                        ${p.closer ? `<div class="detail">Closer: ${capitalize(p.closer)}</div>` : ''}
-                        ${p.cash_available ? `<div class="detail">${fmtCurrency(p.cash_available)} available</div>` : ''}
-                        ${p.follow_up_date ? `<div class="detail" style="${p.follow_up_date <= todayStr() ? 'color:var(--accent)' : ''}">${p.follow_up_date <= todayStr() ? 'OVERDUE: ' : 'Follow-up: '}${fmtDate(p.follow_up_date)}</div>` : ''}
-                        ${p.location ? `<div class="detail">${p.location}</div>` : ''}
+            document.getElementById('dept-grid').innerHTML = `
+                <div class="dept-card">
+                    <div class="dept-title">ROUTERS</div>
+                    <div class="dept-stats">
+                        <div><div class="ds-label">Calls</div><div class="ds-value">${rCalls}</div></div>
+                        <div><div class="ds-label">Regs</div><div class="ds-value">${rRegs}</div></div>
+                        <div><div class="ds-label">Sets</div><div class="ds-value dv-red">${rSets}</div></div>
+                        <div><div class="ds-label">CRM%</div><div class="ds-value dv-gold">${rCRM}%</div></div>
                     </div>
-                `).join('')}
-            </div>
-        `).join('');
-    } catch (err) {
-        renderError(kpiEl, err);
-        renderError(kanbanEl, err);
-    }
-}
+                </div>
+                <div class="dept-card">
+                    <div class="dept-title">SETTERS</div>
+                    <div class="dept-stats">
+                        <div><div class="ds-label">Dials</div><div class="ds-value">${sDials}</div></div>
+                        <div><div class="ds-label">Sets</div><div class="ds-value dv-red">${sets}</div></div>
+                        <div><div class="ds-label">Shows</div><div class="ds-value dv-green">${shows}</div></div>
+                        <div><div class="ds-label">Reroutes</div><div class="ds-value">${sReroute}</div></div>
+                    </div>
+                </div>
+                <div class="dept-card">
+                    <div class="dept-title">CLOSERS</div>
+                    <div class="dept-stats">
+                        <div><div class="ds-label">Calls</div><div class="ds-value">${cCalls}</div></div>
+                        <div><div class="ds-label">No-Shows</div><div class="ds-value dv-red">${cNS}</div></div>
+                        <div><div class="ds-label">Closes</div><div class="ds-value dv-green">${closes}</div></div>
+                        <div><div class="ds-label">Close%</div><div class="ds-value dv-gold">${cRate}%</div></div>
+                        <div class="span2"><div class="ds-label">Cash Collected</div><div class="ds-value dv-red">${fmt(cashCL || cashCD)}</div></div>
+                    </div>
+                </div>
+                <div class="dept-card">
+                    <div class="dept-title">WEBINAR</div>
+                    <div class="dept-stats">
+                        <div><div class="ds-label">Regs</div><div class="ds-value">${wRegs}</div></div>
+                        <div><div class="ds-label">Show%</div><div class="ds-value dv-gold">${wSRate}%</div></div>
+                        <div><div class="ds-label">Watch%</div><div class="ds-value">${wWatch}%</div></div>
+                        <div><div class="ds-label">Booked</div><div class="ds-value dv-red">${wBooked}</div></div>
+                        <div class="span2"><div class="ds-label">Rev/Webinar</div><div class="ds-value dv-green">${fmt(wRev)}</div></div>
+                    </div>
+                </div>
+                <div class="dept-card">
+                    <div class="dept-title">ADS</div>
+                    <div class="dept-stats">
+                        <div><div class="ds-label">Spend</div><div class="ds-value dv-red">${fmt(aSpend)}</div></div>
+                        <div><div class="ds-label">Leads</div><div class="ds-value">${aLeads}</div></div>
+                        <div><div class="ds-label">CPL</div><div class="ds-value dv-gold">${fmt(aCPL)}</div></div>
+                        <div><div class="ds-label">CPQS</div><div class="ds-value">${fmt(aCPQS)}</div></div>
+                    </div>
+                </div>
+                <div class="dept-card">
+                    <div class="dept-title">CREDIT</div>
+                    <div class="dept-stats">
+                        <div><div class="ds-label">Sweeps</div><div class="ds-value">${crSweep}</div></div>
+                        <div><div class="ds-label">Active</div><div class="ds-value dv-red">${crActive}</div></div>
+                        <div><div class="ds-label">Funding Ready</div><div class="ds-value dv-green">${crFund}</div></div>
+                        <div><div class="ds-label">Stalled</div><div class="ds-value dv-gold">${crStall}</div></div>
+                    </div>
+                </div>
+                <div class="dept-card">
+                    <div class="dept-title">EA / OPS</div>
+                    <div class="dept-stats">
+                        <div><div class="ds-label">New Clients</div><div class="ds-value">${crNew}</div></div>
+                        <div><div class="ds-label">Team Size</div><div class="ds-value dv-red">${team.length}</div></div>
+                        <div><div class="ds-label">Active</div><div class="ds-value dv-green">${team.filter(m=>m.is_active).length}</div></div>
+                        <div><div class="ds-label">Leads</div><div class="ds-value dv-gold">${leads}</div></div>
+                    </div>
+                </div>
+            `;
 
-// ============================================================
-// TAB: CLOSERS (extended with radar chart)
-// ============================================================
-async function loadClosers() {
-    await loadTeamTab('closers');
+            // -- FINANCIAL HEALTH --
+            const nowD = new Date();
+            const mStart = new Date(nowD.getFullYear(), nowD.getMonth(), 1).toISOString().split('T')[0];
+            const [monthDeals, monthCloserLogs] = await Promise.all([
+                q('closed_deals', `select=amount,cash_collected&closed_at=gte.${mStart}`),
+                q('closer_logs', `select=revenue_collected&week_of=gte.${mStart}`),
+            ]);
+            const monthRev = monthDeals.reduce((a, d) => a + n(d.cash_collected || d.amount), 0) + monthCloserLogs.reduce((a, r) => a + n(r.revenue_collected), 0);
+            const periodLabel = { today: 'Today', week: 'This Week', month: 'This Month' }[period] || 'Period';
+            const margin = cash > 0 && aSpend > 0 ? Math.round((cash - aSpend) / cash * 100) : (cash > 0 ? 100 : 0);
 
-    // Also load call reviews for radar chart
-    const radarCanvas = document.getElementById('closerRadarChart');
-    const breakdownEl = document.getElementById('closers-breakdown');
-    breakdownEl.innerHTML = '<div class="skeleton skel-table" style="height:120px"></div>';
+            document.getElementById('fin-grid').innerHTML = `
+                <div class="fin-card"><div class="fc-label">Period Rev</div><div class="fc-value">${fmt(cash)}</div><div class="fc-sub">${periodLabel}</div></div>
+                <div class="fin-card"><div class="fc-label">Monthly Rev</div><div class="fc-value">${fmt(monthRev)}</div><div class="fc-sub">Current month</div></div>
+                <div class="fin-card"><div class="fc-label">Ad Spend</div><div class="fc-value" style="color:var(--red)">${fmt(aSpend)}</div><div class="fc-sub">Period spend</div></div>
+                <div class="fin-card"><div class="fc-label">Gross Margin</div><div class="fc-value" style="color:var(--gold)">${margin}%</div><div class="fc-sub">${aSpend > 0 ? 'After ad spend' : 'No ad data yet'}</div></div>
+            `;
 
-    try {
-        const reviews = await query('call_reviews', 'call_date', state.dateStart, state.dateEnd);
-        if (!reviews || reviews.length === 0) {
-            renderEmpty(breakdownEl, 'No call reviews for this period.');
-            return;
+            // -- CONSTRAINTS --
+            if (constraints.length > 0) {
+                const c = constraints[0].constraint_area;
+                showConstraint(c);
+            }
+
+            // -- TEAM ROSTER --
+            if (!team.length) {
+                document.getElementById('team-grid').innerHTML = '<div class="empty">No team members found</div>';
+            } else {
+                document.getElementById('team-grid').innerHTML = team.map(m => `
+                    <div class="team-card" onclick="openMemberDetail('${esc(m.name)}', '${esc(m.role)}', '${esc(m.phone || '')}')">
+                        <button class="delete-btn" onclick="event.stopPropagation(); promptDeleteMember('${m.id}', '${esc(m.name)}')" title="Delete member">&#10005;</button>
+                        <div class="avatar">${ini(m.name)}</div>
+                        <div class="t-name"><span class="sdot${m.is_active ? '' : ' off'}"></span>${m.name.split(' ')[0]}</div>
+                        <div class="t-role">${esc(m.role)}</div>
+                        ${m.phone ? `<div class="t-contact">${esc(m.phone)}</div>` : ''}
+                    </div>
+                `).join('');
+            }
+
+            // -- TASKS --
+            renderTasks(tasks);
+
+            document.getElementById('last-upd').textContent = 'Updated ' + new Date().toLocaleTimeString();
         }
 
-        // Normalize closer names
-        const CLOSER_NAMES = { 'andrew (ak)': 'AK', 'andrew (a.k.)': 'AK', 'ak': 'AK', 'andrew': 'AK', 'derrick furlow': 'Derrick Furlow', 'derrick': 'Derrick Furlow', 'unknown': null };
-        const normCloser = (name) => { const key = (name || '').toLowerCase().trim(); return CLOSER_NAMES[key] !== undefined ? CLOSER_NAMES[key] : name; };
+        // --- Constraint ---
+        function showConstraint(area) {
+            document.querySelectorAll('.cbtn').forEach(b => b.classList.toggle('active', b.dataset.c === area));
+            const el = document.getElementById('con-active');
+            if (area) {
+                el.style.display = 'flex';
+                document.getElementById('con-val').textContent = area.toUpperCase();
+            } else {
+                el.style.display = 'none';
+            }
+        }
 
-        // Aggregate by closer
-        const byCloser = {};
-        const scoreFields = ['score_rapport','score_discovery','score_pain_building','score_objection_handling','score_close_strength','score_revenue_protection'];
-        reviews.forEach(r => {
-            const c = normCloser(r.closer) || 'Unknown';
-            if (!byCloser[c]) byCloser[c] = { count: 0, scores: {} };
-            byCloser[c].count++;
-            scoreFields.forEach(f => {
-                if (r[f] != null) {
-                    if (!byCloser[c].scores[f]) byCloser[c].scores[f] = [];
-                    byCloser[c].scores[f].push(safeNum(r[f]));
+        async function setConstraint(area) {
+            showConstraint(area);
+            const note = document.getElementById('con-note');
+            note.textContent = 'Saving...';
+            note.className = 'constraint-note';
+            try {
+                const r = await ins('constraints_tracker', {
+                    week_of: getWeekOf(),
+                    constraint_area: area
+                });
+                if (r.ok) {
+                    note.textContent = area + ' saved as this week\'s constraint';
+                    note.style.color = 'var(--green)';
+                } else {
+                    const err = await r.json().catch(() => ({}));
+                    note.textContent = err.code === 'PGRST205' ? 'Run setup SQL in Supabase to enable saving.' : 'Not saved: ' + (err.message || 'Error');
+                    note.style.color = 'var(--gold)';
                 }
-            });
-        });
+            } catch {
+                note.textContent = 'Connection error';
+                note.style.color = 'var(--red)';
+            }
+        }
 
-        // Radar chart with avg scores across all closers
-        const labels = ['Rapport','Discovery','Pain Building','Objection Handling','Close Strength','Revenue Protection'];
-        const datasets = Object.entries(byCloser).map(([name, data], i) => {
-            const colors = ['rgba(204,34,34,','rgba(232,53,53,','rgba(255,76,76,','rgba(180,40,40,','rgba(255,100,100,','rgba(150,25,25,'];
-            const color = colors[i % colors.length];
-            return {
-                label: capitalize(name),
-                data: scoreFields.map(f => {
-                    const vals = data.scores[f] || [];
-                    return vals.length > 0 ? (vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1) : 0;
-                }),
-                backgroundColor: color + '0.1)',
-                borderColor: color + '0.8)',
-                borderWidth: 2,
-                pointRadius: 3
+        // --- Tasks ---
+        function renderTasks(tasks) {
+            const el = document.getElementById('task-list');
+            if (!tasks || !tasks.length) {
+                el.innerHTML = '<div class="empty">No tasks yet -- click "+ Add Task" to create one.</div>';
+                return;
+            }
+            el.innerHTML = tasks.map(t => {
+                const st = t.status || 'pending';
+                const pr = t.priority || 'medium';
+                return `<div class="task-row">
+                    <div class="task-bar tb-${pr}"></div>
+                    <span class="task-status ts-${st}" onclick="cycleTask('${t.id}','${st}')">${st.replace('_',' ')}</span>
+                    <div class="task-title">${esc(t.title)}</div>
+                    <div class="task-who">${t.assigned_to ? esc(t.assigned_to) : '\u2014'}</div>
+                    <div class="task-due">${t.due_date || '\u2014'}</div>
+                </div>`;
+            }).join('');
+        }
+
+        async function cycleTask(id, cur) {
+            const next = { pending: 'in_progress', in_progress: 'done', done: 'pending' }[cur] || 'pending';
+            const r = await upd('dashboard_tasks', id, { status: next });
+            if (r.ok) {
+                const tasks = await q('dashboard_tasks', 'select=*&order=priority.asc,due_date.asc');
+                renderTasks(tasks);
+            }
+        }
+
+        function openTask() {
+            document.getElementById('task-overlay').classList.add('open');
+            document.getElementById('t-due').value = new Date().toISOString().split('T')[0];
+        }
+
+        function closeTask() {
+            document.getElementById('task-overlay').classList.remove('open');
+            document.getElementById('t-msg').textContent = '';
+        }
+
+        async function submitTask() {
+            const title = document.getElementById('t-title').value.trim();
+            const msg = document.getElementById('t-msg');
+            if (!title) {
+                msg.textContent = 'Please enter a title';
+                msg.className = 'form-msg msg-err';
+                return;
+            }
+            const r = await ins('dashboard_tasks', {
+                title,
+                assigned_to: document.getElementById('t-assigned').value || null,
+                priority: document.getElementById('t-priority').value,
+                due_date: document.getElementById('t-due').value || null,
+                category: document.getElementById('t-cat').value,
+                status: 'pending',
+            });
+            if (r.ok) {
+                msg.textContent = 'Task added!';
+                msg.className = 'form-msg msg-ok';
+                document.getElementById('t-title').value = '';
+                setTimeout(() => {
+                    closeTask();
+                    load();
+                }, 1200);
+            } else {
+                const err = await r.json().catch(() => ({}));
+                msg.textContent = err.code === 'PGRST205' ? 'Run setup SQL to enable tasks.' : 'Error: ' + (err.message || 'Unknown');
+                msg.className = 'form-msg msg-err';
+            }
+        }
+
+        // --- Report modal ---
+        const ROLE_FIELDS = {
+            router: [
+                { id:'calls_made', label:'Calls Made', type:'number' },
+                { id:'conversations', label:'Conversations', type:'number' },
+                { id:'webbi_registrations', label:'Webbi Registrations', type:'number' },
+                { id:'qualified_sets', label:'Qualified Sets', type:'number' },
+                { id:'crm_accuracy_pct', label:'CRM Accuracy %', type:'number', ph:'95' },
+            ],
+            setter: [
+                { id:'webbi_leads_contacted',label:'Dials / Leads Contacted',type:'number' },
+                { id:'calls_booked', label:'Calls Booked (Sets)', type:'number' },
+                { id:'calls_showed', label:'Calls Showed', type:'number' },
+                { id:'webbi_reroutes', label:'Webbi Reroutes', type:'number' },
+                { id:'notes', label:'Notes', type:'text', span:true },
+            ],
+            closer: [
+                { id:'calls_taken', label:'Calls Taken', type:'number' },
+                { id:'calls_booked', label:'Follow-Up Booked', type:'number' },
+                { id:'no_shows', label:'No-Shows', type:'number' },
+                { id:'deals_closed', label:'Deals Closed', type:'number' },
+                { id:'revenue_collected', label:'Revenue Collected ($)', type:'number' },
+                { id:'notes', label:'Notes', type:'text', span:true },
+            ],
+            credit: [
+                { id:'new_clients', label:'New Clients', type:'number' },
+                { id:'sweeps_started', label:'Sweeps Started', type:'number' },
+                { id:'active_clients', label:'Active Clients', type:'number' },
+                { id:'funding_ready', label:'Funding Ready', type:'number' },
+                { id:'stalled_clients', label:'Stalled Clients', type:'number' },
+                { id:'notes', label:'Notes', type:'text', span:true },
+            ],
+        };
+
+        const ROLE_TABLE = {
+            router:'router_logs',
+            setter:'setter_logs',
+            closer:'closer_logs',
+            credit:'credit_repair'
+        };
+
+        function getRoleType(role) {
+            const r = (role || '').toLowerCase();
+            if (r.includes('router')) return 'router';
+            if (r.includes('setter') || r.includes('book calls')) return 'setter';
+            if (r.includes('closer') || r.includes('sales advisor')) return 'closer';
+            if (r.includes('credit')) return 'credit';
+            return null;
+        }
+
+        function openReport() {
+            document.getElementById('report-overlay').classList.add('open');
+        }
+
+        function closeReport() {
+            document.getElementById('report-overlay').classList.remove('open');
+            document.getElementById('r-name').value = '';
+            document.getElementById('r-role').value = '';
+            document.getElementById('r-fields').innerHTML = '';
+            document.getElementById('r-submit').disabled = true;
+            document.getElementById('r-msg').textContent = '';
+        }
+
+        function onNameChange() {
+            const name = document.getElementById('r-name').value;
+            const m = teamData.find(x => x.name === name);
+            const roleEl = document.getElementById('r-role');
+            if (!m) {
+                roleEl.value = '';
+                document.getElementById('r-fields').innerHTML = '';
+                document.getElementById('r-submit').disabled = true;
+                return;
+            }
+            roleEl.value = m.role;
+            const rt = getRoleType(m.role);
+            const fields = rt ? ROLE_FIELDS[rt] : null;
+            if (!fields) {
+                document.getElementById('r-fields').innerHTML = '<div style="color:var(--muted);font-size:.82rem;margin:.5rem 0">No form configured for this role yet.</div>';
+                document.getElementById('r-submit').disabled = true;
+                return;
+            }
+            document.getElementById('r-fields').innerHTML = '<div class="fg2" style="margin-top:.5rem">' + fields.map(f => `<div class="fg"${f.span ? ' style="grid-column:1/-1"' : ''}>
+                <label class="fl">${f.label}</label>
+                <input class="fc" id="rf-${f.id}" type="${f.type}" placeholder="${f.ph || (f.type === 'number' ? '0' : '')}">
+            </div>`).join('') + '</div>';
+            document.getElementById('r-submit').disabled = false;
+        }
+
+        async function submitReport() {
+            const name = document.getElementById('r-name').value;
+            const m = teamData.find(x => x.name === name);
+            if (!m) return;
+            const rt = getRoleType(m.role);
+            const fields = rt ? ROLE_FIELDS[rt] : null;
+            if (!fields) return;
+            const today = new Date().toISOString().split('T')[0];
+            const wof = getWeekOf();
+            const data = { team_member: name };
+            if (rt === 'closer' || rt === 'credit') data.week_of = wof;
+            else data.date = today;
+            for (const f of fields) {
+                const el = document.getElementById('rf-' + f.id);
+                if (!el) continue;
+                data[f.id] = f.type === 'number' ? (el.value === '' ? 0 : Number(el.value)) : (el.value || null);
+            }
+            if (rt === 'closer') {
+                const c = n(data.calls_taken), d = n(data.deals_closed);
+                data.close_rate_pct = c > 0 ? Math.round(d / c * 100) : 0;
+            }
+            const btn = document.getElementById('r-submit');
+            const msg = document.getElementById('r-msg');
+            btn.disabled = true;
+            btn.textContent = 'Submitting...';
+            const r = await ins(ROLE_TABLE[rt], data);
+            if (r.ok) {
+                msg.textContent = 'Report submitted!';
+                msg.className = 'form-msg msg-ok';
+                setTimeout(() => {
+                    closeReport();
+                    load();
+                }, 1400);
+            } else {
+                const err = await r.json().catch(() => ({}));
+                msg.textContent = err.code === 'PGRST205' ? 'Table "' + ROLE_TABLE[rt] + '" not created yet. Run setup SQL.' : 'Error: ' + (err.message || JSON.stringify(err));
+                msg.className = 'form-msg msg-err';
+                btn.disabled = false;
+                btn.textContent = 'Submit Report';
+            }
+        }
+
+        // --- Populate dropdowns ---
+        function populateDropdowns(team) {
+            const opts = team.map(m => `<option value="${esc(m.name)}">${esc(m.name)} (${esc(m.role)})</option>`).join('');
+            document.getElementById('r-name').innerHTML = '<option value="">Select your name...</option>' + opts;
+            const taskOpts = team.map(m => `<option value="${esc(m.name)}">${esc(m.name)}</option>`).join('');
+            document.getElementById('t-assigned').innerHTML = '<option value="">Unassigned</option>' + taskOpts;
+        }
+
+        // --- Add Member Modal ---
+        function openAddMember() {
+            document.getElementById('addmember-overlay').classList.add('open');
+            document.getElementById('am-first').value = '';
+            document.getElementById('am-last').value = '';
+            document.getElementById('am-role').value = '';
+            document.getElementById('am-phone').value = '';
+            document.getElementById('am-msg').textContent = '';
+        }
+
+        function closeAddMember() {
+            document.getElementById('addmember-overlay').classList.remove('open');
+        }
+
+        async function submitAddMember() {
+            const first = document.getElementById('am-first').value.trim();
+            const last = document.getElementById('am-last').value.trim();
+            const role = document.getElementById('am-role').value;
+            const phone = document.getElementById('am-phone').value.trim();
+            const msg = document.getElementById('am-msg');
+
+            if (!first || !last) {
+                msg.textContent = 'First and last name are required';
+                msg.className = 'form-msg msg-err';
+                return;
+            }
+            if (!role) {
+                msg.textContent = 'Please select a role';
+                msg.className = 'form-msg msg-err';
+                return;
+            }
+
+            const fullName = first + ' ' + last;
+            const data = {
+                name: fullName,
+                first_name: first,
+                last_name: last,
+                role: role,
+                is_active: true
             };
-        });
+            if (phone) data.phone = phone;
 
-        renderRadarChart(radarCanvas, labels, datasets);
+            msg.textContent = 'Adding...';
+            msg.className = 'form-msg';
+            const r = await ins('team_members', data);
+            if (r.ok) {
+                msg.textContent = fullName + ' added!';
+                msg.className = 'form-msg msg-ok';
+                setTimeout(() => {
+                    closeAddMember();
+                    load();
+                }, 1200);
+            } else {
+                const err = await r.json().catch(() => ({}));
+                msg.textContent = 'Error: ' + (err.message || 'Unknown');
+                msg.className = 'form-msg msg-err';
+            }
+        }
 
-        // Breakdown list
-        breakdownEl.innerHTML = Object.entries(byCloser).map(([name, data]) => {
-            const avgScores = scoreFields.map(f => {
-                const vals = data.scores[f] || [];
-                return vals.length ? (vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1) : 'N/A';
+        // --- Delete Member (PIN protected) ---
+        function promptDeleteMember(id, name) {
+            pendingDeleteId = id;
+            document.getElementById('pin-input').value = '';
+            document.getElementById('pin-msg').textContent = 'Deleting: ' + name;
+            document.getElementById('pin-msg').className = 'form-msg';
+            document.getElementById('pin-msg').style.color = 'var(--muted)';
+            document.getElementById('pin-overlay').classList.add('open');
+            setTimeout(() => document.getElementById('pin-input').focus(), 100);
+        }
+
+        function closePin() {
+            document.getElementById('pin-overlay').classList.remove('open');
+            pendingDeleteId = null;
+        }
+
+        async function confirmPin() {
+            const pin = document.getElementById('pin-input').value;
+            const msg = document.getElementById('pin-msg');
+            if (pin !== '0225') {
+                msg.textContent = 'Incorrect PIN';
+                msg.className = 'form-msg msg-err';
+                msg.style.color = '';
+                document.getElementById('pin-input').value = '';
+                return;
+            }
+            if (!pendingDeleteId) return;
+            msg.textContent = 'Deleting...';
+            msg.className = 'form-msg';
+            msg.style.color = 'var(--muted)';
+            const r = await del('team_members', pendingDeleteId);
+            if (r.ok) {
+                msg.textContent = 'Member deleted';
+                msg.className = 'form-msg msg-ok';
+                msg.style.color = '';
+                setTimeout(() => {
+                    closePin();
+                    load();
+                }, 800);
+            } else {
+                msg.textContent = 'Error deleting member';
+                msg.className = 'form-msg msg-err';
+                msg.style.color = '';
+            }
+        }
+
+        // Handle Enter key on PIN input
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('pin-input').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') confirmPin();
             });
-            const overall = avgScores.filter(s => s !== 'N/A');
-            const avg = overall.length ? (overall.reduce((a,b)=>a+safeNum(b),0)/overall.length).toFixed(1) : 'N/A';
-            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.03)">
-                <div>
-                    <div style="font-size:13px;font-weight:500">${capitalize(name)}</div>
-                    <div style="font-size:11px;color:var(--text-muted)">${data.count} reviews</div>
+        });
+
+        // --- Member Detail Modal ---
+        function closeMemberDetail() {
+            document.getElementById('member-overlay').classList.remove('open');
+        }
+
+        async function openMemberDetail(name, role, phone) {
+            const overlay = document.getElementById('member-overlay');
+            const content = document.getElementById('member-detail-content');
+            overlay.classList.add('open');
+            content.innerHTML = '<div class="spinning">Loading reports...</div>';
+
+            const rt = getRoleType(role);
+            const table = rt ? ROLE_TABLE[rt] : null;
+            const fields = rt ? ROLE_FIELDS[rt] : null;
+
+            // Build header
+            let html = `<div class="member-detail-header">
+                <div class="avatar" style="width:56px;height:56px;font-size:1.1rem">${ini(name)}</div>
+                <div class="member-detail-info">
+                    <div class="md-name">${esc(name)}</div>
+                    <div class="md-role">${esc(role)}</div>
+                    ${phone ? '<div class="md-phone">' + esc(phone) + '</div>' : ''}
                 </div>
-                <div style="font-size:18px;font-weight:700;color:var(--blue)">${avg}/10</div>
             </div>`;
-        }).join('');
-    } catch (err) {
-        renderError(breakdownEl, err);
-    }
-}
 
-// ============================================================
-// TAB: AI & WEBINAR
-// ============================================================
-async function loadAIWebinar() {
-    const kpiEl = document.getElementById('ai-kpis');
-    const funnelEl = document.getElementById('ai-funnel');
-    const aiTableEl = document.getElementById('ai-table');
-    const webTableEl = document.getElementById('webinar-table');
-    showSkeleton(kpiEl, 'kpi', 4);
-    [funnelEl, aiTableEl, webTableEl].forEach(e => e.innerHTML = '<div class="skeleton skel-table" style="height:100px"></div>');
-
-    const { start, end } = { start: state.dateStart, end: state.dateEnd };
-
-    const results = await Promise.allSettled([
-        query('ai_team_logs', 'week_of', start, end),
-        query('webinar_metrics', 'logged_date', start, end),
-        query('deals_closed', 'date', start, end),
-    ]);
-
-    const [aiData, webData, dealData] = results.map(r => r.status === 'fulfilled' ? r.value : []);
-
-    const leads = aiData.reduce((s, r) => s + safeNum(r.total_leads_generated), 0);
-    const regs = aiData.reduce((s, r) => s + safeNum(r.webbi_registrations), 0);
-    const shows = webData.reduce((s, w) => s + safeNum(w.attendees), 0);
-    const closes = dealData.length;
-
-    renderKPIs(kpiEl, [
-        { label: 'Leads Generated', value: fmtNum(leads), color: 'blue' },
-        { label: 'Registrations', value: fmtNum(regs), color: 'purple' },
-        { label: 'Webinar Attendees', value: fmtNum(shows), color: 'green' },
-        { label: 'Deals Closed', value: fmtNum(closes), color: 'cyan' }
-    ]);
-
-    // Funnel visualization
-    const funnelSteps = [
-        { label: 'Leads', value: leads, color: 'var(--blue)' },
-        { label: 'Registrations', value: regs, color: 'var(--purple)', rate: leads > 0 ? ((regs/leads)*100).toFixed(1)+'%' : '' },
-        { label: 'Shows', value: shows, color: 'var(--green)', rate: regs > 0 ? ((shows/regs)*100).toFixed(1)+'%' : '' },
-        { label: 'Closes', value: closes, color: 'var(--cyan)', rate: shows > 0 ? ((closes/shows)*100).toFixed(1)+'%' : '' }
-    ];
-    const maxVal = Math.max(...funnelSteps.map(s => s.value), 1);
-    funnelEl.innerHTML = funnelSteps.map(step => {
-        const width = Math.max((step.value / maxVal) * 100, 5);
-        return `<div style="margin-bottom:8px">
-            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px">
-                <span>${step.label}</span>
-                <span style="font-weight:600">${fmtNum(step.value)} ${step.rate ? `<span style="color:var(--text-muted)">(${step.rate})</span>` : ''}</span>
-            </div>
-            <div style="height:24px;background:rgba(255,255,255,0.03);border-radius:4px;overflow:hidden">
-                <div style="height:100%;width:${width}%;background:${step.color};border-radius:4px;transition:width .5s"></div>
-            </div>
-        </div>`;
-    }).join('');
-
-    // Webinar chart
-    renderWebinarChart(webData);
-
-    // Tables
-    renderTable(aiTableEl, [
-        { key: 'week_of', label: 'Date', fmt: 'date' },
-        { key: 'team_member', label: 'Member' },
-        { key: 'total_leads_generated', label: 'Leads', fmt: 'num' },
-        { key: 'webbi_registrations', label: 'Registrations', fmt: 'num' },
-        { key: 'registration_show_rate_pct', label: 'Show Rate', fmt: 'pct' },
-        { key: 'webbi_completion_rate_pct', label: 'Completion', fmt: 'pct' },
-        { key: 'notes', label: 'Notes' }
-    ], aiData);
-
-    renderTable(webTableEl, [
-        { key: 'logged_date', label: 'Date', fmt: 'date' },
-        { key: 'visitors', label: 'Visitors', fmt: 'num' },
-        { key: 'registrants', label: 'Registrants', fmt: 'num' },
-        { key: 'attendees', label: 'Attendees', fmt: 'num' },
-        { key: 'show_rate', label: 'Show Rate', fmt: 'pct' },
-        { key: 'completion_rate', label: 'Completion', fmt: 'pct' },
-        { key: 'offer_clicks', label: 'Offer Clicks', fmt: 'num' }
-    ], webData);
-}
-
-// ============================================================
-// TAB: ADS & ROAS
-// ============================================================
-async function loadAdsROAS() {
-    const kpiEl = document.getElementById('ads-kpis');
-    const tableEl = document.getElementById('ads-table');
-    showSkeleton(kpiEl, 'kpi', 4);
-    tableEl.innerHTML = '<div class="skeleton skel-table"></div>';
-
-    const { start, end } = { start: state.dateStart, end: state.dateEnd };
-
-    const results = await Promise.allSettled([
-        query('ad_metrics', 'week_start', start, end),
-        query('deals_closed', 'date', start, end),
-    ]);
-
-    const [adsData, dealsData] = results.map(r => r.status === 'fulfilled' ? r.value : []);
-
-    const totalSpend = adsData.reduce((s, a) => s + safeNum(a.spend), 0);
-    const totalClicks = adsData.reduce((s, a) => s + safeNum(a.clicks), 0);
-    const totalImpressions = adsData.reduce((s, a) => s + safeNum(a.impressions), 0);
-    const totalConversions = adsData.reduce((s, a) => s + safeNum(a.conversions), 0);
-    const avgCTR = totalImpressions > 0 ? (totalClicks / totalImpressions) * 100 : 0;
-
-    // Calculate real ROAS from ad-sourced deals
-    const adSources = ['facebook', 'meta', 'webinar', 'ad'];
-    const adRevenue = dealsData.filter(d => adSources.includes((d.lead_source || '').toLowerCase())).reduce((s, d) => s + safeNum(d.cash_collected), 0);
-    const roas = totalSpend > 0 ? adRevenue / totalSpend : 0;
-
-    renderKPIs(kpiEl, [
-        { label: 'Total Ad Spend', value: fmtCurrency(totalSpend), color: 'red', sub: `${adsData.length} weeks of data` },
-        { label: 'ROAS', value: roas > 0 ? roas.toFixed(2) + 'x' : 'N/A', color: roas >= 3 ? 'green' : roas >= 1 ? 'yellow' : 'red', sub: `${fmtCurrency(adRevenue)} ad-sourced revenue` },
-        { label: 'Avg CTR', value: fmtPct(avgCTR), color: 'blue', sub: `${fmtNum(totalClicks)} clicks / ${fmtNum(totalImpressions)} impressions` },
-        { label: 'Conversions', value: fmtNum(totalConversions), color: 'purple', sub: totalClicks > 0 ? `${((totalConversions/totalClicks)*100).toFixed(1)}% conv rate` : '' }
-    ]);
-
-    // Chart
-    renderAdSpendChart(adsData, dealsData);
-
-    // Table
-    renderTable(tableEl, [
-        { key: 'week_start', label: 'Week', fmt: 'date' },
-        { key: 'spend', label: 'Spend', fmt: 'currency' },
-        { key: 'clicks', label: 'Clicks', fmt: 'num' },
-        { key: 'impressions', label: 'Impressions', fmt: 'num' },
-        { key: 'ctr', label: 'CTR', fmt: 'pct' },
-        { key: 'conversions', label: 'Conversions', fmt: 'num' },
-        { key: 'roas', label: 'ROAS' },
-        { key: 'notes', label: 'Notes' }
-    ], adsData);
-}
-
-// ============================================================
-// TAB: TASKS
-// ============================================================
-async function loadTasks() {
-    const kanbanEl = document.getElementById('task-kanban');
-    kanbanEl.innerHTML = '<div class="skeleton skel-table" style="height:300px"></div>';
-
-    try {
-        const tasks = await queryAll('dashboard_tasks', '&order=created_at.desc');
-        const cols = { todo: [], in_progress: [], done: [] };
-        tasks.forEach(t => {
-            const s = t.status || 'todo';
-            if (cols[s]) cols[s].push(t);
-            else cols.todo.push(t);
-        });
-
-        const colConfig = [
-            { key: 'todo', label: 'To Do', color: 'var(--blue)' },
-            { key: 'in_progress', label: 'In Progress', color: 'var(--yellow)' },
-            { key: 'done', label: 'Done', color: 'var(--green)' }
-        ];
-
-        kanbanEl.innerHTML = colConfig.map(col => `
-            <div class="kanban-col">
-                <div class="kanban-col-title" style="color:${col.color}">
-                    ${col.label} <span class="count">${cols[col.key].length}</span>
-                </div>
-                ${cols[col.key].length === 0 ? '<div style="color:var(--text-muted);font-size:11px;text-align:center;padding:20px">No tasks</div>' :
-                cols[col.key].map(t => {
-                    const priorityClass = `priority-${t.priority || 'medium'}`;
-                    const isOverdue = t.due_date && t.due_date < todayStr() && t.status !== 'done';
-                    return `<div class="kanban-card" onclick="openTaskModal('${t.id}')">
-                        <div style="display:flex;align-items:center;gap:6px">
-                            <span class="priority-dot ${priorityClass}"></span>
-                            <h4>${t.title}</h4>
-                        </div>
-                        ${t.description ? `<p>${t.description.substring(0, 80)}${t.description.length > 80 ? '...' : ''}</p>` : ''}
-                        <div class="meta">
-                            ${t.assigned_to ? `<span class="badge badge-blue">${t.assigned_to}</span>` : ''}
-                            ${t.category ? `<span class="badge badge-purple">${t.category}</span>` : ''}
-                            ${t.due_date ? `<span class="badge ${isOverdue ? 'badge-red' : 'badge-green'}">${isOverdue ? 'OVERDUE ' : ''}${fmtDate(t.due_date)}</span>` : ''}
-                        </div>
-                        <div style="display:flex;gap:4px;margin-top:8px">
-                            ${t.status !== 'todo' ? `<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();moveTask('${t.id}','${t.status === 'done' ? 'in_progress' : 'todo'}')">Back</button>` : ''}
-                            ${t.status !== 'done' ? `<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();moveTask('${t.id}','${t.status === 'todo' ? 'in_progress' : 'done'}')">Next</button>` : ''}
-                            <button class="btn btn-ghost btn-sm" style="margin-left:auto;color:var(--accent)" onclick="event.stopPropagation();deleteTask('${t.id}')">Del</button>
-                        </div>
-                    </div>`;
-                }).join('')}
-            </div>
-        `).join('');
-    } catch (err) {
-        kanbanEl.innerHTML = `<div class="error-banner show" style="display:block">
-            <p>Could not load tasks: ${err.message}</p>
-            <p style="margin-top:8px;color:var(--text-secondary);font-size:11px">If the dashboard_tasks table doesn't exist yet, run the CREATE TABLE SQL in your Supabase SQL Editor.</p>
-        </div>`;
-    }
-}
-
-async function moveTask(id, newStatus) {
-    try {
-        await apiPatch('dashboard_tasks', id, { status: newStatus, updated_at: new Date().toISOString() });
-        loadTasks();
-    } catch (err) { alert('Failed to move task: ' + err.message); }
-}
-
-async function deleteTask(id) {
-    if (!confirm('Delete this task?')) return;
-    try {
-        await apiDelete('dashboard_tasks', id);
-        loadTasks();
-    } catch (err) { alert('Failed to delete task: ' + err.message); }
-}
-
-// ============================================================
-// CHART HELPERS (Chart.js)
-// ============================================================
-const CHART_DEFAULTS = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: { legend: { labels: { color: '#FFB3B3', font: { family: 'Inter', size: 11 } } } },
-    scales: {
-        x: { ticks: { color: '#6B7094', font: { size: 10 } }, grid: { color: 'rgba(204,34,34,0.08)' } },
-        y: { ticks: { color: '#6B7094', font: { size: 10 } }, grid: { color: 'rgba(204,34,34,0.08)' } }
-    }
-};
-
-function destroyChart(key) {
-    if (state.charts[key]) { state.charts[key].destroy(); delete state.charts[key]; }
-}
-
-function renderRevenueTrendChart(canvasId, deals) {
-    destroyChart(canvasId);
-    const canvas = document.getElementById(canvasId);
-    if (!canvas) return;
-
-    // Group by week
-    const byWeek = {};
-    deals.forEach(d => {
-        const dt = new Date(d.date + 'T12:00:00');
-        const weekStart = new Date(dt);
-        weekStart.setDate(dt.getDate() - dt.getDay());
-        const key = weekStart.toLocaleDateString('en-CA');
-        byWeek[key] = (byWeek[key] || 0) + safeNum(d.cash_collected);
-    });
-
-    const sorted = Object.entries(byWeek).sort((a, b) => a[0].localeCompare(b[0]));
-    if (sorted.length === 0) {
-        canvas.parentElement.innerHTML = '<div class="empty-state"><p>No revenue data to chart.</p></div>';
-        return;
-    }
-
-    state.charts[canvasId] = new Chart(canvas, {
-        type: 'line',
-        data: {
-            labels: sorted.map(([k]) => fmtDate(k)),
-            datasets: [{
-                label: 'Revenue',
-                data: sorted.map(([,v]) => v),
-                borderColor: 'rgba(232,53,53,0.9)',
-                backgroundColor: 'rgba(204,34,34,0.15)',
-                fill: true,
-                tension: 0.4,
-                pointRadius: 4,
-                pointBackgroundColor: 'rgba(232,53,53,1)',
-                pointBorderColor: 'rgba(204,34,34,0.4)',
-                pointBorderWidth: 2
-            }]
-        },
-        options: {
-            ...CHART_DEFAULTS,
-            scales: {
-                ...CHART_DEFAULTS.scales,
-                y: { ...CHART_DEFAULTS.scales.y, ticks: { ...CHART_DEFAULTS.scales.y.ticks, callback: v => '$' + (v/1000).toFixed(0) + 'k' } }
+            if (!table || !fields) {
+                html += '<div class="empty">No report data available for this role (EA/Ops).</div>';
+                content.innerHTML = html;
+                return;
             }
-        }
-    });
-}
 
-function renderPipelineChart(canvasId, stages) {
-    destroyChart(canvasId);
-    const canvas = document.getElementById(canvasId);
-    if (!canvas) return;
+            // Fetch reports for this member
+            let orderCol = (rt === 'closer' || rt === 'credit') ? 'week_of' : 'date';
+            const logs = await q(table, `select=*&team_member=eq.${encodeURIComponent(name)}&order=${orderCol}.desc&limit=50`);
 
-    const labels = Object.keys(stages);
-    if (labels.length === 0) {
-        canvas.parentElement.innerHTML = '<div class="empty-state"><p>No pipeline data.</p></div>';
-        return;
-    }
+            if (!logs.length) {
+                html += '<div class="empty">No reports submitted yet for ' + esc(name.split(' ')[0]) + '.</div>';
+                content.innerHTML = html;
+                return;
+            }
 
-    const colors = { lead: '#FFB3B3', booked: '#ffa502', showed: '#CC2222', closed: '#2ed573', lost: '#ff4757' };
+            // KPI Summary - sum up all numeric fields
+            const numericFields = fields.filter(f => f.type === 'number');
+            const totals = {};
+            for (const f of numericFields) {
+                totals[f.id] = logs.reduce((a, row) => a + n(row[f.id]), 0);
+            }
 
-    state.charts[canvasId] = new Chart(canvas, {
-        type: 'bar',
-        data: {
-            labels: labels.map(capitalize),
-            datasets: [{
-                label: 'Prospects',
-                data: labels.map(l => stages[l]),
-                backgroundColor: labels.map(l => colors[l] || '#CC2222'),
-                borderRadius: 6
-            }]
-        },
-        options: {
-            ...CHART_DEFAULTS,
-            indexAxis: 'y',
-            plugins: { ...CHART_DEFAULTS.plugins, legend: { display: false } }
-        }
-    });
-}
+            html += '<div class="kpi-summary">';
+            for (const f of numericFields) {
+                const val = totals[f.id];
+                const displayVal = f.id.includes('revenue') || f.id.includes('collected') ? fmt(val) :
+                                   f.id.includes('pct') || f.id.includes('accuracy') ? (logs.length > 0 ? Math.round(val / logs.length) : 0) + '%' :
+                                   val;
+                html += `<div class="kpi-item">
+                    <div class="kpi-val">${displayVal}</div>
+                    <div class="kpi-lbl">${f.label}</div>
+                </div>`;
+            }
+            html += '</div>';
 
-function renderRadarChart(canvas, labels, datasets) {
-    destroyChart('closerRadar');
-    if (!canvas || datasets.length === 0) return;
-
-    state.charts['closerRadar'] = new Chart(canvas, {
-        type: 'radar',
-        data: { labels, datasets },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                r: {
-                    min: 0, max: 10,
-                    ticks: { stepSize: 2, color: '#6B7094', backdropColor: 'transparent', font: { size: 9 } },
-                    grid: { color: 'rgba(204,34,34,0.1)' },
-                    pointLabels: { color: '#FFB3B3', font: { size: 10 } }
+            // Individual reports list
+            html += `<div class="report-list-title">Individual Reports (${logs.length})</div>`;
+            for (const log of logs) {
+                const dateVal = log[orderCol] || 'N/A';
+                html += `<div class="report-entry">
+                    <div class="report-entry-date">${dateVal}</div>
+                    <div class="report-entry-stats">`;
+                for (const f of fields) {
+                    if (f.type === 'text') {
+                        if (log[f.id]) {
+                            html += `<span style="flex-basis:100%"><strong>${f.label}:</strong> ${esc(log[f.id])}</span>`;
+                        }
+                    } else {
+                        const v = log[f.id];
+                        const displayV = f.id.includes('revenue') || f.id.includes('collected') ? fmt(v) :
+                                         f.id.includes('pct') || f.id.includes('accuracy') ? n(v) + '%' :
+                                         n(v);
+                        html += `<span><strong>${f.label}:</strong> ${displayV}</span>`;
+                    }
                 }
-            },
-            plugins: { legend: { labels: { color: '#FFB3B3', font: { family: 'Inter', size: 11 } } } }
-        }
-    });
-}
-
-function renderWebinarChart(webData) {
-    destroyChart('webinarChart');
-    const canvas = document.getElementById('webinarChart');
-    if (!canvas || !webData || webData.length === 0) return;
-
-    const sorted = [...webData].sort((a, b) => (a.logged_date || '').localeCompare(b.logged_date || ''));
-
-    state.charts['webinarChart'] = new Chart(canvas, {
-        type: 'bar',
-        data: {
-            labels: sorted.map(w => fmtDate(w.logged_date)),
-            datasets: [
-                { label: 'Registrants', data: sorted.map(w => safeNum(w.registrants)), backgroundColor: 'rgba(204,34,34,0.5)', borderRadius: 4, borderColor: 'rgba(204,34,34,0.8)', borderWidth: 1 },
-                { label: 'Attendees', data: sorted.map(w => safeNum(w.attendees)), backgroundColor: 'rgba(232,53,53,0.5)', borderRadius: 4, borderColor: 'rgba(232,53,53,0.8)', borderWidth: 1 }
-            ]
-        },
-        options: CHART_DEFAULTS
-    });
-}
-
-function renderAdSpendChart(adsData, dealsData) {
-    destroyChart('adSpendChart');
-    const canvas = document.getElementById('adSpendChart');
-    if (!canvas || !adsData || adsData.length === 0) return;
-
-    const sorted = [...adsData].sort((a, b) => (a.week_start || '').localeCompare(b.week_start || ''));
-
-    state.charts['adSpendChart'] = new Chart(canvas, {
-        type: 'bar',
-        data: {
-            labels: sorted.map(a => fmtDate(a.week_start)),
-            datasets: [
-                { label: 'Ad Spend', data: sorted.map(a => safeNum(a.spend)), backgroundColor: 'rgba(204,34,34,0.5)', borderRadius: 4, borderColor: 'rgba(204,34,34,0.8)', borderWidth: 1 },
-                { label: 'Clicks', data: sorted.map(a => safeNum(a.clicks)), backgroundColor: 'rgba(232,53,53,0.5)', borderRadius: 4, borderColor: 'rgba(232,53,53,0.8)', borderWidth: 1 }
-            ]
-        },
-        options: {
-            ...CHART_DEFAULTS,
-            scales: {
-                ...CHART_DEFAULTS.scales,
-                y: { ...CHART_DEFAULTS.scales.y, ticks: { ...CHART_DEFAULTS.scales.y.ticks, callback: v => '$' + v.toLocaleString() } }
+                html += '</div></div>';
             }
+
+            content.innerHTML = html;
         }
-    });
-}
 
-// ============================================================
-// FORM MODAL (Data Entry)
-// ============================================================
-let currentFormTab = null;
-
-function openFormModal(tabKey) {
-    currentFormTab = tabKey;
-    const cfg = TEAM_TABS[tabKey];
-    if (!cfg) return;
-    document.getElementById('formModalTitle').textContent = `Add ${capitalize(tabKey).replace(/s$/, '')} Entry`;
-    const container = document.getElementById('formFields');
-    container.innerHTML = cfg.formFields.map(f => {
-        const val = f.default === 'today' ? todayStr() : (f.default || '');
-        if (f.type === 'select' && f.options) {
-            const opts = f.options.map(o => `<option value="${o}"${o === val ? ' selected' : ''}>${o}</option>`).join('');
-            return `<div class="form-group"><label>${f.label}${f.required ? ' *' : ''}</label><select name="${f.key}" ${f.required ? 'required' : ''}><option value="">Select...</option>${opts}</select></div>`;
-        }
-        if (f.type === 'textarea') {
-            return `<div class="form-group"><label>${f.label}</label><textarea name="${f.key}" placeholder="${f.label}">${val}</textarea></div>`;
-        }
-        return `<div class="form-group"><label>${f.label}${f.required ? ' *' : ''}</label><input type="${f.type}" name="${f.key}" value="${val}" ${f.required ? 'required' : ''} ${f.step ? `step="${f.step}"` : ''} placeholder="${f.label}"></div>`;
-    }).join('');
-    document.getElementById('formModal').classList.add('show');
-}
-
-async function submitEntry(e) {
-    e.preventDefault();
-    const cfg = TEAM_TABS[currentFormTab];
-    if (!cfg) return;
-    const form = e.target;
-    const data = {};
-    cfg.formFields.forEach(f => {
-        const el = form.querySelector(`[name="${f.key}"]`);
-        if (!el) return;
-        const v = el.value.trim();
-        if (v === '') return;
-        data[f.key] = f.type === 'number' ? Number(v) : v;
-    });
-
-    // Auto-calculate close rate for closers
-    if (cfg.table === 'closer_logs' && data.calls_taken && data.deals_closed) {
-        data.close_rate_pct = Number(((data.deals_closed / data.calls_taken) * 100).toFixed(1));
-    }
-
-    try {
-        await apiInsert(cfg.table, data);
-        closeModal('formModal');
-        loadTab(currentFormTab);
-    } catch (err) {
-        alert('Error saving: ' + err.message);
-    }
-}
-
-// ============================================================
-// TASK MODAL
-// ============================================================
-let taskCache = {};
-
-function openTaskModal(editId) {
-    const titleEl = document.getElementById('taskModalTitle');
-    const form = document.getElementById('taskForm');
-    form.reset();
-    document.getElementById('taskEditId').value = '';
-
-    if (editId && taskCache[editId]) {
-        const t = taskCache[editId];
-        titleEl.textContent = 'Edit Task';
-        document.getElementById('taskEditId').value = editId;
-        document.getElementById('taskTitle').value = t.title || '';
-        document.getElementById('taskDesc').value = t.description || '';
-        document.getElementById('taskAssigned').value = t.assigned_to || '';
-        document.getElementById('taskPriority').value = t.priority || 'medium';
-        document.getElementById('taskDue').value = t.due_date || '';
-        document.getElementById('taskCategory').value = t.category || '';
-    } else {
-        titleEl.textContent = 'New Task';
-    }
-    document.getElementById('taskModal').classList.add('show');
-}
-
-async function submitTask(e) {
-    e.preventDefault();
-    const editId = document.getElementById('taskEditId').value;
-    const data = {
-        title: document.getElementById('taskTitle').value.trim(),
-        description: document.getElementById('taskDesc').value.trim() || null,
-        assigned_to: document.getElementById('taskAssigned').value.trim() || null,
-        priority: document.getElementById('taskPriority').value,
-        due_date: document.getElementById('taskDue').value || null,
-        category: document.getElementById('taskCategory').value.trim() || null,
-        updated_at: new Date().toISOString()
-    };
-
-    try {
-        if (editId) {
-            await apiPatch('dashboard_tasks', editId, data);
-        } else {
-            data.status = 'todo';
-            data.created_by = 'dashboard';
-            await apiInsert('dashboard_tasks', data);
-        }
-        closeModal('taskModal');
-        loadTasks();
-    } catch (err) {
-        alert('Error saving task: ' + err.message);
-    }
-}
-
-function closeModal(id) {
-    document.getElementById(id).classList.remove('show');
-}
-
-// Close modals on overlay click
-document.querySelectorAll('.modal-overlay').forEach(el => {
-    el.addEventListener('click', e => { if (e.target === el) el.classList.remove('show'); });
-});
-
-// ============================================================
-// NAVIGATION & DATE CONTROLS
-// ============================================================
-const TAB_LOADERS = {
-    'command-center': loadCommandCenter,
-    'revenue': loadRevenue,
-    'pipeline': loadPipeline,
-    'routers': () => loadTeamTab('routers'),
-    'setters': () => loadTeamTab('setters'),
-    'closers': loadClosers,
-    'ai-webinar': loadAIWebinar,
-    'ea': () => loadTeamTab('ea'),
-    'ads-roas': loadAdsROAS,
-    'tasks': loadTasks
-};
-
-function switchTab(tabId) {
-    state.activeTab = tabId;
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-    const tabEl = document.getElementById('tab-' + tabId);
-    if (tabEl) tabEl.classList.add('active');
-    document.querySelector(`.nav-btn[data-tab="${tabId}"]`)?.classList.add('active');
-
-    // Hide date controls for non-date tabs
-    const noDateTabs = ['pipeline', 'tasks'];
-    document.getElementById('dateControls').style.display = noDateTabs.includes(tabId) ? 'none' : 'flex';
-
-    loadTab(tabId);
-}
-
-function loadTab(tabId) {
-    const loader = TAB_LOADERS[tabId];
-    if (loader) loader();
-    document.getElementById('lastUpdated').textContent = 'Updated ' + new Date().toLocaleTimeString();
-}
-
-function refreshCurrentTab() {
-    loadTab(state.activeTab);
-}
-
-// Navigation click handlers
-document.querySelectorAll('.nav-btn').forEach(btn => {
-    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
-});
-
-// Date preset handlers
-document.querySelectorAll('.date-preset').forEach(btn => {
-    btn.addEventListener('click', () => {
-        document.querySelectorAll('.date-preset').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const range = getDateRange(btn.dataset.range);
-        state.dateStart = range.start;
-        state.dateEnd = range.end;
-        document.getElementById('dateStart').value = range.start;
-        document.getElementById('dateEnd').value = range.end;
-        loadTab(state.activeTab);
-    });
-});
-
-// Custom date inputs
-document.getElementById('dateStart').addEventListener('change', onCustomDate);
-document.getElementById('dateEnd').addEventListener('change', onCustomDate);
-
-function onCustomDate() {
-    const s = document.getElementById('dateStart').value;
-    const e = document.getElementById('dateEnd').value;
-    if (s && e) {
-        document.querySelectorAll('.date-preset').forEach(b => b.classList.remove('active'));
-        state.dateStart = s;
-        state.dateEnd = e;
-        loadTab(state.activeTab);
-    }
-}
-
-// ============================================================
-// TASK CACHE (for edit modal)
-// ============================================================
-const _origLoadTasks = loadTasks;
-// Wrap loadTasks to cache task data
-const wrappedLoadTasks = async function() {
-    const kanbanEl = document.getElementById('task-kanban');
-    kanbanEl.innerHTML = '<div class="skeleton skel-table" style="height:300px"></div>';
-    try {
-        const tasks = await queryAll('dashboard_tasks', '&order=created_at.desc');
-        taskCache = {};
-        tasks.forEach(t => taskCache[t.id] = t);
-        // Re-render (inlined from loadTasks to avoid recursion)
-        const cols = { todo: [], in_progress: [], done: [] };
-        tasks.forEach(t => {
-            const s = t.status || 'todo';
-            if (cols[s]) cols[s].push(t);
-            else cols.todo.push(t);
+        // --- Close overlays on bg click ---
+        ['report-overlay','task-overlay','addmember-overlay','member-overlay','pin-overlay'].forEach(id => {
+            document.getElementById(id).addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('open');
+                    if (id === 'pin-overlay') pendingDeleteId = null;
+                }
+            });
         });
-        const colConfig = [
-            { key: 'todo', label: 'To Do', color: 'var(--blue)' },
-            { key: 'in_progress', label: 'In Progress', color: 'var(--yellow)' },
-            { key: 'done', label: 'Done', color: 'var(--green)' }
-        ];
-        kanbanEl.innerHTML = colConfig.map(col => `
-            <div class="kanban-col">
-                <div class="kanban-col-title" style="color:${col.color}">
-                    ${col.label} <span class="count">${cols[col.key].length}</span>
-                </div>
-                ${cols[col.key].length === 0 ? '<div style="color:var(--text-muted);font-size:11px;text-align:center;padding:20px">No tasks</div>' :
-                cols[col.key].map(t => {
-                    const priorityClass = 'priority-' + (t.priority || 'medium');
-                    const isOverdue = t.due_date && t.due_date < todayStr() && t.status !== 'done';
-                    return `<div class="kanban-card" onclick="openTaskModal('${t.id}')">
-                        <div style="display:flex;align-items:center;gap:6px">
-                            <span class="priority-dot ${priorityClass}"></span>
-                            <h4>${t.title || 'Untitled'}</h4>
-                        </div>
-                        ${t.description ? '<p>' + (t.description.length > 80 ? t.description.substring(0,80)+'...' : t.description) + '</p>' : ''}
-                        <div class="meta">
-                            ${t.assigned_to ? '<span class="badge badge-blue">'+t.assigned_to+'</span>' : ''}
-                            ${t.category ? '<span class="badge badge-purple">'+t.category+'</span>' : ''}
-                            ${t.due_date ? '<span class="badge '+(isOverdue?'badge-red':'badge-green')+'">'+(isOverdue?'OVERDUE ':'')+fmtDate(t.due_date)+'</span>' : ''}
-                        </div>
-                        <div style="display:flex;gap:4px;margin-top:8px">
-                            ${t.status !== 'todo' ? '<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();moveTask(\''+t.id+'\',\''+(t.status === 'done' ? 'in_progress' : 'todo')+'\')">Back</button>' : ''}
-                            ${t.status !== 'done' ? '<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();moveTask(\''+t.id+'\',\''+(t.status === 'todo' ? 'in_progress' : 'done')+'\')">Next</button>' : ''}
-                            <button class="btn btn-ghost btn-sm" style="margin-left:auto;color:var(--accent)" onclick="event.stopPropagation();deleteTask('${t.id}')">Del</button>
-                        </div>
-                    </div>`;
-                }).join('')}
-            </div>
-        `).join('');
-    } catch (err) {
-        kanbanEl.innerHTML = '<div class="error-banner show" style="display:block"><p>Could not load tasks: '+err.message+'</p><p style="margin-top:8px;color:var(--text-secondary);font-size:11px">If the dashboard_tasks table doesn\'t exist yet, run the CREATE TABLE SQL in your Supabase SQL Editor.</p></div>';
-    }
-};
-TAB_LOADERS['tasks'] = wrappedLoadTasks;
 
-// ============================================================
-// INIT
-// ============================================================
-function init() {
-    // Set default date range to this month
-    const range = getDateRange('this_month');
-    state.dateStart = range.start;
-    state.dateEnd = range.end;
-    document.getElementById('dateStart').value = range.start;
-    document.getElementById('dateEnd').value = range.end;
-
-    // Load command center
-    loadTab('command-center');
-
-    // Auto-refresh every 5 minutes
-    setInterval(() => loadTab(state.activeTab), 300000);
-}
-
-document.addEventListener('DOMContentLoaded', init);
-</script>
+        // --- Init ---
+        load();
+        setInterval(load, 300000);
+    </script>
 </body>
 </html>
