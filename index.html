@@ -1166,7 +1166,7 @@
             document.getElementById('last-upd').textContent = 'Loading...';
             const { s, e } = getRange();
             const wof = getWeekOf();
-            const [qualLeads, setterLogs, closerLogs, closedDeals, routerLogs, webinarLogs, creditLogs, adMetrics, team, constraints, tasks] = await Promise.all([
+            const [qualLeads, setterLogs, closerLogs, closedDeals, routerLogs, webinarLogs, creditLogs, adMetrics, team, constraints, tasks, fulfillmentLogs, eaLogs] = await Promise.all([
                 q('lgh_qualifier_leads', `select=id,created_at&created_at=gte.${s}&created_at=lte.${e}T23:59:59`),
                 q('setter_logs', `select=*&date=gte.${s}&date=lte.${e}`),
                 q('closer_logs', `select=*&week_of=gte.${wof}`),
@@ -1178,6 +1178,8 @@
                 q('team_members', 'select=*&order=name.asc'),
                 q('constraints_tracker', 'select=*&order=created_at.desc&limit=1'),
                 q('dashboard_tasks', 'select=*&order=priority.asc,due_date.asc'),
+                q('fulfillment_logs', `select=*&date=gte.${s}&date=lte.${e}`),
+                q('ea_logs', `select=*&date=gte.${s}&date=lte.${e}`),
             ]);
             teamData = team;
             populateDropdowns(team);
@@ -1231,6 +1233,16 @@
             const crFund = creditLogs.reduce((a,r) => a + n(r.funding_ready), 0);
             const crStall = creditLogs.reduce((a,r) => a + n(r.stalled_clients), 0);
             const crSweep = creditLogs.reduce((a,r) => a + n(r.sweeps_started), 0);
+            const flOnboarded = fulfillmentLogs.reduce((a,r) => a + n(r.new_clients_onboarded), 0);
+            const flActive = fulfillmentLogs.reduce((a,r) => a + n(r.active_clients), 0);
+            const flCheckIns = fulfillmentLogs.reduce((a,r) => a + n(r.check_ins_completed), 0);
+            const flIssues = fulfillmentLogs.reduce((a,r) => a + n(r.issues_resolved), 0);
+            const flSatVals = fulfillmentLogs.filter(r => n(r.client_satisfaction) > 0);
+            const flSat = flSatVals.length > 0 ? (flSatVals.reduce((a,r) => a + n(r.client_satisfaction), 0) / flSatVals.length).toFixed(1) : '--';
+            const eaOnboarded = eaLogs.reduce((a,r) => a + n(r.new_clients_onboarded), 0);
+            const eaRecovered = eaLogs.reduce((a,r) => a + n(r.cash_recovered_hac), 0);
+            const eaPastDue = eaLogs.reduce((a,r) => a + n(r.hac_past_due), 0);
+            const eaTasks = eaLogs.reduce((a,r) => a + n(r.tasks_completed), 0);
 
             document.getElementById('dept-grid').innerHTML = `
                 <div class="dept-card">
@@ -1290,12 +1302,21 @@
                     </div>
                 </div>
                 <div class="dept-card">
+                    <div class="dept-title">FULFILLMENT</div>
+                    <div class="dept-stats">
+                        <div><div class="ds-label">Onboarded</div><div class="ds-value">${flOnboarded}</div></div>
+                        <div><div class="ds-label">Active</div><div class="ds-value dv-green">${flActive}</div></div>
+                        <div><div class="ds-label">Check-Ins</div><div class="ds-value dv-red">${flCheckIns}</div></div>
+                        <div><div class="ds-label">Satisfaction</div><div class="ds-value dv-gold">${flSat}</div></div>
+                    </div>
+                </div>
+                <div class="dept-card">
                     <div class="dept-title">EA / OPS</div>
                     <div class="dept-stats">
-                        <div><div class="ds-label">New Clients</div><div class="ds-value">${crNew}</div></div>
-                        <div><div class="ds-label">Team Size</div><div class="ds-value dv-red">${team.length}</div></div>
-                        <div><div class="ds-label">Active</div><div class="ds-value dv-green">${team.filter(m=>m.is_active).length}</div></div>
-                        <div><div class="ds-label">Leads</div><div class="ds-value dv-gold">${leads}</div></div>
+                        <div><div class="ds-label">Onboarded</div><div class="ds-value">${eaOnboarded}</div></div>
+                        <div><div class="ds-label">Recovered</div><div class="ds-value dv-green">${fmt(eaRecovered)}</div></div>
+                        <div><div class="ds-label">Past Due</div><div class="ds-value dv-red">${eaPastDue}</div></div>
+                        <div><div class="ds-label">Tasks</div><div class="ds-value dv-gold">${eaTasks}</div></div>
                     </div>
                 </div>
             `;
@@ -1483,21 +1504,44 @@
                 { id:'stalled_clients', label:'Stalled Clients', type:'number' },
                 { id:'notes', label:'Notes', type:'text', span:true },
             ],
+            fulfillment: [
+                { id:'new_clients_onboarded', label:'New Clients Onboarded', type:'number' },
+                { id:'active_clients', label:'Active Clients', type:'number' },
+                { id:'check_ins_completed', label:'Check-Ins Completed', type:'number' },
+                { id:'issues_resolved', label:'Issues Resolved', type:'number' },
+                { id:'client_satisfaction', label:'Client Satisfaction (1-10)', type:'number', ph:'8' },
+                { id:'notes', label:'Notes', type:'text', span:true },
+            ],
+            ea: [
+                { id:'new_clients_onboarded', label:'New Clients Onboarded', type:'number' },
+                { id:'cash_recovered_hac', label:'Cash Recovered (HAC) $', type:'number' },
+                { id:'hac_past_due', label:"HAC's Past Due", type:'number' },
+                { id:'fu_30_60_90_conducted', label:'30/60/90 Day FU Conducted', type:'number' },
+                { id:'tasks_completed', label:'Tasks Completed', type:'number' },
+                { id:'emails_managed', label:'Emails Managed', type:'number' },
+                { id:'appointments_scheduled', label:'Appointments Scheduled', type:'number' },
+                { id:'follow_ups_sent', label:'Follow-Ups Sent', type:'number' },
+                { id:'notes', label:'Notes', type:'text', span:true },
+            ],
         };
 
         const ROLE_TABLE = {
             router:'router_logs',
             setter:'setter_logs',
             closer:'closer_logs',
-            credit:'credit_repair'
+            credit:'credit_repair',
+            fulfillment:'fulfillment_logs',
+            ea:'ea_logs'
         };
 
         function getRoleType(role) {
-            const r = (role || '').toLowerCase();
+            const r = (role || '').toLowerCase().trim();
             if (r.includes('router')) return 'router';
             if (r.includes('setter') || r.includes('book calls')) return 'setter';
             if (r.includes('closer') || r.includes('sales advisor')) return 'closer';
             if (r.includes('credit')) return 'credit';
+            if (r.includes('fulfil') || r.includes('fullfi')) return 'fulfillment';
+            if (r.includes('ea') || r.includes('executive') || r.includes('assistant') || r.includes('ops')) return 'ea';
             return null;
         }
 
