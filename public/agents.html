@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LGH AI Command Structure</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --red: #E31837;
+      --red-dark: #B8132C;
+      --red-glow: rgba(227,24,55,0.35);
+      --black: #0A0A0A;
+      --gold: #f9cf25;
+      --green: #22c55e;
+      --white: #ffffff;
+      --muted: rgba(255,255,255,0.45);
+      --card-bg: rgba(255,255,255,0.03);
+      --card-border: rgba(255,255,255,0.08);
+    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Inter',system-ui,sans-serif; background:var(--black); color:var(--white); min-height:100vh; }
+
+    /* NAV */
+    nav { background:rgba(10,10,10,0.97); border-bottom:1px solid rgba(227,24,55,0.25); position:sticky; top:0; z-index:100; backdrop-filter:blur(12px); }
+    .nav-inner { max-width:1440px; margin:0 auto; padding:0 1.5rem; display:flex; align-items:center; justify-content:space-between; height:60px; gap:1rem; }
+    .nav-brand { font-family:'Bebas Neue',sans-serif; font-size:1.35rem; letter-spacing:.05em; display:flex; align-items:center; gap:.5rem; }
+    .nav-brand .accent { color:var(--red); }
+    .live-dot { width:7px; height:7px; border-radius:50%; background:var(--red); animation:blink 2s infinite; display:inline-block; }
+    @keyframes blink { 0%,100%{opacity:1;box-shadow:0 0 0 0 var(--red-glow)} 50%{opacity:.6;box-shadow:0 0 0 5px transparent} }
+    .nav-count { font-size:.72rem; color:var(--muted); margin-left:.25rem; }
+    .nav-right { display:flex; align-items:center; gap:.75rem; }
+    .btn { padding:.38rem .95rem; border-radius:8px; border:none; font-size:.76rem; font-weight:800; cursor:pointer; text-transform:uppercase; letter-spacing:.06em; font-family:'Inter',sans-serif; transition:all .2s; text-decoration:none; display:inline-flex; align-items:center; gap:.35rem; }
+    .btn-ghost { background:rgba(255,255,255,.06); color:#fff; border:1px solid rgba(255,255,255,.12); }
+    .btn-ghost:hover { background:rgba(255,255,255,.1); }
+    .btn-red { background:linear-gradient(135deg,#E31837,#B8132C); color:#fff; box-shadow:0 0 16px var(--red-glow); }
+    .btn-red:hover { box-shadow:0 0 26px rgba(227,24,55,.55); transform:translateY(-1px); }
+    .last-upd { font-size:.7rem; color:var(--muted); }
+
+    /* LAYOUT */
+    .container { max-width:1440px; margin:0 auto; padding:0 1.5rem 4rem; }
+
+    /* HERO HEADER */
+    .page-header { padding:2rem 0 1.5rem; }
+    .page-title { font-family:'Bebas Neue',sans-serif; font-size:2.5rem; letter-spacing:.06em; line-height:1; }
+    .page-title .accent { color:var(--red); }
+    .page-sub { color:var(--muted); font-size:.82rem; margin-top:.35rem; letter-spacing:.03em; }
+
+    /* SECTION HEADERS */
+    .sec-hdr { font-family:'Bebas Neue',sans-serif; font-size:1.4rem; letter-spacing:.05em; margin-bottom:1rem; display:flex; align-items:center; gap:.75rem; }
+    .sec-hdr::after { content:''; flex:1; height:1px; background:linear-gradient(to right,rgba(227,24,55,.35),transparent); }
+    .badge-red { font-family:'Inter',sans-serif; font-size:.67rem; font-weight:700; background:rgba(227,24,55,.12); border:1px solid rgba(227,24,55,.3); color:var(--red); padding:.18rem .5rem; border-radius:4px; text-transform:uppercase; }
+
+    /* STATUS DOTS */
+    .sdot { display:inline-block; width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .sdot-active { background:var(--green); box-shadow:0 0 6px rgba(34,197,94,.6); animation:pulse-g 2s infinite; }
+    @keyframes pulse-g { 0%,100%{opacity:1} 50%{opacity:.6} }
+    .sdot-recent { background:var(--gold); box-shadow:0 0 6px rgba(249,207,37,.5); }
+    .sdot-standby { background:rgba(255,255,255,.2); }
+    .status-label { font-size:.65rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; }
+    .sl-active { color:var(--green); }
+    .sl-recent { color:var(--gold); }
+    .sl-standby { color:var(--muted); }
+
+    /* COMMANDER CARD */
+    .cmd-card {
+      background:rgba(227,24,55,.05);
+      border:1px solid rgba(227,24,55,.35);
+      border-radius:20px;
+      padding:1.75rem 2rem;
+      margin-bottom:2.5rem;
+      position:relative;
+      overflow:hidden;
+    }
+    .cmd-card::before {
+      content:'';
+      position:absolute;
+      top:0; left:0; right:0;
+      height:2px;
+      background:linear-gradient(to right,var(--red),var(--red-dark),transparent);
+    }
+    .cmd-header { display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; margin-bottom:1.25rem; flex-wrap:wrap; }
+    .cmd-title-row { display:flex; align-items:center; gap:.75rem; }
+    .cmd-icon { font-size:1.75rem; }
+    .cmd-title { font-family:'Bebas Neue',sans-serif; font-size:1.8rem; letter-spacing:.05em; line-height:1; }
+    .cmd-subtitle { font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); margin-top:.15rem; }
+    .cmd-stats { display:flex; align-items:center; gap:1.25rem; flex-wrap:wrap; }
+    .cmd-stat { text-align:center; }
+    .cs-val { font-family:'Bebas Neue',sans-serif; font-size:1.6rem; color:var(--red); line-height:1; }
+    .cs-lbl { font-size:.62rem; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-top:.1rem; }
+    .cmd-divider { height:1px; background:rgba(255,255,255,.07); margin:1rem 0; }
+    .cmd-meta { display:flex; align-items:center; gap:1.5rem; margin-bottom:1rem; flex-wrap:wrap; }
+    .cmd-status { display:flex; align-items:center; gap:.4rem; }
+    .cmd-kpis { display:flex; gap:.4rem; flex-wrap:wrap; }
+    .kpi-chip { background:rgba(227,24,55,.1); border:1px solid rgba(227,24,55,.2); border-radius:6px; padding:.15rem .5rem; font-size:.65rem; font-weight:600; color:rgba(255,255,255,.7); text-transform:uppercase; letter-spacing:.04em; }
+    .cmd-mission { font-size:.82rem; color:rgba(255,255,255,.6); line-height:1.5; margin-bottom:1.25rem; max-width:700px; }
+
+    /* MESSAGE FEED */
+    .msg-feed-title { font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-bottom:.65rem; }
+    .msg-feed { display:flex; flex-direction:column; gap:.5rem; }
+    .msg-item { display:flex; gap:.75rem; padding:.6rem .75rem; background:rgba(255,255,255,.025); border-radius:10px; border:1px solid rgba(255,255,255,.05); }
+    .msg-role { font-size:.62rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; white-space:nowrap; padding:.2rem .45rem; border-radius:4px; height:fit-content; margin-top:.05rem; flex-shrink:0; }
+    .mr-user { background:rgba(96,165,250,.15); color:#60a5fa; border:1px solid rgba(96,165,250,.25); }
+    .mr-assistant { background:rgba(227,24,55,.12); color:var(--red); border:1px solid rgba(227,24,55,.25); }
+    .msg-content { font-size:.82rem; line-height:1.45; flex:1; color:rgba(255,255,255,.8); }
+    .msg-time { font-size:.62rem; color:var(--muted); white-space:nowrap; margin-top:.1rem; }
+
+    /* AGENT GRID */
+    .agent-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; margin-bottom:2.5rem; }
+    .agent-card {
+      background:var(--card-bg);
+      border:1px solid var(--card-border);
+      border-radius:16px;
+      padding:1.25rem;
+      transition:border-color .2s;
+      position:relative;
+      overflow:hidden;
+    }
+    .agent-card::before { content:''; position:absolute; top:0; left:0; bottom:0; width:3px; border-radius:3px 0 0 3px; }
+    .ac-active::before { background:var(--green); }
+    .ac-recent::before { background:var(--gold); }
+    .ac-standby::before { background:rgba(255,255,255,.1); }
+    .agent-card:hover { border-color:rgba(227,24,55,.35); }
+    .ac-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:1rem; }
+    .ac-title-block { display:flex; align-items:center; gap:.6rem; }
+    .ac-icon { font-size:1.3rem; }
+    .ac-name { font-family:'Bebas Neue',sans-serif; font-size:1.15rem; letter-spacing:.04em; line-height:1; }
+    .ac-type { font-size:.62rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-top:.1rem; }
+    .ac-status { display:flex; align-items:center; gap:.35rem; }
+    .ac-divider { height:1px; background:rgba(255,255,255,.06); margin:.75rem 0; }
+    .ac-mission { font-size:.77rem; color:rgba(255,255,255,.55); line-height:1.5; margin-bottom:.75rem; }
+    .ac-kpis { display:flex; gap:.3rem; flex-wrap:wrap; margin-bottom:.75rem; }
+    .ac-kpi { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:5px; padding:.12rem .4rem; font-size:.6rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+    .ac-activity { font-size:.75rem; color:var(--muted); }
+    .ac-msg-count { display:flex; align-items:center; gap:.5rem; }
+    .ac-count-num { font-family:'Bebas Neue',sans-serif; font-size:1.25rem; color:var(--white); }
+    .ac-count-lbl { font-size:.62rem; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); }
+    .ac-last { font-size:.68rem; color:var(--muted); margin-top:.25rem; }
+    .ac-mini-feed { margin-top:.65rem; display:flex; flex-direction:column; gap:.3rem; }
+    .mini-msg { font-size:.72rem; padding:.35rem .5rem; background:rgba(255,255,255,.025); border-radius:6px; color:rgba(255,255,255,.6); line-height:1.4; display:flex; gap:.4rem; align-items:flex-start; }
+    .mini-role { font-size:.58rem; font-weight:700; text-transform:uppercase; color:var(--muted); flex-shrink:0; margin-top:.05rem; }
+    .mini-role.user { color:#60a5fa; }
+    .mini-role.assistant { color:var(--red); }
+
+    /* PIPELINE */
+    .pipeline-section { margin-top:2.5rem; }
+    .pipeline { background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.06); border-radius:20px; padding:2rem; }
+    .pipeline-flow { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:.5rem; }
+    .pipe-node {
+      display:flex; flex-direction:column; align-items:center; gap:.3rem;
+      padding:.65rem 1rem; border-radius:10px;
+      background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08);
+      transition:all .2s; min-width:110px; text-align:center;
+    }
+    .pipe-node.active-node { background:rgba(227,24,55,.1); border-color:rgba(227,24,55,.4); box-shadow:0 0 16px var(--red-glow); }
+    .pipe-node-icon { font-size:1.1rem; }
+    .pipe-node-name { font-family:'Bebas Neue',sans-serif; font-size:.85rem; letter-spacing:.04em; line-height:1; }
+    .pipe-node-sub { font-size:.58rem; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); }
+    .pipe-arrow { color:rgba(255,255,255,.2); font-size:1rem; }
+    .pipe-arrow.active-arrow { color:var(--red); }
+    .pipe-loop { text-align:center; margin-top:1.25rem; font-size:.72rem; color:var(--muted); letter-spacing:.04em; }
+    .pipe-loop span { color:var(--red); font-weight:600; }
+
+    /* STATS BAR */
+    .stats-bar { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:2rem; }
+    .stat-card { background:var(--card-bg); border:1px solid var(--card-border); border-radius:12px; padding:1rem; text-align:center; }
+    .sc-val { font-family:'Bebas Neue',sans-serif; font-size:2rem; color:var(--white); line-height:1; }
+    .sc-lbl { font-size:.65rem; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); margin-top:.25rem; }
+
+    /* UTIL */
+    .empty { color:var(--muted); font-size:.78rem; font-style:italic; }
+    .spinning { color:var(--muted); font-size:.8rem; animation:fade 1.4s infinite; }
+    @keyframes fade { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+    /* RESPONSIVE */
+    @media(max-width:768px) {
+      .agent-grid { grid-template-columns:1fr; }
+      .stats-bar { grid-template-columns:repeat(2,1fr); }
+      .cmd-card { padding:1.25rem; }
+      .cmd-title { font-size:1.4rem; }
+      .pipeline-flow { gap:.35rem; }
+      .pipe-node { min-width:80px; padding:.5rem .7rem; }
+    }
+    @media(max-width:500px) {
+      .stats-bar { grid-template-columns:repeat(2,1fr); }
+      .cmd-stats { gap:.75rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-brand">
+      <span class="live-dot"></span>
+      LGH <span class="accent">AI COMMAND</span>
+      <span class="nav-count" id="total-count"></span>
+    </div>
+    <div class="nav-right">
+      <span class="last-upd" id="last-upd"></span>
+      <a class='btn btn-ghost' href='/'>← OPS DASHBOARD</a>
+      <button class="btn btn-red" onclick="load()">Refresh</button>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+
+  <div class="page-header">
+    <div class="page-title">AI <span class="accent">COMMAND</span> STRUCTURE</div>
+    <div class="page-sub">8 ACTIVE AGENTS · ALIGNED TO LGH REVENUE SOP · TELEGRAM COMMAND CENTER</div>
+  </div>
+
+  <!-- SYSTEM STATS BAR -->
+  <div class="stats-bar" id="stats-bar">
+    <div class="stat-card"><div class="sc-val" id="s-total">—</div><div class="sc-lbl">Total Messages</div></div>
+    <div class="stat-card"><div class="sc-val" id="s-today">—</div><div class="sc-lbl">Messages Today</div></div>
+    <div class="stat-card"><div class="sc-val" id="s-active">—</div><div class="sc-lbl">Active Agents</div></div>
+    <div class="stat-card"><div class="sc-val" id="s-week">—</div><div class="sc-lbl">This Week</div></div>
+  </div>
+
+  <!-- COMMANDER FEATURED CARD -->
+  <div class="sec-hdr">STRATEGIC COMMAND <span class="badge-red">COMMANDER AI</span></div>
+  <div class="cmd-card" id="cmd-card">
+    <div class="spinning">Loading...</div>
+  </div>
+
+  <!-- DEPARTMENT AGENTS -->
+  <div class="sec-hdr">DEPARTMENT AGENTS</div>
+  <div class="agent-grid" id="agent-grid">
+    <div class="spinning" style="grid-column:1/-1">Loading...</div>
+  </div>
+
+  <!-- PIPELINE -->
+  <div class="pipeline-section">
+    <div class="sec-hdr">AI REVENUE PIPELINE</div>
+    <div class="pipeline">
+      <div class="pipeline-flow" id="pipeline-flow">Loading...</div>
+      <div class="pipe-loop">Self-improving loop: better ads → more leads → higher revenue → <span>reinvest</span></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const SU = 'https://wrrfrhuocbftgqqfpaoz.supabase.co';
+const SK = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndycmZyaHVvY2JmdGdxcWZwYW96Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3Mjc1ODk3NSwiZXhwIjoyMDg4MzM0OTc1fQ.f51I6th0qv7WK0xGQEEJ7TcaSe-OEG_fg4bg_4iSSsY';
+const H = { apikey: SK, Authorization: 'Bearer ' + SK };
+
+// Agent definitions
+const AGENTS = [
+  {
+    id: 'commander',
+    name: 'Strategic Command',
+    type: 'COMMANDER AI',
+    icon: '⚔️',
+    topicId: null,
+    mission: 'Monitors the entire LGH revenue system. Tracks CPL, webinar registrations, attendance, calls booked, show rate, close rate, and LTV by source. Alerts the correct agent when any metric drops.',
+    kpis: ['CPL','Show Rate','Close Rate','LTV','Webinar Regs','Calls Booked'],
+    color: 'red',
+  },
+  {
+    id: 'ad-commander',
+    name: 'Ad Commander',
+    type: 'MEDIA BUYER AI',
+    icon: '📣',
+    topicId: 2,
+    mission: 'Launch VA increase ads, pause low ROAS campaigns, test new creatives, allocate budget to winners. Analyzes CPM, CTR, CPL, and ROAS daily. 5–10 new ad creative tests weekly.',
+    kpis: ['CPM','CTR','CPL','ROAS','Budget','Creatives'],
+  },
+  {
+    id: 'psych-warfare',
+    name: 'Psych Warfare Officer',
+    type: 'CREATIVE AI',
+    icon: '🧠',
+    topicId: 3,
+    mission: 'Generates daily VA ad hooks: underrated veteran angles, inflation hooks, transition hooks. Output goes directly to Ad Commander. Better hooks = cheaper leads.',
+    kpis: ['Hook Tests','VA Angles','Inflation Hooks','CTR Impact'],
+  },
+  {
+    id: 'comms-officer',
+    name: 'Communications Officer',
+    type: 'COPYWRITER AI',
+    icon: '📝',
+    topicId: 4,
+    mission: 'Writes ad primary text, funnel headlines, webinar reminders, follow-up emails, and SMS nurture sequences. Tone: authority, calm, no hype, logical buyers only.',
+    kpis: ['Ad Copy','Email Sequences','SMS Scripts','Show Rate Impact'],
+  },
+  {
+    id: 'infrastructure',
+    name: 'Infrastructure Officer',
+    type: 'SYSTEMS AI',
+    icon: '⚙️',
+    topicId: 5,
+    mission: 'Maintains GoHighLevel workflows, tags, pipelines, and automations. Ensures no lead leaks: opt-in → SMS → email → training reminder → CRM log. Every step tracked.',
+    kpis: ['GHL Workflows','CRM Tags','Automations','Lead Leak %'],
+  },
+  {
+    id: 'traffic-control',
+    name: 'Traffic Control Sergeant',
+    type: 'LEAD INTAKE AI',
+    icon: '🚦',
+    topicId: 6,
+    mission: 'Immediately responds to new leads. Confirms opt-in, sends training link, encourages registration. Does NOT explain — only routes. Matches SOP exactly.',
+    kpis: ['Response Time','Opt-in Rate','Training Regs','Routing Speed'],
+  },
+  {
+    id: 'webinar-tracker',
+    name: 'Engagement Tracker',
+    type: 'WEBINAR AI',
+    icon: '📊',
+    topicId: 7,
+    mission: 'Monitors webinar watch %, drop-off points, replay viewers. If watched <50%: send back to training. If watched >50%: route to setter. Only serious prospects reach closers.',
+    kpis: ['Watch %','Drop-off','Replay Views','Setter Routes'],
+  },
+  {
+    id: 'success-captain',
+    name: 'Success Captain',
+    type: 'CLIENT SUCCESS AI',
+    icon: '🏆',
+    topicId: 8,
+    mission: 'Monthly check-ins with active clients. Monitors credit onboarding, Discord participation, call attendance, asset progress. Reduces refunds, increases testimonials.',
+    kpis: ['Check-ins','Onboarding %','Discord Active','Testimonials'],
+  },
+];
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function ago(ts) {
+  if (!ts) return '—';
+  const m = Math.floor((Date.now() - new Date(ts)) / 60000);
+  if (m < 1) return 'just now';
+  if (m < 60) return m + 'm ago';
+  const h = Math.floor(m/60);
+  if (h < 24) return h + 'h ago';
+  return Math.floor(h/24) + 'd ago';
+}
+function getStatus(lastMsg) {
+  if (!lastMsg) return 'standby';
+  const m = (Date.now() - new Date(lastMsg)) / 60000;
+  if (m < 60) return 'active';
+  if (m < 1440) return 'recent';
+  return 'standby';
+}
+function statusDot(s) {
+  const cls = { active:'sdot-active', recent:'sdot-recent', standby:'sdot-standby' }[s];
+  return `<span class="sdot ${cls}"></span>`;
+}
+function statusLabel(s) {
+  const cls = { active:'sl-active', recent:'sl-recent', standby:'sl-standby' }[s];
+  const txt = { active:'ACTIVE', recent:'RECENT', standby:'STANDBY' }[s];
+  return `<span class="status-label ${cls}">${txt}</span>`;
+}
+
+async function q(path) {
+  try {
+    const r = await fetch(`${SU}/rest/v1/${path}`, { headers: H });
+    if (!r.ok) return [];
+    return r.json();
+  } catch { return []; }
+}
+
+// ─── Main load ────────────────────────────────────────────────────────────────
+async function load() {
+  document.getElementById('last-upd').textContent = 'Loading…';
+
+  const today = new Date().toISOString().split('T')[0];
+  // Get this week Monday
+  const d = new Date(); const day = d.getDay();
+  d.setDate(d.getDate() - (day===0?6:day-1));
+  const weekStart = d.toISOString().split('T')[0];
+
+  // Fetch messages for each agent in parallel
+  const fetches = AGENTS.map(a => {
+    const topicFilter = a.topicId === null
+      ? `metadata->>topicId=is.null`
+      : `metadata->>topicId=eq.${a.topicId}`;
+    return Promise.all([
+      q(`messages?select=id,created_at,role,content&${topicFilter}&order=created_at.desc&limit=5`),
+      q(`messages?select=id&${topicFilter}&created_at=gte.${today}`),
+      q(`messages?select=id&${topicFilter}&created_at=gte.${weekStart}`),
+      q(`messages?select=id&${topicFilter}`),
+    ]);
+  });
+
+  const results = await Promise.all(fetches);
+
+  // Collate per agent
+  const agentData = AGENTS.map((a, i) => ({
+    ...a,
+    recent: results[i][0],
+    todayCount: results[i][1].length,
+    weekCount: results[i][2].length,
+    total: results[i][3].length,
+  }));
+
+  const totalMsgs = agentData.reduce((s,a) => s + a.total, 0);
+  const todayMsgs = agentData.reduce((s,a) => s + a.todayCount, 0);
+  const weekMsgs  = agentData.reduce((s,a) => s + a.weekCount, 0);
+  const activeCount = agentData.filter(a => getStatus(a.recent[0]?.created_at) !== 'standby').length;
+
+  document.getElementById('s-total').textContent = totalMsgs;
+  document.getElementById('s-today').textContent = todayMsgs;
+  document.getElementById('s-active').textContent = activeCount;
+  document.getElementById('s-week').textContent = weekMsgs;
+  document.getElementById('total-count').textContent = `· ${totalMsgs} messages`;
+
+  // Commander card
+  const cmd = agentData[0];
+  const cmdStatus = getStatus(cmd.recent[0]?.created_at);
+  document.getElementById('cmd-card').innerHTML = `
+    <div class="cmd-header">
+      <div class="cmd-title-row">
+        <span class="cmd-icon">${cmd.icon}</span>
+        <div>
+          <div class="cmd-title">${esc(cmd.name)}</div>
+          <div class="cmd-subtitle">${esc(cmd.type)}</div>
+        </div>
+      </div>
+      <div class="cmd-stats">
+        <div class="cmd-stat"><div class="cs-val">${cmd.total}</div><div class="cs-lbl">Total Msgs</div></div>
+        <div class="cmd-stat"><div class="cs-val">${cmd.todayCount}</div><div class="cs-lbl">Today</div></div>
+        <div class="cmd-stat"><div class="cs-val">${cmd.weekCount}</div><div class="cs-lbl">This Week</div></div>
+      </div>
+    </div>
+    <div class="cmd-meta">
+      <div class="cmd-status">${statusDot(cmdStatus)} ${statusLabel(cmdStatus)}</div>
+      ${cmd.recent[0] ? `<span style="font-size:.7rem;color:var(--muted)">Last active: ${ago(cmd.recent[0].created_at)}</span>` : ''}
+    </div>
+    <div class="cmd-mission">${esc(cmd.mission)}</div>
+    <div class="cmd-kpis">
+      ${cmd.kpis.map(k => `<span class="kpi-chip">${esc(k)}</span>`).join('')}
+    </div>
+    <div class="cmd-divider"></div>
+    <div class="msg-feed-title">Recent Activity</div>
+    <div class="msg-feed">
+      ${cmd.recent.length === 0
+        ? '<div class="empty">No activity yet</div>'
+        : cmd.recent.map(m => `
+          <div class="msg-item">
+            <span class="msg-role ${m.role==='user'?'mr-user':'mr-assistant'}">${esc(m.role)}</span>
+            <div style="flex:1">
+              <div class="msg-content">${esc(String(m.content||'').slice(0,180))}${String(m.content||'').length>180?'…':''}</div>
+              <div class="msg-time">${ago(m.created_at)}</div>
+            </div>
+          </div>
+        `).join('')}
+    </div>
+  `;
+
+  // Department agent cards (skip commander at index 0)
+  const deptAgents = agentData.slice(1);
+  document.getElementById('agent-grid').innerHTML = deptAgents.map(a => {
+    const status = getStatus(a.recent[0]?.created_at);
+    const statClass = `ac-${status}`;
+    return `
+      <div class="agent-card ${statClass}">
+        <div class="ac-header">
+          <div class="ac-title-block">
+            <span class="ac-icon">${a.icon}</span>
+            <div>
+              <div class="ac-name">${esc(a.name)}</div>
+              <div class="ac-type">${esc(a.type)}</div>
+            </div>
+          </div>
+          <div class="ac-status">${statusDot(status)} ${statusLabel(status)}</div>
+        </div>
+        <div class="ac-mission">${esc(a.mission)}</div>
+        <div class="ac-kpis">
+          ${a.kpis.map(k=>`<span class="ac-kpi">${esc(k)}</span>`).join('')}
+        </div>
+        <div class="ac-divider"></div>
+        <div class="ac-msg-count">
+          <div>
+            <span class="ac-count-num">${a.total}</span>
+            <span style="font-size:.65rem;color:var(--muted);margin-left:.3rem">total msgs</span>
+          </div>
+          <div style="margin-left:auto;text-align:right">
+            <div style="font-size:.68rem;color:var(--muted)">Today: <strong style="color:var(--white)">${a.todayCount}</strong></div>
+            <div style="font-size:.68rem;color:var(--muted)">Week: <strong style="color:var(--white)">${a.weekCount}</strong></div>
+          </div>
+        </div>
+        ${a.recent[0]
+          ? `<div class="ac-last">Last: ${ago(a.recent[0].created_at)}</div>
+             <div class="ac-mini-feed">
+               ${a.recent.slice(0,3).map(m=>`
+                 <div class="mini-msg">
+                   <span class="mini-role ${m.role}">${esc(m.role)}</span>
+                   <span>${esc(String(m.content||'').slice(0,90))}${String(m.content||'').length>90?'…':''}</span>
+                 </div>`).join('')}
+             </div>`
+          : `<div class="ac-last" style="margin-top:.25rem">Telegram topic: <strong>#${a.topicId||'general'}</strong> · No activity yet</div>`}
+      </div>
+    `;
+  }).join('');
+
+  // Pipeline
+  const pipeNodes = [
+    { icon:'📣', name:'ADS', sub:'Ad Commander', agentId:'ad-commander' },
+    { icon:'🚦', name:'LEAD INTAKE', sub:'Traffic Control', agentId:'traffic-control' },
+    { icon:'🧠', name:'TRAINING REG', sub:'Psych Warfare', agentId:'psych-warfare' },
+    { icon:'📊', name:'WEBINAR', sub:'Engagement Tracker', agentId:'webinar-tracker' },
+    { icon:'👤', name:'HUMAN CLOSER', sub:'Sets + Closes', agentId:null },
+    { icon:'🏆', name:'CLIENT SUCCESS', sub:'Success Captain', agentId:'success-captain' },
+    { icon:'⚔️', name:'COMMAND', sub:'Strategic Command', agentId:'commander' },
+  ];
+  const activeIds = new Set(agentData.filter(a => getStatus(a.recent[0]?.created_at) === 'active').map(a => a.id));
+
+  document.getElementById('pipeline-flow').innerHTML = pipeNodes.map((n, i) => {
+    const isActive = n.agentId && activeIds.has(n.agentId);
+    return `
+      <div class="pipe-node ${isActive ? 'active-node' : ''}">
+        <span class="pipe-node-icon">${n.icon}</span>
+        <div class="pipe-node-name">${n.name}</div>
+        <div class="pipe-node-sub">${n.sub}</div>
+      </div>
+      ${i < pipeNodes.length - 1 ? `<span class="pipe-arrow ${isActive?'active-arrow':''}">→</span>` : ''}
+    `;
+  }).join('');
+
+  document.getElementById('last-upd').textContent = 'Updated ' + new Date().toLocaleTimeString();
+}
+
+load();
+setInterval(load, 120000); // refresh every 2 min
+</script>
+</body>
+</html>
