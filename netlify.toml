@@ -1,0 +1,20 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[[redirects]]
+  from = "/"
+  to = "/dashboard"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/dashboard.html"
+  to = "/dashboard"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/agents"
+  to = "/agents.html"
+  status = 200

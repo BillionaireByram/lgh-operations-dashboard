@@ -1,8 +1,19 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #090101;
+  --foreground: #f7f7f3;
+  --lgh-red: #e10600;
+  --lgh-red-dark: #830000;
+  --lgh-red-deep: #300000;
+  --lgh-gold: #f4c34e;
+  --lgh-green: #22c55e;
+  --lgh-ink: #080000;
+  --lgh-panel: rgba(16, 6, 6, 0.82);
+  --lgh-panel-strong: rgba(28, 9, 9, 0.92);
+  --lgh-border: rgba(255, 255, 255, 0.12);
+  --lgh-line: rgba(227, 24, 24, 0.22);
+  --lgh-muted: rgba(247, 247, 243, 0.58);
 }
 
 @theme inline {
@@ -22,5 +33,133 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 16% 12%, rgba(225, 6, 0, 0.34), transparent 30rem),
+    radial-gradient(circle at 86% 0%, rgba(131, 0, 0, 0.38), transparent 34rem),
+    radial-gradient(circle at 70% 86%, rgba(244, 195, 78, 0.08), transparent 26rem),
+    linear-gradient(145deg, #140000 0%, #070000 50%, #030303 100%),
+    var(--background);
+  background-attachment: fixed;
+}
+
+::selection {
+  background: rgba(227, 24, 55, 0.35);
+}
+
+.lgh-shell {
+  position: relative;
+  isolation: isolate;
+  overflow-x: hidden;
+  background:
+    radial-gradient(circle at 28% 8%, rgba(225, 6, 0, 0.18), transparent 24rem),
+    radial-gradient(circle at 85% 42%, rgba(244, 195, 78, 0.055), transparent 30rem),
+    linear-gradient(180deg, rgba(35, 0, 0, 0.38), rgba(4, 0, 0, 0.78) 34rem, rgba(2, 0, 0, 0.9));
+}
+
+.lgh-particles {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.lgh-particles span {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(244, 195, 78, 0.72);
+  box-shadow: 0 0 18px rgba(244, 195, 78, 0.75);
+  opacity: 0.34;
+  animation: particle-drift var(--duration, 18s) linear infinite;
+  animation-delay: var(--delay, 0s);
+  left: var(--x, 50%);
+  top: var(--y, 50%);
+}
+
+.lgh-particles span:nth-child(2n) {
+  width: 3px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.65);
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.38);
+}
+
+.lgh-particles span:nth-child(3n) {
+  width: 6px;
+  height: 6px;
+  background: rgba(225, 6, 0, 0.62);
+  box-shadow: 0 0 22px rgba(225, 6, 0, 0.55);
+}
+
+@keyframes particle-drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.8);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.35;
+  }
+  100% {
+    transform: translate3d(var(--dx, 24px), -120vh, 0) scale(1.15);
+    opacity: 0;
+  }
+}
+
+.lgh-panel {
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.065), rgba(255, 255, 255, 0.028)),
+    rgba(12, 4, 4, 0.76);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.42);
+}
+
+.lgh-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: rgba(247, 247, 243, 0.95);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.lgh-section-title::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: linear-gradient(90deg, rgba(227, 24, 55, 0.45), transparent);
+}
+
+.lgh-hero {
+  background:
+    radial-gradient(circle at 10% 0%, rgba(255, 255, 255, 0.16), transparent 16rem),
+    linear-gradient(130deg, rgba(225, 6, 0, 0.45), rgba(44, 0, 0, 0.86) 44%, rgba(7, 0, 0, 0.92));
+  min-height: 0;
+}
+
+.nav-mark {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  border-radius: 4px;
+  border: 1px solid currentColor;
+  opacity: 0.58;
+}
+
+.nav-mark.active {
+  background: var(--lgh-red);
+  border-color: var(--lgh-red);
+  box-shadow: 0 0 16px rgba(225, 6, 0, 0.7);
+  opacity: 1;
 }
