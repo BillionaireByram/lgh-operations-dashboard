@@ -1,5 +1,5 @@
 import { DateRange } from "@/lib/date-range";
-import { centralRangeQuery, getHybridMetrics } from "@/lib/hybrid-metrics";
+import { centralRangeQuery, getGhlRevenueMetrics, getHybridMetrics } from "@/lib/hybrid-metrics";
 import { fromView, KpiDay } from "@/lib/supabase";
 
 const money = (value: number) => `$${Math.round(value).toLocaleString()}`;
@@ -55,7 +55,7 @@ type Deal = {
 
 export async function FunnelDiagram({ range }: { range: DateRange }) {
   const { startIso, endIso } = centralRangeQuery(range);
-  const [rows, hybrid, closedDeals] = await Promise.all([
+  const [rows, hybrid, closedDeals, ghlRevenue] = await Promise.all([
     fromView<KpiDay>("v_kpi_daily", {
       query: { day: `gte.${range.start}`, and: `(day.lte.${range.end})`, order: "day.asc" },
     }),
@@ -63,6 +63,7 @@ export async function FunnelDiagram({ range }: { range: DateRange }) {
     fromView<Deal>("closed_deals", {
       query: { select: "cash_collected,amount", closed_at: `gte.${startIso}`, and: `(closed_at.lte.${endIso})` },
     }),
+    getGhlRevenueMetrics(range),
   ]);
 
   const spend = rows.reduce((sum, row) => sum + Number(row.ad_spend || 0), 0);
@@ -70,10 +71,10 @@ export async function FunnelDiagram({ range }: { range: DateRange }) {
   const attended = hybrid.available ? hybrid.reachedVcc : rows.reduce((sum, row) => sum + Number(row.attended || 0), 0);
   const calls = rows.reduce((sum, row) => sum + Number(row.calls || 0), 0);
   const booked = hybrid.available ? hybrid.bookedCalls : rows.reduce((sum, row) => sum + Number(row.booked || 0), 0);
-  const deals = closedDeals.length || rows.reduce((sum, row) => sum + Number(row.deals || 0), 0);
-  const revenue = closedDeals.length
+  const deals = ghlRevenue.count || closedDeals.length || rows.reduce((sum, row) => sum + Number(row.deals || 0), 0);
+  const revenue = ghlRevenue.value || (closedDeals.length
     ? closedDeals.reduce((sum, row) => sum + Number(row.cash_collected || row.amount || 0), 0)
-    : rows.reduce((sum, row) => sum + Number(row.revenue || 0), 0);
+    : rows.reduce((sum, row) => sum + Number(row.revenue || 0), 0));
   const max = Math.max(signups, attended, calls, booked, deals, 1);
 
   const width = (value: number, floor = 34) => Math.max(floor, Math.round((value / max) * 100));
@@ -103,7 +104,13 @@ export async function FunnelDiagram({ range }: { range: DateRange }) {
             <Stage label="Attended training" value={attended} sub={`${pct(attended, signups)} of sign-ups attended`} width={width(attended, 66)} tone="gold" />
             <Stage label="AI calls made" value={calls} sub="follow-up pressure after sign-up" width={width(calls, 58)} tone="gold" />
             <Stage label="Booked calls" value={booked} sub={`${pct(booked, signups)} of sign-ups booked`} width={width(booked, 42)} tone="gold" />
-            <Stage label="Deals won" value={deals} sub={`${money(revenue)} cash tracked`} width={width(deals, 34)} tone="green" />
+            <Stage
+              label="Deals won"
+              value={deals}
+              sub={`${money(revenue)} ${ghlRevenue.available ? "GHL won value" : "cash tracked"}`}
+              width={width(deals, 34)}
+              tone="green"
+            />
           </div>
 
           <div className="space-y-3">

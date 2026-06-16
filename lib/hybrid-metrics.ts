@@ -52,6 +52,26 @@ export type HybridMetrics = {
   daily: HybridDailyMetrics[];
 };
 
+export type GhlWonDeal = {
+  id: string;
+  name: string;
+  closer: string | null;
+  contactId: string | null;
+  source: string | null;
+  closedAt: string | null;
+  amount: number;
+  package: string | null;
+};
+
+export type GhlRevenueMetrics = {
+  available: boolean;
+  error?: string;
+  deals: GhlWonDeal[];
+  count: number;
+  value: number;
+  source: "ghl_won_opportunities" | "unavailable";
+};
+
 type GhlOpportunity = Record<string, any>;
 
 function parseIso(value?: string | null): Date | null {
@@ -214,6 +234,25 @@ async function fetchClosersBooked(maxRows = 1000): Promise<GhlOpportunity[]> {
   return out.slice(0, maxRows);
 }
 
+async function fetchClosersWon(maxRows = 500): Promise<GhlOpportunity[]> {
+  const params = new URLSearchParams({
+    location_id: process.env.LGH_GHL_LOCATION_ID || LOCATION_ID,
+    pipeline_id: CLOSERS_PIPELINE_ID,
+    status: "won",
+    limit: "100",
+  });
+  let url = `/opportunities/search?${params.toString()}`;
+  const out: GhlOpportunity[] = [];
+  while (url && out.length < maxRows) {
+    const data = await ghlGet(url);
+    const batch = data.opportunities || data.items || [];
+    out.push(...batch);
+    url = data.meta?.nextPageUrl || "";
+    if (!batch.length) break;
+  }
+  return out.slice(0, maxRows);
+}
+
 function leadFromOpp(opp: GhlOpportunity, status: HybridLead["status"]): HybridLead {
   const contact = contactFromOpp(opp);
   const tags = tagsFor(opp);
@@ -234,6 +273,60 @@ function leadFromOpp(opp: GhlOpportunity, status: HybridLead["status"]): HybridL
 function isInternal(lead: HybridLead) {
   const text = `${lead.name} ${lead.email || ""} ${lead.tags.join(" ")}`.toLowerCase();
   return text.includes("trevor") || text.includes("calais") || text.includes("internal-test") || text.includes("commander-test") || text.includes("owner-test");
+}
+
+function dealDate(opp: GhlOpportunity) {
+  return opp.lastStatusChangeAt || opp.closedAt || opp.updatedAt || opp.lastStageChangeAt || opp.createdAt || null;
+}
+
+function packageFromOpp(opp: GhlOpportunity) {
+  const text = `${opp.name || ""} ${opp.source || ""} ${tagsFor(opp).join(" ")}`.toLowerCase();
+  if (text.includes("finance") || text.includes("financed") || text.includes("in house") || text.includes("in-house")) return "Financed";
+  if (text.includes("pif") || text.includes("paid in full") || text.includes("paid")) return "PIF";
+  return "Won";
+}
+
+function dealFromOpp(opp: GhlOpportunity): GhlWonDeal {
+  const contact = contactFromOpp(opp);
+  return {
+    id: String(opp.id || leadKey(opp)),
+    name: cleanName(contact.name || contact.contactName || opp.name, contact.email),
+    closer: opp.assignedTo || null,
+    contactId: opp.contactId || contact.id || contact.recordId || null,
+    source: opp.source || null,
+    closedAt: dealDate(opp),
+    amount: Number(opp.monetaryValue || 0),
+    package: packageFromOpp(opp),
+  };
+}
+
+export async function getGhlRevenueMetrics(range?: DateRange, limit = 500): Promise<GhlRevenueMetrics> {
+  try {
+    const won = await fetchClosersWon(limit);
+    const deals = won
+      .filter((opp) => String(opp.status || "").toLowerCase() === "won")
+      .filter((opp) => (range ? inRange(dealDate(opp), range) : true))
+      .map(dealFromOpp)
+      .filter((deal) => deal.id && !`${deal.name} ${deal.source || ""}`.toLowerCase().includes("test"))
+      .sort((a, b) => String(b.closedAt || "").localeCompare(String(a.closedAt || "")));
+
+    return {
+      available: true,
+      deals,
+      count: deals.length,
+      value: deals.reduce((sum, deal) => sum + deal.amount, 0),
+      source: "ghl_won_opportunities",
+    };
+  } catch (err) {
+    return {
+      available: false,
+      error: err instanceof Error ? err.message : "GHL won deals unavailable",
+      deals: [],
+      count: 0,
+      value: 0,
+      source: "unavailable",
+    };
+  }
 }
 
 export async function getHybridMetrics(range: DateRange): Promise<HybridMetrics> {

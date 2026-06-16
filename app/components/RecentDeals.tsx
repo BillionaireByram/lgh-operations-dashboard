@@ -1,5 +1,5 @@
 import { Card } from "./Card";
-import { fromView, FunnelJourneyRow } from "@/lib/supabase";
+import { getGhlRevenueMetrics, type GhlWonDeal } from "@/lib/hybrid-metrics";
 
 const fmtMoney = (n: number | null) => (n == null ? "—" : `$${Number(n).toLocaleString(undefined, { maximumFractionDigits: 0 })}`);
 
@@ -28,6 +28,21 @@ type Deal = {
   contact_id: string | null;
 };
 
+function fromGhlDeal(deal: GhlWonDeal): Deal {
+  return {
+    id: deal.id,
+    amount: deal.amount,
+    cash_collected: deal.amount,
+    total_value: deal.amount,
+    prospect_name: deal.name,
+    package: deal.package,
+    closer: deal.closer,
+    closed_at: deal.closedAt || new Date().toISOString(),
+    utm_source: deal.source,
+    contact_id: deal.contactId,
+  };
+}
+
 export async function RecentDeals() {
   // Direct query of closed_deals — most recent 10
   const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -49,12 +64,21 @@ export async function RecentDeals() {
     }
   }
 
+  let source = "Last 10 deals";
+  if (rows.length === 0) {
+    const ghlRevenue = await getGhlRevenueMetrics(undefined, 25);
+    if (ghlRevenue.available && ghlRevenue.deals.length) {
+      rows = ghlRevenue.deals.slice(0, 10).map(fromGhlDeal);
+      source = "Live GHL won opportunities";
+    }
+  }
+
   const orphans = rows.filter((d) => !d.contact_id).length;
 
   return (
     <Card
       title="Recent Deals"
-      subtitle={orphans > 0 ? `${orphans}/${rows.length} deals need source cleanup` : "Last 10 deals"}
+      subtitle={orphans > 0 ? `${orphans}/${rows.length} deals need source cleanup` : source}
     >
       <div className="overflow-x-auto -mx-2">
         <table className="min-w-full text-sm">
@@ -73,7 +97,7 @@ export async function RecentDeals() {
             {rows.length === 0 ? (
               <tr>
                 <td colSpan={7} className="px-2 py-6 text-center text-white/40">
-                  No deals yet.
+                  No deals found in the connected sources yet.
                 </td>
               </tr>
             ) : (

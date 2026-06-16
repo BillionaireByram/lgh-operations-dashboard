@@ -28,7 +28,7 @@ export async function KpiTrend() {
   const hybridByDay = new Map(hybrid.daily.map((row) => [row.day, row]));
 
   return (
-    <Card title="Last 14 Days" subtitle="Hybrid VSL opt-ins/VCC/booked from GHL, money/calls from Supabase">
+    <Card title="Last 14 Days" subtitle="Hybrid VSL opt-ins/VCC/booked from GHL; calls and legacy daily rows from the ledger">
       <div className="overflow-x-auto -mx-2">
         <table className="min-w-full text-sm">
           <thead>

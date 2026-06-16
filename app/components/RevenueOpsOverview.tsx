@@ -1,5 +1,5 @@
 import { DateRange, weekOf } from "@/lib/date-range";
-import { centralRangeQuery, getHybridMetrics } from "@/lib/hybrid-metrics";
+import { centralRangeQuery, getGhlRevenueMetrics, getHybridMetrics, type GhlWonDeal } from "@/lib/hybrid-metrics";
 import { fromView } from "@/lib/supabase";
 
 type SetterLog = {
@@ -114,7 +114,7 @@ function Metric({ label, value, sub }: { label: string; value: string | number; 
 
 export async function RevenueOpsOverview({ range }: { range: DateRange }) {
   const { startIso, endIso } = centralRangeQuery(range);
-  const [registrations, aiCalls, closerLogs, closedDeals, kpiDays, adMetrics, hybridMetrics] = await Promise.all([
+  const [registrations, aiCalls, closerLogs, closedDeals, kpiDays, adMetrics, hybridMetrics, ghlRevenue] = await Promise.all([
     fromView<Lead>("webinar_registrations", {
       query: { select: "id", registered_at: `gte.${range.start}`, and: `(registered_at.lte.${range.end}T23:59:59)` },
     }),
@@ -143,6 +143,7 @@ export async function RevenueOpsOverview({ range }: { range: DateRange }) {
       query: { date: `gte.${range.start}`, and: `(date.lte.${range.end})` },
     }),
     getHybridMetrics(range),
+    getGhlRevenueMetrics(range),
   ]);
 
   const callsMade = aiCalls.length;
@@ -154,23 +155,27 @@ export async function RevenueOpsOverview({ range }: { range: DateRange }) {
     return status.includes("answer") || outcome.includes("book") || outcome.includes("interested") || Number(row.call_duration_seconds || 0) > 20;
   }).length;
   const closesFromLogs = closerLogs.reduce((sum, row) => sum + num(row.deals_closed), 0);
-  const closes = Math.max(closedDeals.length, closesFromLogs);
+  const closes = Math.max(ghlRevenue.count, closedDeals.length, closesFromLogs);
   const cashFromDeals = closedDeals.reduce((sum, row) => sum + num(row.cash_collected || row.amount), 0);
   const cashFromLogs = closerLogs.reduce((sum, row) => sum + num(row.revenue_collected), 0);
-  const cash = Math.max(cashFromDeals, cashFromLogs);
+  const cash = Math.max(ghlRevenue.value, cashFromDeals, cashFromLogs);
   const closerCalls = closerLogs.reduce((sum, row) => sum + num(row.calls_taken), 0);
   const noShows = closerLogs.reduce((sum, row) => sum + num(row.no_shows), 0);
-  const closeRate = closerCalls > 0 ? Math.round((closes / closerCalls) * 100) : 0;
+  const closeRateBase = closerCalls || hybridMetrics.bookedCalls;
+  const closeRate = closeRateBase > 0 ? Math.round((closes / closeRateBase) * 100) : 0;
   const goal = 25_000;
   const goalPct = Math.min(100, Math.round((cash / goal) * 100));
 
+  const leaderDeals: Array<{ team_member: string | null; value: number }> = ghlRevenue.available && ghlRevenue.deals.length
+    ? ghlRevenue.deals.map((deal: GhlWonDeal) => ({ team_member: deal.closer || "GHL closer", value: deal.amount }))
+    : closedDeals.map((row) => ({ team_member: row.closer, value: num(row.cash_collected || row.amount) }));
   const cashLeaders = rank(
-    closedDeals.map((row) => ({ team_member: row.closer, value: num(row.cash_collected || row.amount) })),
+    leaderDeals,
     "team_member",
     (row) => num(row.value)
   );
   const dealLeaders = rank(
-    closedDeals.map((row) => ({ team_member: row.closer, value: 1 })),
+    leaderDeals.map((row) => ({ team_member: row.team_member, value: 1 })),
     "team_member",
     (row) => num(row.value)
   );
@@ -197,7 +202,10 @@ export async function RevenueOpsOverview({ range }: { range: DateRange }) {
         <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <div className="text-sm font-extrabold uppercase tracking-[0.08em] text-white/88">Scoreboard</div>
-            <div className="mt-1 text-sm text-white/50">The main numbers for {range.label.toLowerCase()}.</div>
+            <div className="mt-1 text-sm text-white/50">
+              The main numbers for {range.label.toLowerCase()}.
+              {ghlRevenue.available ? " Deals and value are pulled from live GHL won opportunities." : ""}
+            </div>
           </div>
           <div className="text-sm font-bold text-[var(--lgh-gold)]">{money(cash)} / {money(goal)} goal</div>
         </div>
@@ -209,7 +217,7 @@ export async function RevenueOpsOverview({ range }: { range: DateRange }) {
           <Metric label="AI calls" value={callsMade} sub={`${answered} answered`} />
           <Metric label="Booked calls" value={webinarBooked} sub={hybridMetrics.available ? "GHL booked-call stage" : "from Commander calls"} />
           <Metric label="Deals" value={closes} sub={`${closeRate}% close rate`} />
-          <Metric label="Cash won" value={money(cash)} sub="collected" />
+          <Metric label="Cash won" value={money(cash)} sub={ghlRevenue.available ? "GHL won value" : "collected"} />
         </div>
       </div>
 
