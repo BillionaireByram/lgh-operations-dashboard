@@ -1,0 +1,2241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LGH Command Center Field Manual</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-0: #050505;
+      --bg-1: #0a0606;
+      --bg-2: #110707;
+      --panel-bg: rgba(14, 6, 6, 0.78);
+      --panel-bg-2: rgba(20, 9, 9, 0.92);
+      --panel-edge: rgba(255, 255, 255, 0.08);
+      --panel-edge-strong: rgba(255, 255, 255, 0.16);
+
+      --red: #e10600;
+      --red-soft: #ff3a30;
+      --red-deep: #780300;
+      --gold: #f4c34e;
+      --gold-soft: #ffdd8a;
+      --green: #22c55e;
+      --green-soft: #4ade80;
+      --amber: #f59e0b;
+
+      --ink: #fffaf2;
+      --ink-2: rgba(255, 250, 242, 0.88);
+      --ink-3: rgba(255, 250, 242, 0.62);
+      --ink-4: rgba(255, 250, 242, 0.42);
+
+      --rule: rgba(255, 255, 255, 0.10);
+      --rule-warm: rgba(225, 6, 0, 0.32);
+      --rule-gold: rgba(244, 195, 78, 0.32);
+
+      --mono: "JetBrains Mono", "SFMono-Regular", "Consolas", monospace;
+      --display: "Space Grotesk", "Inter", system-ui, sans-serif;
+      --sans: "Inter", system-ui, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: var(--bg-0);
+      color: var(--ink);
+      font-family: var(--sans);
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Background system: dot grid + radial warm light + scanlines */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 12% 8%, rgba(225, 6, 0, 0.22), transparent 40rem),
+        radial-gradient(circle at 90% 6%, rgba(244, 195, 78, 0.10), transparent 32rem),
+        radial-gradient(circle at 78% 96%, rgba(225, 6, 0, 0.14), transparent 30rem),
+        linear-gradient(160deg, #150505 0%, #060303 55%, #020101 100%);
+      z-index: -3;
+    }
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+      background-size: 28px 28px;
+      mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.9), transparent 75%);
+      -webkit-mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.9), transparent 75%);
+      z-index: -2;
+      pointer-events: none;
+    }
+
+    .scanlines {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 6;
+      mix-blend-mode: overlay;
+      opacity: 0.18;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0.04) 0px,
+          rgba(255, 255, 255, 0.04) 1px,
+          transparent 2px,
+          transparent 3px
+        );
+    }
+
+    .vignette {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5;
+      background: radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.6) 100%);
+    }
+
+    .progress {
+      position: fixed;
+      left: 0; top: 0;
+      height: 2px;
+      width: var(--progress, 8%);
+      background: linear-gradient(90deg, var(--red) 0%, var(--gold) 100%);
+      box-shadow: 0 0 20px rgba(225, 6, 0, 0.6);
+      z-index: 8;
+      transition: width 280ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Deck shell */
+    .deck {
+      position: relative;
+      z-index: 1;
+      height: 100vh;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      padding: 18px 22px;
+    }
+
+    /* Top bar — classification banner */
+    .topbar {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--rule);
+      position: relative;
+    }
+    .topbar::after {
+      content: "";
+      position: absolute;
+      left: 0; bottom: -1px;
+      width: 64px;
+      height: 1px;
+      background: var(--gold);
+      box-shadow: 0 0 10px rgba(244, 195, 78, 0.6);
+    }
+
+    .crest {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--ink);
+    }
+    .crest-mark {
+      width: 38px; height: 38px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: linear-gradient(135deg, var(--red), var(--red-deep));
+      display: grid; place-items: center;
+      color: #fff;
+      font-family: var(--display);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      font-size: 0.78rem;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 0 22px rgba(225, 6, 0, 0.36);
+    }
+    .crest-text {
+      display: grid;
+      gap: 2px;
+    }
+    .crest-title {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 0.92rem;
+      letter-spacing: -0.01em;
+      line-height: 1;
+    }
+    .crest-sub {
+      color: var(--ink-3);
+      font-family: var(--mono);
+      font-size: 0.64rem;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .classify {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      font-family: var(--mono);
+      font-size: 0.66rem;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+    .classify span { display: inline-flex; align-items: center; gap: 6px; }
+    .classify .dot-live {
+      width: 7px; height: 7px;
+      border-radius: 999px;
+      background: var(--green);
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.7);
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    .built-for {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-2);
+      border: 1px solid var(--rule-gold);
+      background: linear-gradient(180deg, rgba(244, 195, 78, 0.10), rgba(0, 0, 0, 0.18));
+      padding: 7px 12px;
+      border-radius: 4px;
+    }
+    .built-for strong {
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    /* Stage + slide frame */
+    .stage {
+      position: relative;
+      min-height: 0;
+      display: grid;
+      place-items: center;
+      padding: 14px 0;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 14px 0;
+      width: min(1240px, 100%);
+      max-height: calc(100vh - 150px);
+      margin: 0 auto;
+      border: 1px solid var(--panel-edge);
+      border-radius: 14px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.012) 100%),
+        var(--panel-bg);
+      box-shadow:
+        0 32px 96px rgba(0, 0, 0, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      overflow: hidden;
+      isolation: isolate;
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+      transition: opacity 320ms ease, transform 320ms ease;
+    }
+    .slide.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    /* Corner brackets — mil/ops aesthetic */
+    .slide::before,
+    .slide::after {
+      content: "";
+      position: absolute;
+      width: 24px; height: 24px;
+      border-color: var(--rule-warm);
+      pointer-events: none;
+      z-index: 2;
+    }
+    .slide::before {
+      top: 14px; left: 14px;
+      border-top: 1px solid currentColor;
+      border-left: 1px solid currentColor;
+      color: rgba(244, 195, 78, 0.55);
+    }
+    .slide::after {
+      bottom: 14px; right: 14px;
+      border-bottom: 1px solid currentColor;
+      border-right: 1px solid currentColor;
+      color: rgba(244, 195, 78, 0.55);
+    }
+
+    .slide-inner {
+      height: 100%;
+      padding: 44px 52px 52px;
+      display: grid;
+      gap: 26px;
+      align-content: start;
+      position: relative;
+    }
+
+    /* Slide header bar — file ID, eyebrow, divider */
+    .slide-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: var(--mono);
+      font-size: 0.66rem;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      padding-bottom: 14px;
+      border-bottom: 1px dashed var(--rule);
+    }
+    .slide-meta .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .slide-meta .eyebrow::before {
+      content: "";
+      width: 6px; height: 6px;
+      background: var(--gold);
+      border-radius: 1px;
+      box-shadow: 0 0 8px rgba(244, 195, 78, 0.7);
+    }
+    .slide-meta .eyebrow span {
+      color: var(--gold);
+    }
+    .slide-meta .filecode {
+      color: var(--ink-4);
+    }
+
+    /* Title system */
+    .title-xl {
+      margin: 0;
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: clamp(3.6rem, 6.4vw, 5.8rem);
+      line-height: 0.92;
+      letter-spacing: -0.04em;
+      max-width: 18ch;
+    }
+    .title-lg {
+      margin: 0;
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: clamp(2.4rem, 4.2vw, 3.6rem);
+      line-height: 0.96;
+      letter-spacing: -0.025em;
+      max-width: 22ch;
+    }
+    .title-md {
+      margin: 0;
+      font-family: var(--display);
+      font-weight: 600;
+      font-size: 1.4rem;
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+    }
+
+    .lede {
+      margin: 0;
+      max-width: 64ch;
+      color: var(--ink-2);
+      font-size: 1.05rem;
+      line-height: 1.55;
+    }
+    .body {
+      color: var(--ink-2);
+      font-size: 0.96rem;
+      line-height: 1.55;
+    }
+    .micro {
+      color: var(--ink-3);
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+    .gold { color: var(--gold); }
+    .red { color: var(--red-soft); }
+    .green { color: var(--green-soft); }
+
+    /* Generic panel (rare — used selectively) */
+    .panel {
+      position: relative;
+      border: 1px solid var(--panel-edge);
+      border-radius: 10px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.008)), rgba(0, 0, 0, 0.24);
+      padding: 22px;
+    }
+
+    /* SVG icon defaults */
+    .ico {
+      width: 18px; height: 18px;
+      stroke: currentColor;
+      stroke-width: 1.6;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex: 0 0 auto;
+    }
+    .ico-lg { width: 22px; height: 22px; }
+    .ico-xl { width: 28px; height: 28px; stroke-width: 1.4; }
+
+    /* =========================================================
+       SLIDE 01 — COVER
+       ========================================================= */
+    .cover {
+      grid-template-rows: auto 1fr auto;
+      gap: 0;
+      padding: 38px 52px 40px;
+    }
+    .cover-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+      padding-bottom: 18px;
+      border-bottom: 1px dashed var(--rule);
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+    .cover-top .left { display: grid; gap: 6px; }
+    .cover-top .left .gold { letter-spacing: 0.24em; }
+    .cover-top .right { text-align: right; color: var(--gold); }
+
+    .cover-body {
+      display: grid;
+      grid-template-columns: 1.7fr 1fr;
+      gap: 40px;
+      align-items: center;
+      padding: 38px 0 28px;
+    }
+    .cover-headline {
+      display: grid;
+      gap: 22px;
+    }
+    .cover-headline .pre {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--mono);
+      font-size: 0.74rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .cover-headline .pre::before {
+      content: ""; width: 28px; height: 1px; background: var(--gold);
+    }
+    .cover-headline h1 {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: clamp(3.8rem, 7.4vw, 6.6rem);
+      line-height: 0.88;
+      letter-spacing: -0.045em;
+      margin: 0;
+    }
+    .cover-headline h1 em {
+      font-style: normal;
+      background: linear-gradient(180deg, var(--gold) 0%, var(--red-soft) 110%);
+      -webkit-background-clip: text;
+              background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .cover-headline .lede {
+      max-width: 48ch;
+      font-size: 1.08rem;
+    }
+
+    .cover-crest {
+      position: relative;
+      aspect-ratio: 1 / 1;
+      max-width: 320px;
+      margin-left: auto;
+      border: 1px solid var(--rule-gold);
+      border-radius: 16px;
+      background:
+        radial-gradient(circle at 28% 22%, rgba(244, 195, 78, 0.30), transparent 60%),
+        linear-gradient(150deg, rgba(225, 6, 0, 0.46), rgba(45, 0, 0, 0.86));
+      box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.5),
+        0 0 60px rgba(225, 6, 0, 0.32),
+        inset 0 1px 0 rgba(255, 255, 255, 0.16);
+      display: grid;
+      place-items: center;
+      transform: rotate(-3deg);
+      overflow: hidden;
+    }
+    .cover-crest::before {
+      content: "";
+      position: absolute;
+      inset: 12px;
+      border: 1px dashed rgba(255, 250, 242, 0.18);
+      border-radius: 10px;
+      pointer-events: none;
+    }
+    .cover-crest .glyph {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 5.5rem;
+      letter-spacing: -0.08em;
+      color: var(--ink);
+      text-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+      line-height: 1;
+    }
+    .cover-crest .stamp {
+      position: absolute;
+      bottom: 22px; left: 0; right: 0;
+      text-align: center;
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.24em;
+      color: var(--gold);
+    }
+    .cover-crest .corner {
+      position: absolute;
+      width: 14px; height: 14px;
+      color: rgba(244, 195, 78, 0.7);
+    }
+    .cover-crest .corner.tl { top: 8px; left: 8px; border-top: 1px solid; border-left: 1px solid; }
+    .cover-crest .corner.tr { top: 8px; right: 8px; border-top: 1px solid; border-right: 1px solid; }
+    .cover-crest .corner.bl { bottom: 8px; left: 8px; border-bottom: 1px solid; border-left: 1px solid; }
+    .cover-crest .corner.br { bottom: 8px; right: 8px; border-bottom: 1px solid; border-right: 1px solid; }
+
+    .cover-strip {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0;
+      padding-top: 22px;
+      border-top: 1px dashed var(--rule);
+    }
+    .cover-stat {
+      padding: 4px 18px;
+      border-left: 1px solid var(--rule);
+      min-width: 0;
+    }
+    .cover-stat:first-child { border-left: 0; padding-left: 0; }
+    .cover-stat b {
+      display: block;
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: clamp(2rem, 3.4vw, 2.8rem);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+      background: linear-gradient(180deg, var(--ink) 35%, rgba(244, 195, 78, 0.78));
+      -webkit-background-clip: text;
+              background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .cover-stat span {
+      display: block;
+      margin-top: 8px;
+      color: var(--ink-3);
+      font-family: var(--mono);
+      font-size: 0.66rem;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    /* =========================================================
+       SLIDE 02 — RACK (modules)
+       ========================================================= */
+    .rack-grid {
+      display: grid;
+      gap: 14px;
+    }
+    .rack-row {
+      display: grid;
+      grid-template-columns: 56px 1.4fr 2fr auto;
+      gap: 22px;
+      align-items: center;
+      padding: 20px 22px;
+      border: 1px solid var(--panel-edge);
+      border-left: 3px solid var(--red);
+      border-radius: 10px;
+      background: linear-gradient(90deg, rgba(225, 6, 0, 0.10), rgba(0, 0, 0, 0.16) 40%);
+      transition: transform 220ms ease, border-left-color 220ms ease;
+    }
+    .rack-row:nth-child(2) { border-left-color: var(--gold); background: linear-gradient(90deg, rgba(244, 195, 78, 0.08), rgba(0, 0, 0, 0.16) 40%); }
+    .rack-row:nth-child(3) { border-left-color: var(--green); background: linear-gradient(90deg, rgba(34, 197, 94, 0.08), rgba(0, 0, 0, 0.16) 40%); }
+    .rack-row:nth-child(4) { border-left-color: rgba(255, 255, 255, 0.45); background: linear-gradient(90deg, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.16) 40%); }
+    .rack-row:hover { transform: translateX(3px); }
+
+    .rack-id {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      color: var(--ink-3);
+      text-align: center;
+      padding: 6px 0;
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.3);
+    }
+    .rack-name {
+      display: grid;
+      gap: 4px;
+    }
+    .rack-name strong {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 1.18rem;
+      letter-spacing: -0.01em;
+      line-height: 1;
+    }
+    .rack-name .sub {
+      font-family: var(--mono);
+      font-size: 0.64rem;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+    .rack-desc {
+      color: var(--ink-2);
+      font-size: 0.94rem;
+      line-height: 1.5;
+    }
+    .rack-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: 0.66rem;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--green-soft);
+      padding: 6px 10px;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      border-radius: 999px;
+      background: rgba(34, 197, 94, 0.08);
+      white-space: nowrap;
+    }
+    .rack-status .blip {
+      width: 6px; height: 6px;
+      border-radius: 999px;
+      background: var(--green);
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.8);
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+
+    /* =========================================================
+       SLIDE 03 — REVENUE CHAIN (single line, ops style)
+       ========================================================= */
+    .chain {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0;
+      padding: 26px 0 12px;
+    }
+    .chain::before {
+      content: "";
+      position: absolute;
+      top: 56px;
+      left: 6%;
+      right: 6%;
+      height: 1px;
+      background: linear-gradient(90deg, var(--red), var(--gold));
+      opacity: 0.55;
+      z-index: 0;
+    }
+    .chain-step {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      gap: 10px;
+      justify-items: center;
+      text-align: center;
+      padding: 0 6px;
+    }
+    .chain-node {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      border: 1px solid var(--rule-warm);
+      background: radial-gradient(circle at 30% 25%, rgba(244, 195, 78, 0.12), rgba(0, 0, 0, 0.7));
+      display: grid; place-items: center;
+      color: var(--gold);
+      box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.85);
+      position: relative;
+    }
+    .chain-step:nth-child(odd) .chain-node {
+      border-color: rgba(225, 6, 0, 0.45);
+      color: var(--red-soft);
+    }
+    .chain-num {
+      position: absolute;
+      top: -8px; right: -8px;
+      width: 20px; height: 20px;
+      border-radius: 999px;
+      background: var(--red);
+      color: var(--ink);
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      font-weight: 700;
+      display: grid; place-items: center;
+      box-shadow: 0 0 12px rgba(225, 6, 0, 0.55);
+    }
+    .chain-name {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 0.98rem;
+      letter-spacing: -0.005em;
+      line-height: 1;
+    }
+    .chain-detail {
+      max-width: 16ch;
+      color: var(--ink-3);
+      font-size: 0.78rem;
+      line-height: 1.4;
+    }
+
+    .chain-rule {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 18px;
+      padding: 14px 22px;
+      border: 1px solid var(--rule-gold);
+      border-radius: 8px;
+      background: linear-gradient(90deg, rgba(244, 195, 78, 0.08), transparent);
+      font-family: var(--mono);
+      font-size: 0.86rem;
+      color: var(--ink-2);
+    }
+    .chain-rule strong { color: var(--gold); }
+
+    /* =========================================================
+       SLIDE 04 — DASHBOARD (KPI strip + readbook)
+       ========================================================= */
+    .dash-grid {
+      display: grid;
+      grid-template-columns: 1.6fr 1fr;
+      gap: 22px;
+      align-items: stretch;
+    }
+    .dash-screen {
+      position: relative;
+      border: 1px solid var(--rule-gold);
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.25));
+      padding: 22px;
+      display: grid;
+      gap: 18px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 0 40px rgba(244, 195, 78, 0.08);
+    }
+    .dash-screen::before {
+      content: "DASHBOARD // LIVE";
+      position: absolute;
+      top: -10px; left: 18px;
+      padding: 2px 10px;
+      background: var(--bg-1);
+      border: 1px solid var(--rule-gold);
+      border-radius: 4px;
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      color: var(--gold);
+    }
+    .dash-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+    .dash-cell {
+      padding: 14px 14px;
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.025);
+      display: grid;
+      gap: 8px;
+    }
+    .dash-cell .label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+    .dash-cell .value {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 1.55rem;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+    .dash-cell .value.live { color: var(--green-soft); }
+    .dash-cell .value.warm { color: var(--gold); }
+    .dash-cell .delta {
+      font-family: var(--mono);
+      font-size: 0.66rem;
+      color: var(--ink-3);
+    }
+
+    .dash-readbook {
+      display: grid;
+      gap: 14px;
+    }
+    .readbook-row {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 14px;
+      align-items: start;
+      padding: 12px 0;
+      border-bottom: 1px dashed var(--rule);
+    }
+    .readbook-row:last-child { border-bottom: 0; }
+    .readbook-row .glyph {
+      width: 28px; height: 28px;
+      border-radius: 6px;
+      border: 1px solid var(--rule-warm);
+      background: rgba(225, 6, 0, 0.08);
+      color: var(--red-soft);
+      display: grid; place-items: center;
+    }
+    .readbook-row strong { display: block; font-family: var(--display); font-weight: 700; font-size: 0.96rem; }
+    .readbook-row span { display: block; margin-top: 3px; color: var(--ink-3); font-size: 0.86rem; line-height: 1.45; }
+
+    .ask-box {
+      margin-top: 4px;
+      padding: 14px 16px;
+      border: 1px solid var(--rule-gold);
+      border-left: 3px solid var(--gold);
+      border-radius: 8px;
+      background: linear-gradient(180deg, rgba(244, 195, 78, 0.08), rgba(0, 0, 0, 0.12));
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: var(--ink-2);
+    }
+    .ask-box::before {
+      content: "> ASK COMMANDER";
+      display: block;
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+
+    /* =========================================================
+       SLIDE 05 — AGENTS (personnel files)
+       ========================================================= */
+    .roster {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .dossier {
+      position: relative;
+      border: 1px solid var(--panel-edge);
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(0, 0, 0, 0.32));
+      padding: 22px;
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+    .dossier-head {
+      display: grid;
+      grid-template-columns: 64px 1fr;
+      gap: 14px;
+      align-items: center;
+      padding-bottom: 14px;
+      border-bottom: 1px dashed var(--rule);
+    }
+    .dossier-portrait {
+      width: 64px; height: 64px;
+      border-radius: 8px;
+      border: 1px solid var(--rule-warm);
+      background:
+        radial-gradient(circle at 30% 25%, rgba(244, 195, 78, 0.16), transparent 60%),
+        linear-gradient(135deg, rgba(225, 6, 0, 0.5), rgba(60, 0, 0, 0.85));
+      display: grid; place-items: center;
+      color: var(--ink);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    }
+    .dossier-name {
+      display: grid; gap: 4px;
+    }
+    .dossier-name strong {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 1.4rem;
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+    .dossier-name .role {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: 0.66rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .dossier-name .role::before {
+      content: ""; width: 14px; height: 1px; background: var(--gold);
+    }
+    .dossier-id {
+      position: absolute;
+      top: 14px; right: 16px;
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      color: var(--ink-4);
+    }
+    .dossier-body {
+      color: var(--ink-2);
+      font-size: 0.92rem;
+      line-height: 1.55;
+      margin: 0;
+    }
+    .dossier-cmd {
+      margin-top: auto;
+      padding: 12px 14px;
+      border: 1px solid var(--rule);
+      border-left: 3px solid var(--gold);
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.32);
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      line-height: 1.45;
+      color: var(--ink-2);
+    }
+    .dossier-cmd::before {
+      content: "// SAMPLE PROMPT";
+      display: block;
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      color: var(--gold);
+      margin-bottom: 5px;
+    }
+
+    /* =========================================================
+       SLIDE 06 — DAILY RHYTHM (timeline)
+       ========================================================= */
+    .rhythm {
+      display: grid;
+      grid-template-columns: 0.7fr 1.3fr;
+      gap: 28px;
+      align-items: stretch;
+    }
+    .rule-card {
+      position: relative;
+      padding: 24px;
+      border: 1px solid var(--rule-warm);
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(225, 6, 0, 0.10), rgba(0, 0, 0, 0.32));
+    }
+    .rule-card::before {
+      content: "DIRECTIVE";
+      position: absolute;
+      top: -10px; left: 18px;
+      padding: 2px 10px;
+      background: var(--bg-1);
+      border: 1px solid var(--rule-warm);
+      border-radius: 4px;
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      color: var(--red-soft);
+    }
+    .rule-card h3 {
+      margin: 0 0 12px;
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 1.4rem;
+      letter-spacing: -0.02em;
+    }
+    .rule-card p { margin: 0; color: var(--ink-2); font-size: 0.96rem; line-height: 1.55; }
+
+    .timeline {
+      position: relative;
+      padding-left: 28px;
+      display: grid;
+      gap: 22px;
+    }
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 9px; top: 8px; bottom: 8px;
+      width: 1px;
+      background: linear-gradient(180deg, var(--gold), var(--red), transparent);
+      opacity: 0.5;
+    }
+    .station {
+      position: relative;
+      padding: 14px 18px;
+      border: 1px solid var(--rule);
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.22);
+    }
+    .station::before {
+      content: "";
+      position: absolute;
+      left: -28px; top: 22px;
+      width: 18px; height: 18px;
+      border: 1px solid var(--gold);
+      background: var(--bg-1);
+      border-radius: 999px;
+      box-shadow: 0 0 12px rgba(244, 195, 78, 0.55);
+    }
+    .station::after {
+      content: "";
+      position: absolute;
+      left: -22px; top: 28px;
+      width: 6px; height: 6px;
+      background: var(--gold);
+      border-radius: 999px;
+    }
+    .station .time {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+    }
+    .station .time .clock {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--ink-3);
+    }
+    .station strong {
+      display: block;
+      margin-top: 6px;
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: -0.01em;
+    }
+    .station span {
+      display: block;
+      margin-top: 4px;
+      color: var(--ink-2);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    /* =========================================================
+       SLIDE 07 — COMMANDER (terminal)
+       ========================================================= */
+    .terminal-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 22px;
+      align-items: stretch;
+    }
+    .terminal {
+      position: relative;
+      border: 1px solid var(--rule-gold);
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.32));
+      padding: 22px 22px 26px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+    .terminal::before {
+      content: "";
+      position: absolute;
+      top: 12px; left: 14px;
+      width: 12px; height: 12px;
+      border-radius: 999px;
+      background: var(--red);
+      box-shadow: 18px 0 0 var(--gold), 36px 0 0 var(--green);
+    }
+    .terminal-title {
+      display: flex;
+      justify-content: flex-end;
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      color: var(--ink-3);
+      margin-bottom: 22px;
+    }
+    .term-line {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px;
+      align-items: baseline;
+      padding: 10px 0;
+      border-bottom: 1px dashed var(--rule);
+      font-family: var(--mono);
+      font-size: 0.92rem;
+      color: var(--ink-2);
+    }
+    .term-line:last-child { border-bottom: 0; }
+    .term-line::before {
+      content: ">";
+      color: var(--gold);
+      font-weight: 700;
+    }
+    .term-line.cursor::after {
+      content: "▌";
+      color: var(--gold);
+      animation: blink 1s steps(2) infinite;
+      margin-left: 4px;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .answer-card {
+      padding: 22px;
+      border: 1px solid var(--rule-gold);
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(244, 195, 78, 0.08), rgba(0, 0, 0, 0.30));
+      display: grid;
+      gap: 16px;
+      align-content: start;
+    }
+    .answer-card .head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--mono);
+      font-size: 0.66rem;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .answer-card h3 {
+      margin: 0;
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 1.4rem;
+      letter-spacing: -0.02em;
+    }
+    .answer-card p { margin: 0; color: var(--ink-2); font-size: 0.95rem; line-height: 1.55; }
+
+    /* =========================================================
+       SLIDE 08 — ADS COMMANDER
+       ========================================================= */
+    .ads-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+      align-items: stretch;
+    }
+    .owns-card, .ask-card {
+      padding: 22px;
+      border-radius: 12px;
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+    .owns-card {
+      border: 1px solid var(--panel-edge);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(0, 0, 0, 0.28));
+    }
+    .ask-card {
+      border: 1px solid var(--rule-warm);
+      background: linear-gradient(180deg, rgba(225, 6, 0, 0.10), rgba(0, 0, 0, 0.30));
+    }
+    .card-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed var(--rule);
+    }
+    .card-head .label {
+      font-family: var(--mono);
+      font-size: 0.66rem;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .ask-card .card-head .label { color: var(--red-soft); }
+    .card-head h3 {
+      margin: 0;
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 1.3rem;
+      letter-spacing: -0.02em;
+    }
+    .duty-list {
+      margin: 0; padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 10px;
+    }
+    .duty-list li {
+      display: grid;
+      grid-template-columns: 26px 1fr;
+      gap: 12px;
+      align-items: start;
+      color: var(--ink-2);
+      font-size: 0.95rem;
+      line-height: 1.45;
+    }
+    .duty-list li .dot {
+      width: 16px; height: 16px;
+      border: 1px solid var(--rule-gold);
+      border-radius: 4px;
+      background: rgba(244, 195, 78, 0.10);
+      display: grid; place-items: center;
+      color: var(--gold);
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+    .ask-list {
+      display: grid;
+      gap: 10px;
+    }
+    .ask-line {
+      padding: 12px 14px;
+      border: 1px solid var(--rule);
+      border-left: 3px solid var(--red);
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.30);
+      font-family: var(--mono);
+      font-size: 0.84rem;
+      line-height: 1.45;
+      color: var(--ink-2);
+    }
+
+    .footer-rule {
+      padding: 14px 18px;
+      border-top: 1px dashed var(--rule);
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--ink-3);
+      line-height: 1.5;
+      letter-spacing: 0.04em;
+    }
+    .footer-rule strong { color: var(--gold); font-weight: 700; }
+
+    /* =========================================================
+       SLIDE 09 — STRATEGY (funnel)
+       ========================================================= */
+    .strat-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 26px;
+      align-items: stretch;
+    }
+    .funnel-stack {
+      display: grid;
+      gap: 8px;
+      align-content: center;
+    }
+    .funnel-bar {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 22px;
+      border-radius: 10px;
+      border: 1px solid var(--rule);
+      background:
+        linear-gradient(90deg, rgba(225, 6, 0, 0.45), rgba(244, 195, 78, 0.18)),
+        rgba(0, 0, 0, 0.22);
+      margin-right: var(--shrink, 0);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.30);
+      overflow: hidden;
+    }
+    .funnel-bar strong {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: -0.01em;
+    }
+    .funnel-bar span {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255, 250, 242, 0.78);
+    }
+    .funnel-bar::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.10) 50%, transparent 70%);
+      transform: translateX(-100%);
+      animation: shimmer 6s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes shimmer { to { transform: translateX(100%); } }
+
+    .strat-side {
+      display: grid;
+      gap: 18px;
+      align-content: start;
+    }
+    .strat-side h3 {
+      margin: 0;
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 1.4rem;
+      letter-spacing: -0.02em;
+    }
+    .strat-side p { margin: 0; color: var(--ink-2); font-size: 0.95rem; line-height: 1.55; }
+    .cron-line {
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 12px;
+      align-items: center;
+      padding: 10px 14px;
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.30);
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      color: var(--ink-2);
+    }
+    .cron-line code {
+      color: var(--gold);
+      font-weight: 600;
+      font-size: 0.78rem;
+      letter-spacing: 0.04em;
+    }
+
+    /* =========================================================
+       SLIDE 10 — DATA HEALTH (monitors)
+       ========================================================= */
+    .monitor-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .monitor {
+      position: relative;
+      padding: 18px;
+      border: 1px solid var(--rule);
+      border-radius: 10px;
+      background: linear-gradient(180deg, rgba(34, 197, 94, 0.06), rgba(0, 0, 0, 0.30));
+      display: grid;
+      gap: 10px;
+    }
+    .monitor::before {
+      content: "";
+      position: absolute;
+      top: 14px; right: 14px;
+      width: 8px; height: 8px;
+      border-radius: 999px;
+      background: var(--green);
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.7);
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+    .monitor .cron {
+      font-family: var(--mono);
+      font-size: 0.66rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      color: var(--green-soft);
+      text-transform: uppercase;
+    }
+    .monitor strong {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: -0.01em;
+    }
+    .monitor span {
+      color: var(--ink-3);
+      font-size: 0.86rem;
+      line-height: 1.45;
+    }
+
+    .interpret {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .interpret .legend {
+      padding: 16px 18px;
+      border-radius: 10px;
+      display: grid;
+      gap: 6px;
+    }
+    .interpret .legend.good {
+      border: 1px solid rgba(34, 197, 94, 0.32);
+      background: linear-gradient(180deg, rgba(34, 197, 94, 0.10), rgba(0, 0, 0, 0.22));
+    }
+    .interpret .legend.bad {
+      border: 1px solid var(--rule-warm);
+      background: linear-gradient(180deg, rgba(225, 6, 0, 0.10), rgba(0, 0, 0, 0.22));
+    }
+    .interpret .legend strong {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: -0.01em;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .interpret .legend.good strong { color: var(--green-soft); }
+    .interpret .legend.bad strong { color: var(--red-soft); }
+    .interpret .legend p { margin: 0; color: var(--ink-2); font-size: 0.9rem; line-height: 1.5; }
+
+    /* =========================================================
+       SLIDE 11 — WEEKLY INTEL
+       ========================================================= */
+    .intel-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+      align-items: stretch;
+    }
+    .intel-card {
+      padding: 22px;
+      border-radius: 12px;
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+    .intel-card.review {
+      border: 1px solid var(--rule-gold);
+      background: linear-gradient(180deg, rgba(244, 195, 78, 0.08), rgba(0, 0, 0, 0.30));
+    }
+    .intel-card.expect {
+      border: 1px solid var(--panel-edge);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(0, 0, 0, 0.28));
+    }
+    .intel-list {
+      margin: 0; padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 10px;
+    }
+    .intel-list li {
+      display: grid;
+      grid-template-columns: 22px 1fr;
+      gap: 12px;
+      align-items: start;
+      color: var(--ink-2);
+      font-size: 0.95rem;
+      line-height: 1.45;
+    }
+    .intel-list li .check {
+      width: 18px; height: 18px;
+      border: 1px solid rgba(244, 195, 78, 0.45);
+      border-radius: 3px;
+      background: rgba(244, 195, 78, 0.10);
+      color: var(--gold);
+      display: grid; place-items: center;
+      margin-top: 1px;
+    }
+
+    /* =========================================================
+       SLIDE 12 — OPTIMIZE
+       ========================================================= */
+    .lever-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .lever {
+      position: relative;
+      padding: 22px;
+      border-radius: 12px;
+      border: 1px solid var(--panel-edge);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(0, 0, 0, 0.30));
+      display: grid;
+      gap: 14px;
+    }
+    .lever .head {
+      display: flex; align-items: center; gap: 10px;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+    .lever:nth-child(1) { border-color: var(--rule-warm); background: linear-gradient(180deg, rgba(225, 6, 0, 0.10), rgba(0, 0, 0, 0.30)); }
+    .lever:nth-child(1) .head { color: var(--red-soft); }
+    .lever:nth-child(2) { border-color: var(--rule-gold); background: linear-gradient(180deg, rgba(244, 195, 78, 0.10), rgba(0, 0, 0, 0.30)); }
+    .lever:nth-child(2) .head { color: var(--gold); }
+    .lever:nth-child(3) { border-color: rgba(34, 197, 94, 0.35); background: linear-gradient(180deg, rgba(34, 197, 94, 0.08), rgba(0, 0, 0, 0.30)); }
+    .lever:nth-child(3) .head { color: var(--green-soft); }
+    .lever h3 {
+      margin: 0;
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 1.2rem;
+      letter-spacing: -0.02em;
+    }
+    .lever p { margin: 0; color: var(--ink-2); font-size: 0.93rem; line-height: 1.5; }
+
+    .operating-q {
+      margin-top: 6px;
+      padding: 22px 26px;
+      border: 1px solid var(--rule-gold);
+      border-radius: 12px;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(244, 195, 78, 0.18), transparent 60%),
+        linear-gradient(180deg, rgba(244, 195, 78, 0.06), rgba(0, 0, 0, 0.28));
+      display: grid;
+      gap: 6px;
+    }
+    .operating-q .label {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      color: var(--gold);
+      text-transform: uppercase;
+    }
+    .operating-q p {
+      margin: 0;
+      font-family: var(--display);
+      font-weight: 600;
+      font-size: 1.45rem;
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+    }
+    .operating-q em {
+      font-style: normal;
+      color: var(--gold);
+    }
+
+    /* Slide page footer indicator */
+    .slide-id {
+      position: absolute;
+      right: 28px;
+      bottom: 18px;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      color: var(--ink-4);
+      text-transform: uppercase;
+    }
+    .slide-id strong { color: var(--gold); font-weight: 700; }
+
+    /* Bottom navigation bar */
+    .bottombar {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 18px;
+      padding-top: 12px;
+      border-top: 1px solid var(--rule);
+      font-family: var(--mono);
+      font-size: 0.66rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+    .nav-hint kbd {
+      display: inline-block;
+      padding: 2px 6px;
+      border: 1px solid var(--rule);
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.04);
+      font-family: var(--mono);
+      font-size: 0.66rem;
+      color: var(--ink-2);
+    }
+    .dots {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: center;
+    }
+    .dot {
+      cursor: pointer;
+      width: 9px; height: 9px;
+      border: 0;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.16);
+      padding: 0;
+      flex: 0 0 auto;
+      transition: 200ms ease;
+    }
+    .dot.active {
+      width: 28px;
+      background: var(--gold);
+      box-shadow: 0 0 12px rgba(244, 195, 78, 0.55);
+    }
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .nav-btn {
+      cursor: pointer;
+      width: 36px; height: 32px;
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.20));
+      color: var(--ink);
+      font-weight: 700;
+      transition: 160ms ease;
+    }
+    .nav-btn:hover {
+      border-color: var(--rule-gold);
+      color: var(--gold);
+    }
+
+    /* Print + tight viewport */
+    @media (max-height: 760px) {
+      .slide-inner { padding: 32px 40px 40px; gap: 18px; }
+      .title-xl { font-size: clamp(2.8rem, 5vw, 4.6rem); }
+      .title-lg { font-size: clamp(1.9rem, 3.4vw, 2.8rem); }
+      .cover-headline h1 { font-size: clamp(2.8rem, 6vw, 5rem); }
+      .cover-stat b { font-size: clamp(1.6rem, 2.8vw, 2.2rem); }
+    }
+    @media print {
+      body::before, body::after, .scanlines, .vignette, .progress, .topbar, .bottombar { display: none; }
+      .slide { display: none !important; opacity: 1; transform: none; position: relative; max-height: none; page-break-after: always; }
+      .slide.active { display: block !important; }
+    }
+  </style>
+</head>
+<body>
+  <!-- icon library -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+    <symbol id="i-pulse" viewBox="0 0 24 24"><path d="M3 12h4l3-9 4 18 3-9h4"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></symbol>
+    <symbol id="i-database" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v6c0 1.66 4 3 9 3s9-1.34 9-3V5"/><path d="M3 11v6c0 1.66 4 3 9 3s9-1.34 9-3v-6"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+    <symbol id="i-loop" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9"/><polyline points="3 4 3 12 11 12"/></symbol>
+    <symbol id="i-megaphone" viewBox="0 0 24 24"><path d="M3 11v3a1 1 0 0 0 1 1h3l5 5V6L7 11H4a1 1 0 0 0-1 1Z"/><path d="M16 7a4 4 0 0 1 0 10"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92Z"/></symbol>
+    <symbol id="i-dollar" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></symbol>
+    <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 2v6L4 18a3 3 0 0 0 2.6 4.5h10.8A3 3 0 0 0 20 18L15 8V2"/><line x1="8" y1="2" x2="16" y2="2"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></symbol>
+    <symbol id="i-noon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="3" x2="12" y2="12"/><line x1="12" y1="12" x2="17" y2="14"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.5 9.4 8 11 4.5-1.6 8-6 8-11V5l-8-3Z"/></symbol>
+    <symbol id="i-zap" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
+    <symbol id="i-crown" viewBox="0 0 24 24"><path d="M2 18h20l-2-9-5 4-3-7-3 7-5-4-2 9Z"/><line x1="2" y1="22" x2="22" y2="22"/></symbol>
+    <symbol id="i-trending" viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24"><path d="M4 22V4s2-2 6-2 6 4 10 4v10s-4-2-8-2-6 2-6 2"/><line x1="4" y1="22" x2="4" y2="14"/></symbol>
+    <symbol id="i-clipboard" viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 12h6M9 16h4"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></symbol>
+    <symbol id="i-bolt" viewBox="0 0 24 24"><polyline points="13 2 4 14 11 14 10 22 20 10 13 10 13 2"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+    <symbol id="i-radar" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><line x1="12" y1="12" x2="20" y2="6"/></symbol>
+    <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><circle cx="17" cy="14" r="1.5"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7 0l4-4a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-4 4a5 5 0 0 0 7 7l1-1"/></symbol>
+  </svg>
+
+  <div class="scanlines" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+  <div class="progress" id="progress"></div>
+
+  <main class="deck">
+    <header class="topbar">
+      <a class="crest" href="./trevor-field-manual.html" aria-label="LGH field manual home">
+        <span class="crest-mark">LGH</span>
+        <span class="crest-text">
+          <span class="crest-title">Let&rsquo;s Geaux Hustle</span>
+          <span class="crest-sub">Command Center // Field Manual</span>
+        </span>
+      </a>
+      <div class="classify">
+        <span><span class="dot-live"></span>Operations Live</span>
+        <span>Document FM-001</span>
+        <span>Rev. 2026.04</span>
+      </div>
+      <div class="built-for">Built for <strong>Trevor</strong></div>
+    </header>
+
+    <section class="stage" aria-live="polite">
+
+      <!-- 01 — COVER -->
+      <article class="slide active" data-title="Cover">
+        <div class="slide-inner cover">
+          <div class="cover-top">
+            <div class="left">
+              <span>Mission // Trevor&rsquo;s Revenue OS</span>
+              <span class="gold">Operating Theatre: Webinar Funnel + AI Acquisition Engine</span>
+            </div>
+            <div class="right">FM-001 / 12 Sections</div>
+          </div>
+          <div class="cover-body">
+            <div class="cover-headline">
+              <span class="pre">DigitalFlo Acquisition Engine</span>
+              <h1>Trevor&rsquo;s <em>Revenue OS</em>.</h1>
+              <p class="lede">A simple field manual for using the dashboard, Commander agents, and the weekly intelligence loop to turn traffic into booked calls and cash.</p>
+            </div>
+            <aside class="cover-crest" aria-hidden="true">
+              <span class="corner tl"></span><span class="corner tr"></span>
+              <span class="corner bl"></span><span class="corner br"></span>
+              <span class="glyph">LGH</span>
+              <span class="stamp">Revenue Ops</span>
+            </aside>
+          </div>
+          <div class="cover-strip">
+            <div class="cover-stat"><b>1</b><span>Dashboard</span></div>
+            <div class="cover-stat"><b>3</b><span>Commanders</span></div>
+            <div class="cover-stat"><b>24/7</b><span>Tracking</span></div>
+            <div class="cover-stat"><b>15m</b><span>Strategy Loop</span></div>
+            <div class="cover-stat"><b>1</b><span>Revenue Focus</span></div>
+          </div>
+          <div class="slide-id">Section <strong>01</strong> / 12</div>
+        </div>
+      </article>
+
+      <!-- 02 — RACK -->
+      <article class="slide" data-title="What We Built">
+        <div class="slide-inner">
+          <div class="slide-meta">
+            <div class="eyebrow"><span>Section 02</span> &middot; What exists now</div>
+            <div class="filecode">FM-001 // OPS-MOD</div>
+          </div>
+          <h2 class="title-lg">One place to see the business.</h2>
+          <p class="lede">Trevor no longer has to bounce between GHL, Pipeboard, Retell, WebinarKit, and raw spreadsheets to understand what is happening.</p>
+          <div class="rack-grid">
+            <div class="rack-row">
+              <div class="rack-id">MOD-01</div>
+              <div class="rack-name"><strong>Dashboard</strong><span class="sub">Front of house</span></div>
+              <div class="rack-desc">Simple pages for score, funnel, ads, calls, deals, reports, health, and intelligence.</div>
+              <div class="rack-status"><span class="blip"></span>Online</div>
+            </div>
+            <div class="rack-row">
+              <div class="rack-id">MOD-02</div>
+              <div class="rack-name"><strong>Data Layer</strong><span class="sub">Source of truth</span></div>
+              <div class="rack-desc">Supabase keeps the source of truth for sign-ups, calls, deals, ad spend, and funnel stages.</div>
+              <div class="rack-status"><span class="blip"></span>Online</div>
+            </div>
+            <div class="rack-row">
+              <div class="rack-id">MOD-03</div>
+              <div class="rack-name"><strong>Agents</strong><span class="sub">Operators</span></div>
+              <div class="rack-desc">Commander, Ads Commander, and Strategy Commander each own a clear revenue job.</div>
+              <div class="rack-status"><span class="blip"></span>Online</div>
+            </div>
+            <div class="rack-row">
+              <div class="rack-id">MOD-04</div>
+              <div class="rack-name"><strong>Closed Loop</strong><span class="sub">Weekly intelligence</span></div>
+              <div class="rack-desc">Every week the system reviews leaks and creates fixable next moves.</div>
+              <div class="rack-status"><span class="blip"></span>Online</div>
+            </div>
+          </div>
+          <div class="slide-id">Section <strong>02</strong> / 12</div>
+        </div>
+      </article>
+
+      <!-- 03 — REVENUE CHAIN -->
+      <article class="slide" data-title="Revenue Chain">
+        <div class="slide-inner">
+          <div class="slide-meta">
+            <div class="eyebrow"><span>Section 03</span> &middot; The machine</div>
+            <div class="filecode">FM-001 // CHAIN</div>
+          </div>
+          <h2 class="title-lg">Ad click to closed deal.</h2>
+          <p class="lede">The whole system is built around one chain. If a metric does not help this chain, it does not matter.</p>
+          <div class="chain">
+            <div class="chain-step">
+              <div class="chain-node"><span class="chain-num">1</span><svg class="ico ico-lg"><use href="#i-megaphone"/></svg></div>
+              <div class="chain-name">Ad</div>
+              <div class="chain-detail">Pipeboard spend &amp; campaign data</div>
+            </div>
+            <div class="chain-step">
+              <div class="chain-node"><span class="chain-num">2</span><svg class="ico ico-lg"><use href="#i-clipboard"/></svg></div>
+              <div class="chain-name">Register</div>
+              <div class="chain-detail">Sign-up &amp; source tracking</div>
+            </div>
+            <div class="chain-step">
+              <div class="chain-node"><span class="chain-num">3</span><svg class="ico ico-lg"><use href="#i-eye"/></svg></div>
+              <div class="chain-name">Watch</div>
+              <div class="chain-detail">Attendance, watch %, CTA</div>
+            </div>
+            <div class="chain-step">
+              <div class="chain-node"><span class="chain-num">4</span><svg class="ico ico-lg"><use href="#i-calendar"/></svg></div>
+              <div class="chain-name">Book</div>
+              <div class="chain-detail">AI follow-up &amp; call booking</div>
+            </div>
+            <div class="chain-step">
+              <div class="chain-node"><span class="chain-num">5</span><svg class="ico ico-lg"><use href="#i-phone"/></svg></div>
+              <div class="chain-name">Show</div>
+              <div class="chain-detail">Sales call activity</div>
+            </div>
+            <div class="chain-step">
+              <div class="chain-node"><span class="chain-num">6</span><svg class="ico ico-lg"><use href="#i-dollar"/></svg></div>
+              <div class="chain-name">Close</div>
+              <div class="chain-detail">Deal &amp; cash collected</div>
+            </div>
+            <div class="chain-step">
+              <div class="chain-node"><span class="chain-num">7</span><svg class="ico ico-lg"><use href="#i-flask"/></svg></div>
+              <div class="chain-name">Learn</div>
+              <div class="chain-detail">Weekly fixes from the data</div>
+            </div>
+          </div>
+          <div class="chain-rule">
+            <svg class="ico" style="color:var(--gold)"><use href="#i-target"/></svg>
+            <span><strong>Rule:</strong> If a metric does not help this chain, it does not matter.</span>
+          </div>
+          <div class="slide-id">Section <strong>03</strong> / 12</div>
+        </div>
+      </article>
+
+      <!-- 04 — DASHBOARD -->
+      <article class="slide" data-title="Dashboard">
+        <div class="slide-inner">
+          <div class="slide-meta">
+            <div class="eyebrow"><span>Section 04</span> &middot; Daily cockpit</div>
+            <div class="filecode">FM-001 // DASH</div>
+          </div>
+          <h2 class="title-lg">Start here every morning.</h2>
+          <div class="dash-grid">
+            <div class="dash-screen">
+              <div class="dash-row">
+                <div class="dash-cell">
+                  <div class="label"><svg class="ico" style="width:12px;height:12px"><use href="#i-users"/></svg>Leads</div>
+                  <div class="value live">—</div>
+                  <div class="delta">people in the funnel</div>
+                </div>
+                <div class="dash-cell">
+                  <div class="label"><svg class="ico" style="width:12px;height:12px"><use href="#i-pulse"/></svg>AI Calls</div>
+                  <div class="value warm">—</div>
+                  <div class="delta">system pressure</div>
+                </div>
+                <div class="dash-cell">
+                  <div class="label"><svg class="ico" style="width:12px;height:12px"><use href="#i-calendar"/></svg>Booked</div>
+                  <div class="value warm">—</div>
+                  <div class="delta">closer to revenue</div>
+                </div>
+                <div class="dash-cell">
+                  <div class="label"><svg class="ico" style="width:12px;height:12px"><use href="#i-crown"/></svg>Deals</div>
+                  <div class="value live">—</div>
+                  <div class="delta">buyers closed</div>
+                </div>
+                <div class="dash-cell">
+                  <div class="label"><svg class="ico" style="width:12px;height:12px"><use href="#i-wallet"/></svg>Cash Won</div>
+                  <div class="value live">—</div>
+                  <div class="delta">money in</div>
+                </div>
+              </div>
+              <p class="micro" style="margin:0">// LIVE READOUT &middot; refreshes 60s</p>
+            </div>
+            <div class="dash-readbook">
+              <div class="readbook-row">
+                <span class="glyph"><svg class="ico"><use href="#i-trending"/></svg></span>
+                <div><strong>Leads high, bookings low</strong><span>Leak is follow-up or webinar quality.</span></div>
+              </div>
+              <div class="readbook-row">
+                <span class="glyph"><svg class="ico"><use href="#i-phone"/></svg></span>
+                <div><strong>Bookings high, cash low</strong><span>Leak is sales execution on the call.</span></div>
+              </div>
+              <div class="readbook-row">
+                <span class="glyph"><svg class="ico"><use href="#i-megaphone"/></svg></span>
+                <div><strong>Spend up, sign-ups flat</strong><span>Leak is traffic quality or page fit.</span></div>
+              </div>
+              <div class="ask-box">&ldquo;What is the biggest leak today, and what are you doing about it?&rdquo;</div>
+            </div>
+          </div>
+          <div class="slide-id">Section <strong>04</strong> / 12</div>
+        </div>
+      </article>
+
+      <!-- 05 — AGENTS -->
+      <article class="slide" data-title="Agents">
+        <div class="slide-inner">
+          <div class="slide-meta">
+            <div class="eyebrow"><span>Section 05</span> &middot; The three AI roles</div>
+            <div class="filecode">FM-001 // ROSTER</div>
+          </div>
+          <h2 class="title-lg">Each agent has one job.</h2>
+          <div class="roster">
+            <div class="dossier">
+              <span class="dossier-id">AGT-01</span>
+              <div class="dossier-head">
+                <div class="dossier-portrait"><svg class="ico ico-xl"><use href="#i-crown"/></svg></div>
+                <div class="dossier-name">
+                  <strong>Commander</strong>
+                  <span class="role">Chief of Staff</span>
+                </div>
+              </div>
+              <p class="dossier-body">Tracks the whole system, reports what matters, catches broken data, and turns noise into one clear priority.</p>
+              <div class="dossier-cmd">&ldquo;Give me today&rsquo;s revenue report.&rdquo;</div>
+            </div>
+            <div class="dossier">
+              <span class="dossier-id">AGT-02</span>
+              <div class="dossier-head">
+                <div class="dossier-portrait"><svg class="ico ico-xl"><use href="#i-megaphone"/></svg></div>
+                <div class="dossier-name">
+                  <strong>Ads Commander</strong>
+                  <span class="role">Traffic Operator</span>
+                </div>
+              </div>
+              <p class="dossier-body">Uses Pipeboard only to judge campaigns, spend, cost per lead, and real webinar sign-up quality.</p>
+              <div class="dossier-cmd">&ldquo;Which ad is creating webinar registrations?&rdquo;</div>
+            </div>
+            <div class="dossier">
+              <span class="dossier-id">AGT-03</span>
+              <div class="dossier-head">
+                <div class="dossier-portrait"><svg class="ico ico-xl"><use href="#i-radar"/></svg></div>
+                <div class="dossier-name">
+                  <strong>Strategy Commander</strong>
+                  <span class="role">Pipeline Operator</span>
+                </div>
+              </div>
+              <p class="dossier-body">Segments leads, updates tags, queues follow-up, and pushes the hottest leads toward booked calls.</p>
+              <div class="dossier-cmd">&ldquo;Who is closest to buying right now?&rdquo;</div>
+            </div>
+          </div>
+          <div class="slide-id">Section <strong>05</strong> / 12</div>
+        </div>
+      </article>
+
+      <!-- 06 — DAILY RHYTHM -->
+      <article class="slide" data-title="Daily Rhythm">
+        <div class="slide-inner">
+          <div class="slide-meta">
+            <div class="eyebrow"><span>Section 06</span> &middot; Day to day</div>
+            <div class="filecode">FM-001 // RHYTHM</div>
+          </div>
+          <h2 class="title-lg">The daily operating rhythm.</h2>
+          <div class="rhythm">
+            <div class="rule-card">
+              <h3>The rule.</h3>
+              <p>Do not start the day inside tools. Start with the dashboard, then ask Commander what needs action.</p>
+              <div class="ask-box" style="margin-top:14px">Dashboard first. Commander second. GHL, Pipeboard, and calls only when the dashboard points there.</div>
+            </div>
+            <div class="timeline">
+              <div class="station">
+                <div class="time"><svg class="ico" style="width:14px;height:14px;color:var(--gold)"><use href="#i-sun"/></svg>Morning <span class="clock">&middot; 0600</span></div>
+                <strong>Read the scoreboard.</strong>
+                <span>Check leads, booked calls, deals, cash, and health.</span>
+              </div>
+              <div class="station">
+                <div class="time"><svg class="ico" style="width:14px;height:14px;color:var(--gold)"><use href="#i-noon"/></svg>Midday <span class="clock">&middot; 1200</span></div>
+                <strong>Work the bottleneck.</strong>
+                <span>If leads are low, review ads. If show rate is low, push watch follow-up. If sales is low, review hot leads.</span>
+              </div>
+              <div class="station">
+                <div class="time"><svg class="ico" style="width:14px;height:14px;color:var(--gold)"><use href="#i-moon"/></svg>Evening <span class="clock">&middot; 1800</span></div>
+                <strong>Close the loop.</strong>
+                <span>Ask what changed today and what one move matters tomorrow.</span>
+              </div>
+            </div>
+          </div>
+          <div class="slide-id">Section <strong>06</strong> / 12</div>
+        </div>
+      </article>
+
+      <!-- 07 — COMMANDER (terminal) -->
+      <article class="slide" data-title="Commander">
+        <div class="slide-inner">
+          <div class="slide-meta">
+            <div class="eyebrow"><span>Section 07</span> &middot; Commander prompts</div>
+            <div class="filecode">FM-001 // PROMPTS</div>
+          </div>
+          <h2 class="title-lg">Use Commander like a chief of staff.</h2>
+          <div class="terminal-grid">
+            <div class="terminal">
+              <div class="terminal-title">commander // session 24-04</div>
+              <div class="term-line">Give me today&rsquo;s revenue report in plain English.</div>
+              <div class="term-line">Are ads, webinar, calls, and deals tracking correctly?</div>
+              <div class="term-line">Where are we leaking the most money right now?</div>
+              <div class="term-line">What should Trevor focus on today?</div>
+              <div class="term-line cursor">Which leads need human attention right now?</div>
+            </div>
+            <div class="answer-card">
+              <div class="head"><svg class="ico" style="width:14px;height:14px"><use href="#i-target"/></svg>Expected answer</div>
+              <h3>Situation, impact, fix, decision.</h3>
+              <p>Commander should give the situation, the business impact, the fix it can take, and the one decision Trevor may need to make. It should not punt problems to someone else.</p>
+              <div class="ask-box" style="margin-top:0">Best outcome: Trevor sees the issue, the fix, and the next revenue move in under 60 seconds.</div>
+            </div>
+          </div>
+          <div class="slide-id">Section <strong>07</strong> / 12</div>
+        </div>
+      </article>
+
+      <!-- 08 — ADS COMMANDER -->
+      <article class="slide" data-title="Ads Commander">
+        <div class="slide-inner">
+          <div class="slide-meta">
+            <div class="eyebrow"><span>Section 08</span> &middot; Ads Commander</div>
+            <div class="filecode">FM-001 // ADS</div>
+          </div>
+          <h2 class="title-lg">Traffic is judged by buyers, not clicks.</h2>
+          <div class="ads-grid">
+            <div class="owns-card">
+              <div class="card-head">
+                <span class="label">Owns</span>
+                <h3>What it watches</h3>
+              </div>
+              <ul class="duty-list">
+                <li><span class="dot"><svg class="ico" style="width:10px;height:10px"><use href="#i-check"/></svg></span>Pipeboard spend and campaign data.</li>
+                <li><span class="dot"><svg class="ico" style="width:10px;height:10px"><use href="#i-check"/></svg></span>Cost per webinar sign-up.</li>
+                <li><span class="dot"><svg class="ico" style="width:10px;height:10px"><use href="#i-check"/></svg></span>Campaigns that create booked calls.</li>
+                <li><span class="dot"><svg class="ico" style="width:10px;height:10px"><use href="#i-check"/></svg></span>Creative hooks worth testing next.</li>
+              </ul>
+            </div>
+            <div class="ask-card">
+              <div class="card-head">
+                <span class="label">Ask it this</span>
+                <h3>Daily prompts</h3>
+              </div>
+              <div class="ask-list">
+                <div class="ask-line">&ldquo;What should we kill, keep, or scale?&rdquo;</div>
+                <div class="ask-line">&ldquo;Which ad creates real webinar registrations?&rdquo;</div>
+                <div class="ask-line">&ldquo;Give me 3 new hooks based on the winner.&rdquo;</div>
+              </div>
+            </div>
+          </div>
+          <div class="footer-rule">
+            <strong>Rule:</strong> Ads Commander uses Pipeboard only for ad performance. The goal is cheaper qualified attention that turns into webinar movement.
+          </div>
+          <div class="slide-id">Section <strong>08</strong> / 12</div>
+        </div>
+      </article>
+
+      <!-- 09 — STRATEGY COMMANDER -->
+      <article class="slide" data-title="Strategy Commander">
+        <div class="slide-inner">
+          <div class="slide-meta">
+            <div class="eyebrow"><span>Section 09</span> &middot; Strategy Commander</div>
+            <div class="filecode">FM-001 // STRAT</div>
+          </div>
+          <h2 class="title-lg">This is the money maker.</h2>
+          <div class="strat-grid">
+            <div class="funnel-stack">
+              <div class="funnel-bar" style="--shrink:0%"><strong>New opt-in</strong><span>engage fast</span></div>
+              <div class="funnel-bar" style="--shrink:8%"><strong>Not watched</strong><span>push to watch</span></div>
+              <div class="funnel-bar" style="--shrink:16%"><strong>50%+ watched</strong><span>shift to decision</span></div>
+              <div class="funnel-bar" style="--shrink:24%"><strong>CTA clicked</strong><span>close the gap</span></div>
+              <div class="funnel-bar" style="--shrink:32%"><strong>Booked call</strong><span>protect show rate</span></div>
+              <div class="funnel-bar" style="--shrink:40%"><strong>Closed deal</strong><span>cash collected</span></div>
+            </div>
+            <div class="strat-side">
+              <div>
+                <h3>How it works.</h3>
+                <p>Every 15 minutes it checks active leads, updates their stage, syncs GHL tags, and queues the next follow-up touch when the lead is eligible.</p>
+              </div>
+              <div class="cron-line"><code>*/15 * * * *</code><span>scan leads &middot; update stage</span></div>
+              <div class="cron-line"><code>on stage_change</code><span>sync GHL tags</span></div>
+              <div class="cron-line"><code>on eligible</code><span>queue next touch</span></div>
+              <div class="ask-box">&ldquo;Who watched 75% but did not book?&rdquo;<br />&ldquo;Who clicked but did not schedule?&rdquo;<br />&ldquo;What stage has the biggest pile-up?&rdquo;</div>
+            </div>
+          </div>
+          <div class="slide-id">Section <strong>09</strong> / 12</div>
+        </div>
+      </article>
+
+      <!-- 10 — DATA HEALTH -->
+      <article class="slide" data-title="Data Health">
+        <div class="slide-inner">
+          <div class="slide-meta">
+            <div class="eyebrow"><span>Section 10</span> &middot; Trust the numbers</div>
+            <div class="filecode">FM-001 // HEALTH</div>
+          </div>
+          <h2 class="title-lg">Green health means the data is fresh.</h2>
+          <div class="monitor-grid">
+            <div class="monitor">
+              <div class="cron">Every 5 min</div>
+              <strong>Funnel guard</strong>
+              <span>Checks the live funnel path and core tracking.</span>
+            </div>
+            <div class="monitor">
+              <div class="cron">Every 10 min</div>
+              <strong>Canonical sync</strong>
+              <span>Keeps events flowing into the main data model.</span>
+            </div>
+            <div class="monitor">
+              <div class="cron">Every 15 min</div>
+              <strong>Strategy loop</strong>
+              <span>Strategy Commander works the active lead pipeline.</span>
+            </div>
+            <div class="monitor">
+              <div class="cron">Hourly</div>
+              <strong>Ad metrics</strong>
+              <span>Pipeboard refreshes spend, clicks, and leads.</span>
+            </div>
+          </div>
+          <div class="interpret">
+            <div class="legend good">
+              <strong><svg class="ico" style="width:14px;height:14px"><use href="#i-check"/></svg>Green</strong>
+              <p>Latest rows are recent enough to make decisions.</p>
+            </div>
+            <div class="legend bad">
+              <strong><svg class="ico" style="width:14px;height:14px"><use href="#i-shield"/></svg>Yellow / Red</strong>
+              <p>Do not trust that part yet. Ask Commander to verify the break and repair or escalate the exact account-level decision needed.</p>
+            </div>
+          </div>
+          <div class="slide-id">Section <strong>10</strong> / 12</div>
+        </div>
+      </article>
+
+      <!-- 11 — WEEKLY INTEL -->
+      <article class="slide" data-title="Weekly Intelligence">
+        <div class="slide-inner">
+          <div class="slide-meta">
+            <div class="eyebrow"><span>Section 11</span> &middot; Closed-loop intelligence</div>
+            <div class="filecode">FM-001 // WKLY</div>
+          </div>
+          <h2 class="title-lg">The weekly report should create action.</h2>
+          <div class="intel-grid">
+            <div class="intel-card review">
+              <div class="card-head">
+                <span class="label">Reviews</span>
+                <h3>What the weekly loop checks</h3>
+              </div>
+              <ul class="intel-list">
+                <li><span class="check"><svg class="ico" style="width:10px;height:10px"><use href="#i-check"/></svg></span>Ad source to webinar sign-up.</li>
+                <li><span class="check"><svg class="ico" style="width:10px;height:10px"><use href="#i-check"/></svg></span>Registration to attendance.</li>
+                <li><span class="check"><svg class="ico" style="width:10px;height:10px"><use href="#i-check"/></svg></span>Watch behavior to booked calls.</li>
+                <li><span class="check"><svg class="ico" style="width:10px;height:10px"><use href="#i-check"/></svg></span>Booked calls to shows and deals.</li>
+                <li><span class="check"><svg class="ico" style="width:10px;height:10px"><use href="#i-check"/></svg></span>Revenue by campaign and source.</li>
+              </ul>
+            </div>
+            <div class="intel-card expect">
+              <div class="card-head">
+                <span class="label" style="color:var(--ink-3)">Expectation</span>
+                <h3>What Trevor should expect</h3>
+              </div>
+              <p class="body">Not a list of chores. The report should show the leak, what the system can fix, what it proposes to fix next, and what decision only Trevor can make.</p>
+              <div class="ask-box">&ldquo;What did the learning loop find, and what can you fix this week?&rdquo;</div>
+            </div>
+          </div>
+          <div class="slide-id">Section <strong>11</strong> / 12</div>
+        </div>
+      </article>
+
+      <!-- 12 — OPTIMIZE -->
+      <article class="slide" data-title="How To Optimize">
+        <div class="slide-inner">
+          <div class="slide-meta">
+            <div class="eyebrow"><span>Section 12</span> &middot; How to change the system</div>
+            <div class="filecode">FM-001 // LEVERS</div>
+          </div>
+          <h2 class="title-lg">Change one lever at a time.</h2>
+          <div class="lever-grid">
+            <div class="lever">
+              <div class="head"><svg class="ico"><use href="#i-megaphone"/></svg>If traffic is weak</div>
+              <h3>Tune the front door.</h3>
+              <p>Ask Ads Commander for the top winner, the worst loser, and three new hooks. Change creative or budget.</p>
+            </div>
+            <div class="lever">
+              <div class="head"><svg class="ico"><use href="#i-eye"/></svg>If show rate is weak</div>
+              <h3>Tighten the watch.</h3>
+              <p>Ask Strategy Commander for not-watched and partial-watch leads. Tighten reminders and follow-up pressure.</p>
+            </div>
+            <div class="lever">
+              <div class="head"><svg class="ico"><use href="#i-dollar"/></svg>If sales is weak</div>
+              <h3>Sharpen the close.</h3>
+              <p>Ask Commander which hot leads did not close and what objection pattern is showing up.</p>
+            </div>
+          </div>
+          <div class="operating-q">
+            <span class="label">The operating question</span>
+            <p>Every day: <em>what one move makes the company more money today?</em></p>
+          </div>
+          <div class="slide-id">Section <strong>12</strong> / 12</div>
+        </div>
+      </article>
+
+    </section>
+
+    <footer class="bottombar">
+      <div class="nav-hint"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> &middot; or click dots</div>
+      <div class="dots" id="dots" aria-label="Slide navigation"></div>
+      <div class="controls">
+        <button class="nav-btn" id="prev" aria-label="Previous slide">&lsaquo;</button>
+        <button class="nav-btn" id="next" aria-label="Next slide">&rsaquo;</button>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    const dots = document.getElementById("dots");
+    const progress = document.getElementById("progress");
+    let active = 0;
+
+    function renderDots() {
+      slides.forEach((slide, index) => {
+        const dot = document.createElement("button");
+        dot.className = "dot";
+        dot.type = "button";
+        dot.setAttribute("aria-label", "Go to slide " + (index + 1) + ": " + slide.dataset.title);
+        dot.addEventListener("click", () => go(index));
+        dots.appendChild(dot);
+      });
+    }
+
+    function go(index) {
+      active = Math.max(0, Math.min(slides.length - 1, index));
+      slides.forEach((slide, slideIndex) => {
+        slide.classList.toggle("active", slideIndex === active);
+      });
+      Array.from(dots.children).forEach((dot, dotIndex) => {
+        dot.classList.toggle("active", dotIndex === active);
+      });
+      progress.style.setProperty("--progress", ((active + 1) / slides.length * 100).toFixed(2) + "%");
+      document.title = slides[active].dataset.title + " | LGH Command Center Field Manual";
+      history.replaceState(null, "", "#slide-" + String(active + 1).padStart(2, "0"));
+    }
+
+    document.getElementById("prev").addEventListener("click", () => go(active - 1));
+    document.getElementById("next").addEventListener("click", () => go(active + 1));
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowRight" || event.key === "PageDown" || event.key === " ") {
+        event.preventDefault();
+        go(active + 1);
+      }
+      if (event.key === "ArrowLeft" || event.key === "PageUp") {
+        event.preventDefault();
+        go(active - 1);
+      }
+      if (event.key === "Home") go(0);
+      if (event.key === "End") go(slides.length - 1);
+    });
+
+    renderDots();
+    const hashMatch = window.location.hash.match(/slide-(\d+)/);
+    go(hashMatch ? Number(hashMatch[1]) - 1 : 0);
+  </script>
+</body>
+</html>

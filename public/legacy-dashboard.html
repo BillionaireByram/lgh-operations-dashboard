@@ -1,0 +1,2765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LGH Operations Command Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --red: #E31837;
+            --red-dark: #B8132C;
+            --red-glow: rgba(227,24,55,0.35);
+            --black: #0A0A0A;
+            --gold: #f9cf25;
+            --green: #22c55e;
+            --white: #ffffff;
+            --muted: rgba(255,255,255,0.45);
+            --card-bg: rgba(255,255,255,0.03);
+            --card-border: rgba(255,255,255,0.08);
+        }
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--black);
+            color: var(--white);
+            min-height: 100vh;
+        }
+        nav {
+            background: rgba(10,10,10,0.97);
+            border-bottom: 1px solid rgba(227,24,55,0.25);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+        }
+        .nav-inner {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+            gap: 1rem;
+        }
+        .nav-brand {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.35rem;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .nav-brand .accent {
+            color: var(--red);
+        }
+        .live-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--red);
+            animation: blink 2s infinite;
+            display: inline-block;
+        }
+        @keyframes blink {
+            0%,100%{opacity:1;box-shadow:0 0 0 0 var(--red-glow)}
+            50%{opacity:.6;box-shadow:0 0 0 5px transparent}
+        }
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        .last-upd {
+            color: var(--muted);
+            font-size: 0.7rem;
+        }
+        .period-tabs {
+            display: flex;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            padding: 3px;
+            gap: 2px;
+        }
+        .ptab {
+            padding: 0.28rem 0.85rem;
+            border-radius: 6px;
+            border: none;
+            background: transparent;
+            color: var(--muted);
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all .2s;
+            font-family: 'Inter',sans-serif;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+        }
+        .ptab.active {
+            background: var(--red);
+            color: #fff;
+            box-shadow: 0 0 12px var(--red-glow);
+        }
+        .ptab:hover:not(.active) {
+            color: #fff;
+            background: rgba(255,255,255,.08);
+        }
+        .btn {
+            padding: .4rem 1rem;
+            border-radius: 8px;
+            border: none;
+            font-size: .78rem;
+            font-weight: 800;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            font-family: 'Inter',sans-serif;
+            transition: all .2s;
+        }
+        .btn-red {
+            background: linear-gradient(135deg,#E31837,#B8132C);
+            color: #fff;
+            box-shadow: 0 0 16px var(--red-glow);
+        }
+        .btn-red:hover {
+            box-shadow: 0 0 26px rgba(227,24,55,.55);
+            transform: translateY(-1px);
+        }
+        .btn-ghost {
+            background: rgba(255,255,255,.06);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,.12);
+        }
+        .btn-ghost:hover {
+            background: rgba(255,255,255,.1);
+        }
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 0 1.5rem 3rem;
+        }
+        section {
+            margin-top: 2.25rem;
+        }
+        .sec-hdr {
+            font-family: 'Bebas Neue',sans-serif;
+            font-size: 1.45rem;
+            letter-spacing: .05em;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+        }
+        .sec-hdr::after {
+            content:'';
+            flex:1;
+            height:1px;
+            background: linear-gradient(to right, rgba(227,24,55,.35), transparent);
+        }
+        .badge-red {
+            font-family:'Inter',sans-serif;
+            font-size:.68rem;
+            font-weight:700;
+            background:rgba(227,24,55,.12);
+            border:1px solid rgba(227,24,55,.3);
+            color:var(--red);
+            padding:.18rem .5rem;
+            border-radius:4px;
+            text-transform:uppercase;
+            letter-spacing:.04em;
+        }
+        .hero-grid {
+            display: grid;
+            grid-template-columns: repeat(5,1fr);
+            gap: 1rem;
+            margin-bottom: .875rem;
+        }
+        .hero-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 1.5rem 1.25rem;
+            text-align: center;
+            transition: border-color .2s, transform .2s;
+        }
+        .hero-card:hover {
+            border-color: rgba(227,24,55,.45);
+            transform: translateY(-2px);
+        }
+        .hero-card.clickable { cursor: pointer; }
+        .drill-list { margin-top: 1rem; }
+        .drill-row { display: flex; justify-content: space-between; align-items: center; padding: .65rem .75rem; border-bottom: 1px solid var(--card-border); }
+        .drill-row:last-child { border-bottom: none; }
+        .drill-name { display: flex; align-items: center; gap: .6rem; font-weight: 600; font-size: .88rem; }
+        .drill-val { font-size: 1.1rem; font-weight: 700; color: var(--red); }
+        .drill-val.cash { color: var(--green); }
+        .drill-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg,var(--red),var(--red-dark)); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .7rem; flex-shrink: 0; }
+        .drill-empty { text-align: center; color: var(--muted); padding: 2rem 0; font-size: .85rem; }
+        .drill-title { font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: .25rem; }
+        .hc-label {
+            font-size: .68rem;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: var(--muted);
+            margin-bottom: .6rem;
+        }
+        .hc-value {
+            font-family: 'Bebas Neue',sans-serif;
+            font-size: 3rem;
+            line-height: 1;
+        }
+        .hc-sub {
+            font-size: .7rem;
+            color: var(--muted);
+            margin-top: .35rem;
+        }
+        .hero-card.accent {
+            border-color: rgba(227,24,55,.35);
+            background: rgba(227,24,55,.05);
+        }
+        .hero-card.accent .hc-value {
+            color: var(--red);
+        }
+        .hero-card.gold {
+            border-color: rgba(249,207,37,.25);
+        }
+        .hero-card.gold .hc-value {
+            color: var(--gold);
+        }
+        .rev-bar {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 1.1rem 1.4rem;
+        }
+        .rev-bar-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: .65rem;
+        }
+        .rev-bar-label {
+            font-size: .75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            color: var(--muted);
+        }
+        .rev-bar-vals .cur {
+            font-weight: 700;
+        }
+        .rev-bar-vals .tgt {
+            color: var(--muted);
+        }
+        .rev-bar-vals .pct {
+            color: var(--gold);
+            font-weight: 700;
+            margin-left: .4rem;
+        }
+        .prog-track {
+            height: 7px;
+            background: rgba(255,255,255,.07);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .prog-fill {
+            height: 100%;
+            background: linear-gradient(to right,var(--red),var(--red-dark));
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+        .dept-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill,minmax(270px,1fr));
+            gap: 1rem;
+        }
+        .dept-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 1.25rem;
+            transition: border-color .2s;
+        }
+        .dept-card:hover {
+            border-color: rgba(227,24,55,.35);
+        }
+        .dept-card.clickable { cursor: pointer; }
+        .dept-title {
+            font-family: 'Bebas Neue',sans-serif;
+            font-size: 1.05rem;
+            letter-spacing: .05em;
+            margin-bottom: .875rem;
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+        }
+        .dept-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: .5rem;
+        }
+        .ds-label {
+            font-size: .63rem;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: var(--muted);
+            margin-bottom: .15rem;
+        }
+        .ds-value {
+            font-size: 1.35rem;
+            font-weight: 700;
+        }
+        .dv-red { color: var(--red); }
+        .dv-gold { color: var(--gold); }
+        .dv-green { color: var(--green); }
+        .span2 { grid-column: 1 / -1; }
+        .fin-grid {
+            display: grid;
+            grid-template-columns: repeat(4,1fr);
+            gap: 1rem;
+        }
+        .fin-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 1.25rem;
+            text-align: center;
+            transition: border-color .2s;
+        }
+        .fin-card:hover {
+            border-color: rgba(227,24,55,.35);
+        }
+        .fc-label {
+            font-size: .68rem;
+            text-transform: uppercase;
+            letter-spacing: .07em;
+            color: var(--muted);
+            margin-bottom: .5rem;
+        }
+        .fc-value {
+            font-family: 'Bebas Neue',sans-serif;
+            font-size: 2.1rem;
+        }
+        .fc-sub {
+            font-size: .7rem;
+            color: var(--muted);
+            margin-top: .25rem;
+        }
+        .constraint-btns {
+            display: flex;
+            gap: .65rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+        .cbtn {
+            padding: .55rem 1.1rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,.1);
+            background: rgba(255,255,255,.04);
+            color: var(--muted);
+            font-size: .82rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all .2s;
+            font-family: 'Inter',sans-serif;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+        }
+        .cbtn:hover {
+            border-color: var(--red);
+            color: #fff;
+        }
+        .cbtn.active {
+            background: rgba(227,24,55,.14);
+            border-color: var(--red);
+            color: #fff;
+            box-shadow: 0 0 12px var(--red-glow);
+        }
+        .constraint-active {
+            background: rgba(227,24,55,.07);
+            border: 1px solid rgba(227,24,55,.25);
+            border-radius: 12px;
+            padding: .875rem 1.25rem;
+            display: none;
+            align-items: center;
+            gap: .75rem;
+        }
+        .ca-label {
+            font-size: .68rem;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: var(--muted);
+        }
+        .ca-value {
+            font-family: 'Bebas Neue',sans-serif;
+            font-size: 1.25rem;
+            color: var(--red);
+        }
+        .constraint-note {
+            color: var(--muted);
+            font-size: .75rem;
+            margin-top: .6rem;
+        }
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill,minmax(148px,1fr));
+            gap: .75rem;
+        }
+        .team-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            transition: border-color .2s;
+            cursor: pointer;
+            position: relative;
+        }
+        .team-card:hover {
+            border-color: rgba(227,24,55,.35);
+        }
+        .team-card .delete-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,.1);
+            background: rgba(255,255,255,.05);
+            color: var(--muted);
+            font-size: .7rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .2s;
+            opacity: 0;
+            z-index: 2;
+        }
+        .team-card:hover .delete-btn {
+            opacity: 1;
+        }
+        .team-card .delete-btn:hover {
+            background: rgba(227,24,55,.2);
+            border-color: var(--red);
+            color: var(--red);
+        }
+        .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg,var(--red),var(--red-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: .88rem;
+            margin: 0 auto .55rem;
+        }
+        .t-name {
+            font-size: .82rem;
+            font-weight: 600;
+        }
+        .t-role {
+            font-size: .67rem;
+            color: var(--muted);
+            margin-top: .15rem;
+        }
+        .t-contact {
+            font-size: .62rem;
+            color: rgba(255,255,255,.28);
+            margin-top: .25rem;
+        }
+        .sdot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--green);
+            margin-right: 3px;
+            vertical-align: middle;
+        }
+        .sdot.off {
+            background: rgba(255,255,255,.2);
+        }
+        .tasks-hdr {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .tasks-hdr .sec-hdr {
+            margin-bottom: 0;
+            flex: 1;
+        }
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: .5rem;
+        }
+        .task-row {
+            display: flex;
+            align-items: center;
+            gap: .875rem;
+            padding: .8rem 1rem;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            transition: border-color .2s;
+        }
+        .task-row:hover {
+            border-color: rgba(227,24,55,.25);
+        }
+        .task-bar {
+            width: 4px;
+            height: 30px;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+        .tb-high { background: var(--red); }
+        .tb-medium { background: var(--gold); }
+        .tb-low { background: rgba(255,255,255,.2); }
+        .task-status {
+            padding: .18rem .5rem;
+            border-radius: 6px;
+            font-size: .63rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all .2s;
+            border: 1px solid;
+        }
+        .ts-pending {
+            background: rgba(227,24,55,.12);
+            color: var(--red);
+            border-color: rgba(227,24,55,.3);
+        }
+        .ts-in_progress {
+            background: rgba(249,207,37,.12);
+            color: var(--gold);
+            border-color: rgba(249,207,37,.3);
+        }
+        .ts-done {
+            background: rgba(34,197,94,.12);
+            color: var(--green);
+            border-color: rgba(34,197,94,.3);
+        }
+        .task-title {
+            flex: 1;
+            font-size: .87rem;
+            font-weight: 500;
+        }
+        .task-who {
+            font-size: .7rem;
+            color: var(--muted);
+        }
+        .task-due {
+            font-size: .68rem;
+            color: var(--muted);
+            white-space: nowrap;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.87);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .overlay.open {
+            display: flex;
+        }
+        .modal {
+            background: #111;
+            border: 1px solid rgba(227,24,55,.28);
+            border-radius: 20px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 520px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal.modal-wide {
+            max-width: 720px;
+        }
+        .modal-title {
+            font-family: 'Bebas Neue',sans-serif;
+            font-size: 1.55rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-x {
+            background: none;
+            border: none;
+            color: var(--muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: .25rem;
+        }
+        .modal-x:hover {
+            color: #fff;
+        }
+        .fg {
+            margin-bottom: .875rem;
+        }
+        .fl {
+            font-size: .72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            color: var(--muted);
+            display: block;
+            margin-bottom: .35rem;
+        }
+        .fc {
+            width: 100%;
+            background: rgba(255,255,255,.05);
+            border: 1px solid rgba(255,255,255,.12);
+            border-radius: 8px;
+            padding: .58rem .85rem;
+            color: #fff;
+            font-size: .87rem;
+            font-family: 'Inter',sans-serif;
+            outline: none;
+            transition: border-color .2s;
+        }
+        .fc:focus {
+            border-color: var(--red);
+        }
+        .fc option {
+            background: #1a1a1a;
+        }
+        .fg2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: .72rem;
+            background: linear-gradient(135deg,var(--red),var(--red-dark));
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-weight: 800;
+            font-size: .88rem;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            cursor: pointer;
+            font-family: 'Inter',sans-serif;
+            box-shadow: 0 0 20px var(--red-glow);
+            margin-top: .5rem;
+            transition: all .2s;
+        }
+        .btn-submit:hover:not(:disabled) {
+            box-shadow: 0 0 32px rgba(227,24,55,.55);
+            transform: translateY(-1px);
+        }
+        .btn-submit:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+        .form-msg {
+            font-size: .78rem;
+            margin-top: .5rem;
+            text-align: center;
+            min-height: 1.2em;
+        }
+        .msg-ok { color: var(--green); }
+        .msg-err { color: var(--red); }
+        .msg-warn { color: var(--gold); }
+        .empty {
+            color: var(--muted);
+            font-size: .83rem;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .spinning {
+            color: var(--muted);
+            font-size: .83rem;
+            text-align: center;
+            padding: 2rem;
+            animation: fade 1.4s infinite;
+        }
+        @keyframes fade {
+            0%,100%{opacity:1}
+            50%{opacity:.35}
+        }
+
+        /* ─── Member Detail Modal ─── */
+        .member-detail-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,.08);
+        }
+        .member-detail-header .avatar {
+            margin: 0;
+            width: 56px;
+            height: 56px;
+            font-size: 1.1rem;
+        }
+        .member-detail-info .md-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+        .member-detail-info .md-role {
+            font-size: .78rem;
+            color: var(--muted);
+            margin-top: .15rem;
+        }
+        .member-detail-info .md-phone {
+            font-size: .72rem;
+            color: rgba(255,255,255,.3);
+            margin-top: .15rem;
+        }
+        .kpi-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: .75rem;
+            margin-bottom: 1.5rem;
+        }
+        .kpi-item {
+            background: rgba(255,255,255,.04);
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 10px;
+            padding: .75rem;
+            text-align: center;
+        }
+        .kpi-item .kpi-val {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.6rem;
+            color: var(--red);
+        }
+        .kpi-item .kpi-lbl {
+            font-size: .62rem;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: var(--muted);
+            margin-top: .15rem;
+        }
+        .report-list-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.1rem;
+            letter-spacing: .04em;
+            margin-bottom: .75rem;
+            color: var(--muted);
+        }
+        .report-entry {
+            background: rgba(255,255,255,.03);
+            border: 1px solid rgba(255,255,255,.06);
+            border-radius: 10px;
+            padding: .85rem 1rem;
+            margin-bottom: .5rem;
+        }
+        .report-entry-date {
+            font-size: .7rem;
+            color: var(--gold);
+            font-weight: 700;
+            margin-bottom: .4rem;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+        .report-entry-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .5rem .85rem;
+        }
+        .report-entry-stats span {
+            font-size: .78rem;
+            color: rgba(255,255,255,.7);
+        }
+        .report-entry-stats span strong {
+            color: #fff;
+        }
+        .btn-add-member {
+            padding: .32rem .85rem;
+            border-radius: 8px;
+            border: 1px solid rgba(227,24,55,.35);
+            background: rgba(227,24,55,.1);
+            color: var(--red);
+            font-size: .72rem;
+            font-weight: 800;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            font-family: 'Inter',sans-serif;
+            transition: all .2s;
+            white-space: nowrap;
+        }
+        .btn-add-member:hover {
+            background: rgba(227,24,55,.2);
+            box-shadow: 0 0 12px var(--red-glow);
+        }
+
+        @media(max-width:900px) {
+            .hero-grid {
+                grid-template-columns: repeat(3,1fr);
+            }
+            .fin-grid {
+                grid-template-columns: repeat(2,1fr);
+            }
+        }
+        @media(max-width:600px) {
+            .hero-grid {
+                grid-template-columns: repeat(2,1fr);
+            }
+            .hero-grid .hero-card:last-child {
+                grid-column: 1/-1;
+            }
+            .fin-grid {
+                grid-template-columns: repeat(2,1fr);
+            }
+            .fg2 {
+                grid-template-columns: 1fr;
+            }
+            .last-upd {
+                display: none;
+            }
+            nav .nav-inner {
+                height: auto;
+                padding: .7rem 1rem;
+                flex-wrap: wrap;
+                gap: .5rem;
+            }
+        }
+        .lb-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 1.25rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .lb-card.gold { border-color: rgba(249,207,37,0.4); background: linear-gradient(135deg, rgba(249,207,37,0.08), rgba(249,207,37,0.02)); }
+        .lb-card .lb-crown {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+        .lb-card .lb-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            margin: 0 auto 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: #fff;
+        }
+        .lb-card .lb-name {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 0.15rem;
+        }
+        .lb-card .lb-metric {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2rem;
+            line-height: 1;
+            margin: 0.4rem 0;
+        }
+        .lb-card .lb-label {
+            font-size: 0.7rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .lb-runner {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.4rem 0;
+            font-size: 0.8rem;
+        }
+        .lb-runner .lb-r-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.6rem;
+            color: #fff;
+            flex-shrink: 0;
+        }
+        .lb-runner .lb-r-name { flex:1; }
+        .lb-runner .lb-r-val { font-weight: 700; }
+
+        @media (max-width: 768px) {
+            #leaderboard { grid-template-columns: 1fr !important; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-inner">
+            <div class="nav-brand">
+                <span class="live-dot"></span>
+                <span><span class="accent">LGH</span> OPERATIONS</span>
+            </div>
+            <div class="nav-right">
+                <div class="period-tabs">
+                    <button class="ptab active" data-p="today" onclick="setPeriod('today')">Today</button>
+                    <button class="ptab active" data-p="week" onclick="setPeriod('week')">Week</button>
+                    <button class="ptab" data-p="last_week" onclick="setPeriod('last_week')">Last Week</button>
+                    <button class="ptab" data-p="month" onclick="setPeriod('month')">Month</button>
+                </div>
+                <span id="period-lbl" class="badge-red">THIS WEEK</span>
+                <button class="btn btn-red" onclick="document.getElementById('agents-link').click()">AI AGENTS</button>
+                <a id="agents-link" href="/agents" style="display:none;"></a>
+                <button class="btn btn-red" onclick="openReport()">Submit Report</button>
+                <button class="btn btn-ghost" onclick="load()">Refresh</button>
+                <div class="last-upd" id="last-upd">Updated just now</div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- LEADERBOARD -->
+        <section>
+            <h2 class="sec-hdr">LEADERBOARD <span class="badge-red" id="lb-period">THIS WEEK</span></h2>
+            <div id="leaderboard" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem">
+                <div class="spinning">Loading...</div>
+            </div>
+        </section>
+
+        <!-- CEO SCOREBOARD -->
+        <section>
+            <h2 class="sec-hdr">CEO SCOREBOARD <span class="badge-red" id="period-lbl-2">THIS WEEK</span></h2>
+            <div id="hero-grid" class="hero-grid">
+                <div class="spinning">Loading...</div>
+            </div>
+            <div class="rev-bar">
+                <div class="rev-bar-top">
+                    <span class="rev-bar-label">Weekly Revenue Progress</span>
+                    <span class="rev-bar-vals"><span class="cur" id="rv-cur">$0</span> / <span class="tgt">$25,000</span> <span class="pct" id="rv-pct">0%</span></span>
+                </div>
+                <div class="prog-track">
+                    <div class="prog-fill" id="rv-fill" style="width: 0%"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DEPARTMENTS -->
+        <section>
+            <h2 class="sec-hdr">DEPARTMENTS</h2>
+            <div id="dept-grid" class="dept-grid">
+                <div class="spinning">Loading...</div>
+            </div>
+        </section>
+
+        <!-- FINANCIAL HEALTH -->
+        <section>
+            <h2 class="sec-hdr">FINANCIAL HEALTH</h2>
+            <div id="fin-grid" class="fin-grid">
+                <div class="spinning">Loading...</div>
+            </div>
+        </section>
+
+        <!-- REVENUE BY SOURCE -->
+        <section>
+            <h2 class="sec-hdr">REVENUE BY SOURCE</h2>
+            <div id="source-grid" class="fin-grid" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr))">
+                <div class="spinning">Loading...</div>
+            </div>
+            <div id="source-bar" style="margin-top:1rem;background:rgba(255,255,255,0.04);border-radius:10px;overflow:hidden;height:28px;display:flex"></div>
+        </section>
+
+        <!-- ADS REPORT -->
+        <section>
+            <h2 class="sec-hdr">ADS REPORT</h2>
+            <div id="ads-campaign-tabs" style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap"></div>
+            <div id="ads-summary" class="fin-grid" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">
+                <div class="spinning">Loading...</div>
+            </div>
+            <div id="ads-chart" style="margin-top:1.2rem;display:flex;align-items:flex-end;gap:3px;height:120px;padding:0 4px"></div>
+            <div id="ads-table-wrap" style="margin-top:1rem;overflow-x:auto">
+                <table id="ads-table" style="width:100%;border-collapse:collapse;font-size:0.8rem">
+                    <thead><tr id="ads-thead" style="color:var(--muted);text-align:left;border-bottom:1px solid var(--card-border)"></tr></thead>
+                    <tbody id="ads-tbody"></tbody>
+                </table>
+            </div>
+        </section>
+
+
+        <!-- AI DIALER -->
+        <section>
+            <h2 class="sec-hdr">AI DIALER</h2>
+            <div id="dialer-grid" class="fin-grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-bottom:1.2rem">
+                <div class="spinning">Loading...</div>
+            </div>
+            <div style="overflow-x:auto;margin-top:0.5rem">
+                <table id="dialer-table" style="width:100%;border-collapse:collapse;font-size:0.8rem">
+                    <thead>
+                        <tr style="color:var(--muted);text-align:left;border-bottom:1px solid var(--card-border)">
+                            <th style="padding:6px 8px">Time</th>
+                            <th style="padding:6px 8px">Contact</th>
+                            <th style="padding:6px 8px">Type</th>
+                            <th style="padding:6px 8px">Agent</th>
+                            <th style="padding:6px 8px">Status</th>
+                            <th style="padding:6px 8px">Dur</th>
+                            <th style="padding:6px 8px">Booked</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dialer-tbody"></tbody>
+                </table>
+                <div id="dialer-empty" class="empty" style="display:none">No AI calls for this period</div>
+            </div>
+        </section>
+
+        <!-- CONSTRAINT TRACKER -->
+        <section>
+            <h2 class="sec-hdr">CONSTRAINT TRACKER</h2>
+            <div class="constraint-btns">
+                <button class="cbtn" data-c="Leads" onclick="setConstraint('Leads')">Leads</button>
+                <button class="cbtn" data-c="Sets" onclick="setConstraint('Sets')">Sets</button>
+                <button class="cbtn" data-c="Shows" onclick="setConstraint('Shows')">Shows</button>
+                <button class="cbtn" data-c="Closes" onclick="setConstraint('Closes')">Closes</button>
+                <button class="cbtn" data-c="Fulfillment" onclick="setConstraint('Fulfillment')">Fulfillment</button>
+            </div>
+            <div class="constraint-active" id="con-active">
+                <span class="ca-label">Active Constraint This Week</span>
+                <span class="ca-value" id="con-val">&mdash;</span>
+            </div>
+            <div class="constraint-note" id="con-note"></div>
+            <div id="con-data"></div>
+        </section>
+
+        <!-- TEAM ROSTER -->
+        <section>
+            <div class="tasks-hdr">
+                <h2 class="sec-hdr">TEAM ROSTER</h2>
+                <button class="btn-add-member" onclick="openAddMember()">+ Add Member</button>
+            </div>
+            <div id="team-grid" class="team-grid">
+                <div class="spinning">Loading...</div>
+            </div>
+        </section>
+
+        <!-- TASKS -->
+        <section>
+            <div class="tasks-hdr">
+                <h2 class="sec-hdr">TASKS</h2>
+                <button class="btn btn-red" onclick="openTask()">+ Add Task</button>
+            </div>
+            <div id="task-list" class="task-list">
+                <div class="spinning">Loading...</div>
+            </div>
+        </section>
+    </div>
+
+    <!-- SUBMIT DAILY REPORT MODAL -->
+    <div id="report-overlay" class="overlay">
+        <div class="modal">
+            <div class="modal-title">
+                Submit Daily Report
+                <button class="modal-x" onclick="closeReport()">&#10005;</button>
+            </div>
+            <div class="fg">
+                <label class="fl">Your Name</label>
+                <select class="fc" id="r-name" onchange="onNameChange()">
+                    <option value="">Select your name...</option>
+                </select>
+            </div>
+            <div class="fg">
+                <label class="fl">Role</label>
+                <input type="text" class="fc" id="r-role" disabled>
+            </div>
+            <div id="r-fields"></div>
+            <button class="btn-submit" id="r-submit" onclick="submitReport()" disabled>Submit Report</button>
+            <div id="r-msg" class="form-msg"></div>
+        </div>
+    </div>
+
+    <!-- ADD TASK MODAL -->
+    <div id="task-overlay" class="overlay">
+        <div class="modal">
+            <div class="modal-title">
+                Add Task
+                <button class="modal-x" onclick="closeTask()">&#10005;</button>
+            </div>
+            <div class="fg">
+                <label class="fl">Title</label>
+                <input type="text" class="fc" id="t-title" placeholder="Task description">
+            </div>
+            <div class="fg2">
+                <div class="fg">
+                    <label class="fl">Assigned To</label>
+                    <select class="fc" id="t-assigned">
+                        <option value="">Unassigned</option>
+                    </select>
+                </div>
+                <div class="fg">
+                    <label class="fl">Priority</label>
+                    <select class="fc" id="t-priority">
+                        <option value="high">High</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                </div>
+            </div>
+            <div class="fg">
+                <label class="fl">Due Date</label>
+                <input type="date" class="fc" id="t-due">
+            </div>
+            <div class="fg">
+                <label class="fl">Category</label>
+                <select class="fc" id="t-cat">
+                    <option value="sales">Sales</option>
+                    <option value="operations">Operations</option>
+                    <option value="marketing">Marketing</option>
+                    <option value="credit">Credit</option>
+                    <option value="general">General</option>
+                </select>
+            </div>
+            <button class="btn-submit" onclick="submitTask()">Add Task</button>
+            <div id="t-msg" class="form-msg"></div>
+        </div>
+    </div>
+
+    <!-- ADD MEMBER MODAL -->
+    <div id="addmember-overlay" class="overlay">
+        <div class="modal">
+            <div class="modal-title">
+                Add Team Member
+                <button class="modal-x" onclick="closeAddMember()">&#10005;</button>
+            </div>
+            <div class="fg2">
+                <div class="fg">
+                    <label class="fl">First Name</label>
+                    <input type="text" class="fc" id="am-first" placeholder="First name">
+                </div>
+                <div class="fg">
+                    <label class="fl">Last Name</label>
+                    <input type="text" class="fc" id="am-last" placeholder="Last name">
+                </div>
+            </div>
+            <div class="fg">
+                <label class="fl">Role</label>
+                <select class="fc" id="am-role">
+                    <option value="">Select role...</option>
+                    <option value="Setter">Setter</option>
+                    <option value="Closer">Closer</option>
+                    <option value="Credit Repair">Credit Repair</option>
+                    <option value="Fulfillment">Fulfillment</option>
+                    <option value="EA/Ops">EA/Ops</option>
+                </select>
+            </div>
+            <div class="fg">
+                <label class="fl">Phone (optional)</label>
+                <input type="tel" class="fc" id="am-phone" placeholder="+1 (555) 123-4567">
+            </div>
+            <button class="btn-submit" onclick="submitAddMember()">Add Member</button>
+            <div id="am-msg" class="form-msg"></div>
+        </div>
+    </div>
+
+    <!-- MEMBER DETAIL MODAL -->
+    <div id="member-overlay" class="overlay">
+        <div class="modal modal-wide">
+            <div class="modal-title">
+                <span>Member Reports</span>
+                <button class="modal-x" onclick="closeMemberDetail()">&#10005;</button>
+            </div>
+            <div id="member-detail-content">
+                <div class="spinning">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DRILL-DOWN MODAL -->
+    <div id="drill-overlay" class="overlay">
+        <div class="modal modal-wide">
+            <div class="modal-title">
+                <span id="drill-title">Breakdown</span>
+                <button class="modal-x" onclick="closeDrill()">&#10005;</button>
+            </div>
+            <div id="drill-content"></div>
+        </div>
+    </div>
+
+    <!-- PIN PROMPT MODAL -->
+    <div id="pin-overlay" class="overlay" style="z-index:300">
+        <div class="modal" style="max-width:340px;text-align:center">
+            <div class="modal-title" style="justify-content:center">
+                Enter PIN to Delete
+            </div>
+            <div class="fg">
+                <input type="password" class="fc" id="pin-input" placeholder="4-digit PIN" maxlength="4" style="text-align:center;font-size:1.3rem;letter-spacing:.3rem">
+            </div>
+            <div style="display:flex;gap:.75rem">
+                <button class="btn-submit" style="background:rgba(255,255,255,.08);box-shadow:none" onclick="closePin()">Cancel</button>
+                <button class="btn-submit" onclick="confirmPin()">Confirm</button>
+            </div>
+            <div id="pin-msg" class="form-msg"></div>
+        </div>
+    </div>
+
+    <script>
+        const SU = 'https://wrrfrhuocbftgqqfpaoz.supabase.co';
+        const SK = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndycmZyaHVvY2JmdGdxcWZwYW96Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3Mjc1ODk3NSwiZXhwIjoyMDg4MzM0OTc1fQ.f51I6th0qv7WK0xGQEEJ7TcaSe-OEG_fg4bg_4iSSsY';
+        const H = {
+            apikey: SK,
+            Authorization: 'Bearer ' + SK,
+            'Content-Type': 'application/json',
+            Prefer: 'return=representation'
+        };
+        const WEEKLY_TARGET = 25000;
+        const DISCORD_TASK_WEBHOOK = ''; // Add Discord webhook URL for task notifications
+        let period = 'week';
+        let teamData = [];
+        let pendingDeleteId = null;
+        // Store log data globally for drill-down
+        let _setterLogs = [], _closerLogs = [], _closedDeals = [], _qualLeads = [];
+        let _dialerCalls = [];
+        let _creditLogs = [], _eaLogs = [];
+
+        // --- Date helpers ---
+        function getRange() {
+            const now = new Date();
+            const today = now.toISOString().split('T')[0];
+            if (period === 'today') return { s: today, e: today };
+            if (period === 'week') {
+                const d = new Date(now);
+                const day = d.getDay();
+                d.setDate(d.getDate() - (day === 0 ? 6 : day - 1));
+                return { s: d.toISOString().split('T')[0], e: today };
+            }
+            if (period === 'last_week') {
+                const d = new Date(now);
+                const day = d.getDay();
+                // Go to Monday of this week, then back 7 days = last Monday
+                d.setDate(d.getDate() - (day === 0 ? 6 : day - 1) - 7);
+                const lastMon = d.toISOString().split('T')[0];
+                d.setDate(d.getDate() + 6);
+                const lastSun = d.toISOString().split('T')[0];
+                return { s: lastMon, e: lastSun };
+            }
+            const ms = new Date(now.getFullYear(), now.getMonth(), 1);
+            return { s: ms.toISOString().split('T')[0], e: today };
+        }
+
+        function getWeekOf() {
+            const d = new Date();
+            const day = d.getDay();
+            d.setDate(d.getDate() - (day === 0 ? 6 : day - 1));
+            return d.toISOString().split('T')[0];
+        }
+
+        // --- Supabase helpers ---
+        async function q(table, params) {
+            try {
+                const r = await fetch(`${SU}/rest/v1/${table}?${params}`, { headers: H });
+                if (!r.ok) return [];
+                return r.json();
+            } catch {
+                return [];
+            }
+        }
+
+        async function ins(table, data) {
+            return fetch(`${SU}/rest/v1/${table}`, {
+                method: 'POST',
+                headers: H,
+                body: JSON.stringify(data)
+            });
+        }
+
+        async function upd(table, id, data) {
+            return fetch(`${SU}/rest/v1/${table}?id=eq.${id}`, {
+                method: 'PATCH',
+                headers: H,
+                body: JSON.stringify(data)
+            });
+        }
+
+        async function del(table, id) {
+            return fetch(`${SU}/rest/v1/${table}?id=eq.${id}`, {
+                method: 'DELETE',
+                headers: H
+            });
+        }
+
+        // --- Format helpers ---
+        function fmt(n) {
+            const v = Number(n) || 0;
+            if (v >= 1e6) return '$' + (v / 1e6).toFixed(1) + 'M';
+            if (v >= 1e3) return '$' + Math.round(v / 1e3) + 'K';
+            return '$' + v.toLocaleString();
+        }
+
+        function n(v) {
+            return Number(v) || 0;
+        }
+
+        function ini(name) {
+            return (name || '').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+        }
+
+        function esc(s) {
+            return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        }
+
+        // --- Period ---
+        function setPeriod(p) {
+            period = p;
+            document.querySelectorAll('.ptab').forEach(t => t.classList.toggle('active', t.dataset.p === p));
+            const lbl = { today: 'TODAY', week: 'THIS WEEK', last_week: 'LAST WEEK', month: 'THIS MONTH' };
+            document.getElementById('period-lbl').textContent = lbl[p];
+            if (document.getElementById('period-lbl-2')) document.getElementById('period-lbl-2').textContent = lbl[p];
+            load();
+        }
+
+        // --- Main load ---
+        async function load() {
+            document.getElementById('last-upd').textContent = 'Loading...';
+            const { s, e } = getRange();
+            const wof = getWeekOf();
+            const [qualLeads, setterLogs, closerLogs, closedDeals, webinarLogs, creditLogs, adMetrics, team, constraints, tasks, dialerCalls] = await Promise.all([
+                q('lgh_qualifier_leads', `select=id,created_at&created_at=gte.${s}&created_at=lte.${e}T23:59:59`),
+                q('setter_logs', `select=*&date=gte.${s}&date=lte.${e}`),
+                q('closer_logs', `select=*&week_of=gte.${wof}`),
+                q('closed_deals', `select=*&closed_at=gte.${s}&closed_at=lte.${e}T23:59:59`),
+                q('webinar_logs', `select=*&date=gte.${s}&date=lte.${e}`),
+                q('credit_repair', `select=*&week_of=gte.${wof}`),
+                q('ad_metrics', `select=*&date=gte.${s}&date=lte.${e}`),
+                q('team_members', 'select=*&order=name.asc'),
+                q('constraints_tracker', 'select=*&order=created_at.desc&limit=1'),
+                q('dashboard_tasks', 'select=*&order=priority.asc,due_date.asc'),
+                q('retell_call_log', `select=*&call_date=gte.${s}&call_date=lte.${e}&order=created_at.desc&limit=200`),
+            ]);
+            teamData = team;
+            _setterLogs = setterLogs; _closerLogs = closerLogs; _closedDeals = closedDeals; _qualLeads = qualLeads;
+            _dialerCalls = dialerCalls;
+            _creditLogs = creditLogs;
+            populateDropdowns(team);
+
+            // -- CEO SCOREBOARD --
+            const leads = qualLeads.length;
+            const sets = setterLogs.reduce((a, r) => a + n(r.calls_booked), 0);
+            const shows = setterLogs.reduce((a, r) => a + n(r.calls_showed), 0);
+            // closed_deals = auto-tracked from Discord (source of truth for deal count + cash)
+            // closer_logs = manual daily reports (may also have revenue from collections)
+            const closesFromDeals = closedDeals.length;
+            const closesFromLogs = closerLogs.reduce((a, r) => a + n(r.deals_closed), 0);
+            const closes = Math.max(closesFromDeals, closesFromLogs);
+            const cashFromDeals = closedDeals.reduce((a, d) => a + n(d.cash_collected || d.amount), 0);
+            const cashFromLogs = closerLogs.reduce((a, r) => a + n(r.revenue_collected), 0);
+            const cash = Math.max(cashFromDeals, cashFromLogs);
+            const showPct = sets > 0 ? Math.round(shows / sets * 100) : 0;
+            const closePct = closes > 0 && sets > 0 ? Math.round(closes / sets * 100) : 0;
+
+            document.getElementById('hero-grid').innerHTML = `
+                <div class="hero-card clickable" onclick="drillDown('leads')"><div class="hc-label">Leads</div><div class="hc-value">${leads}</div><div class="hc-sub">Qualifier applicants</div></div>
+                <div class="hero-card clickable" onclick="drillDown('sets')"><div class="hc-label">Sets</div><div class="hc-value">${sets}</div><div class="hc-sub">Calls booked</div></div>
+                <div class="hero-card clickable" onclick="drillDown('shows')"><div class="hc-label">Shows</div><div class="hc-value">${shows}</div><div class="hc-sub">Show rate: ${showPct}%</div></div>
+                <div class="hero-card clickable" onclick="drillDown('closes')"><div class="hc-label">Closes</div><div class="hc-value">${closes}</div><div class="hc-sub">Close rate: ${closePct}%</div></div>
+                <div class="hero-card accent clickable" onclick="drillDown('cash')"><div class="hc-label">Cash Collected</div><div class="hc-value">${fmt(cash)}</div><div class="hc-sub">Period total</div></div>
+            `;
+
+            const pct = Math.min(100, Math.round(cash / WEEKLY_TARGET * 100));
+            document.getElementById('rv-cur').textContent = fmt(cash);
+            document.getElementById('rv-pct').textContent = pct + '%';
+            document.getElementById('rv-fill').style.width = pct + '%';
+
+            // -- LEADERBOARD --
+            document.getElementById('lb-period').textContent = { today:'TODAY', week:'THIS WEEK', month:'THIS MONTH' }[period] || 'THIS WEEK';
+
+            // Avatar color helper
+            const avatarColors = ['#E31837','#1877F2','#6366f1','#10b981','#f59e0b','#ec4899','#8b5cf6','#06b6d4','#22c55e','#ef4444'];
+            function getAvatarColor(name) {
+                let hash = 0;
+                for(let i=0;i<name.length;i++) hash = name.charCodeAt(i) + ((hash<<5)-hash);
+                return avatarColors[Math.abs(hash) % avatarColors.length];
+            }
+
+            // Most Sets (from setter_logs)
+            const setsByPerson = {};
+            for (const l of setterLogs) {
+                const nm = l.team_member || 'Unknown';
+                setsByPerson[nm] = (setsByPerson[nm] || 0) + n(l.calls_booked);
+            }
+            const setsRanked = Object.entries(setsByPerson).sort((a,b) => b[1] - a[1]);
+
+            // Most Shows (from setter_logs)
+            const showsByPerson = {};
+            for (const l of setterLogs) {
+                const nm = l.team_member || 'Unknown';
+                showsByPerson[nm] = (showsByPerson[nm] || 0) + n(l.calls_showed);
+            }
+            const showsRanked = Object.entries(showsByPerson).sort((a,b) => b[1] - a[1]);
+
+            // Most Revenue (from closed_deals by closer)
+            const revByPerson = {};
+            for (const d of closedDeals) {
+                const nm = d.closer || 'Unknown';
+                revByPerson[nm] = (revByPerson[nm] || 0) + n(d.cash_collected || d.amount);
+            }
+            const revRanked = Object.entries(revByPerson).sort((a,b) => b[1] - a[1]);
+
+            function buildLbCard(title, ranked, formatVal, icon, color) {
+                if (!ranked.length) return `<div class="lb-card"><div class="lb-label">${title}</div><div class="empty" style="margin:1rem 0">No data</div></div>`;
+                const [topName, topVal] = ranked[0];
+                const runners = ranked.slice(1, 4);
+                return `<div class="lb-card gold">
+                    <div class="lb-crown">${icon}</div>
+                    <div class="lb-avatar" style="background:${getAvatarColor(topName)}">${ini(topName)}</div>
+                    <div class="lb-name">${topName.split(' ')[0]}</div>
+                    <div class="lb-metric" style="color:${color}">${formatVal(topVal)}</div>
+                    <div class="lb-label">${title}</div>
+                    ${runners.length ? '<div style="margin-top:0.75rem;border-top:1px solid var(--card-border);padding-top:0.5rem">' + runners.map(([nm, val], i) => `
+                        <div class="lb-runner">
+                            <span style="color:var(--muted);font-weight:700;width:16px">${i+2}</span>
+                            <div class="lb-r-avatar" style="background:${getAvatarColor(nm)}">${ini(nm)}</div>
+                            <span class="lb-r-name">${nm.split(' ')[0]}</span>
+                            <span class="lb-r-val">${formatVal(val)}</span>
+                        </div>`).join('') + '</div>' : ''}
+                </div>`;
+            }
+
+            document.getElementById('leaderboard').innerHTML =
+                buildLbCard('MOST SETS', setsRanked, v => v, '\ud83d\udcde', 'var(--red)') +
+                buildLbCard('MOST SHOWS', showsRanked, v => v, '\ud83c\udfaf', 'var(--gold)') +
+                buildLbCard('MOST REVENUE', revRanked, v => fmt(v), '\ud83d\udcb0', 'var(--green)');
+
+            // -- DEPARTMENTS --
+            const sDials = setterLogs.reduce((a,r) => a + n(r.webbi_leads_contacted), 0);
+            const sReroute = setterLogs.reduce((a,r) => a + n(r.webbi_reroutes), 0);
+            const cCalls = closerLogs.reduce((a,r) => a + n(r.calls_taken), 0);
+            const cNS = closerLogs.reduce((a,r) => a + n(r.no_shows), 0);
+            const cRate = cCalls > 0 ? Math.round(closes / cCalls * 100) : 0;
+            const wRegs = webinarLogs.reduce((a,r) => a + n(r.registrations), 0);
+            const wShows = webinarLogs.reduce((a,r) => a + n(r.shows), 0);
+            const wSRate = wRegs > 0 ? Math.round(wShows / wRegs * 100) : 0;
+            const wWatch = webinarLogs.length ? Math.round(webinarLogs.reduce((a,r) => a + n(r.watch_time_pct), 0) / webinarLogs.length) : 0;
+            const wBooked = webinarLogs.reduce((a,r) => a + n(r.calls_booked), 0);
+            const wRev = webinarLogs.reduce((a,r) => a + n(r.revenue), 0);
+            // Use only "All Campaigns" aggregate rows for top-level KPIs (avoid double-counting campaign rows)
+            const adAgg = adMetrics.filter(r => !r.campaign_name || r.campaign_name === 'All Campaigns');
+            const aSpend = adAgg.reduce((a,r) => a + n(r.spend), 0);
+            const aLeads = adAgg.reduce((a,r) => a + n(r.leads), 0);
+            const aCPL = aLeads > 0 ? Math.round(aSpend / aLeads) : 0;
+            const aCPQS = sets > 0 && aSpend > 0 ? Math.round(aSpend / sets) : 0;
+            // ROAS — facebook-attributed revenue / ad spend
+            const fbDeals = closedDeals.filter(d => d.lead_source === 'facebook');
+            const fbRevenue = fbDeals.reduce((a, d) => a + n(d.cash_collected || d.amount), 0);
+            const aROAS = aSpend > 0 && fbRevenue > 0 ? Math.round(fbRevenue / aSpend * 10) / 10 : 0;
+            const crNew = creditLogs.reduce((a,r) => a + n(r.new_clients), 0);
+            const crActive = creditLogs.reduce((a,r) => a + n(r.active_clients), 0);
+            const crFund = creditLogs.reduce((a,r) => a + n(r.funding_ready), 0);
+            const crStall = creditLogs.reduce((a,r) => a + n(r.stalled_clients), 0);
+            const crSweep = creditLogs.reduce((a,r) => a + n(r.sweeps_started), 0);
+
+            document.getElementById('dept-grid').innerHTML = `
+                <div class="dept-card clickable" onclick="drillDown('setters')">
+                    <div class="dept-title">SETTERS</div>
+                    <div class="dept-stats">
+                        <div><div class="ds-label">Dials</div><div class="ds-value">${sDials}</div></div>
+                        <div><div class="ds-label">Sets</div><div class="ds-value dv-red">${sets}</div></div>
+                        <div><div class="ds-label">Shows</div><div class="ds-value dv-green">${shows}</div></div>
+                        <div><div class="ds-label">Reroutes</div><div class="ds-value">${sReroute}</div></div>
+                    </div>
+                </div>
+                <div class="dept-card clickable" onclick="drillDown('closers')">
+                    <div class="dept-title">CLOSERS</div>
+                    <div class="dept-stats">
+                        <div><div class="ds-label">Calls</div><div class="ds-value">${cCalls}</div></div>
+                        <div><div class="ds-label">No-Shows</div><div class="ds-value dv-red">${cNS}</div></div>
+                        <div><div class="ds-label">Closes</div><div class="ds-value dv-green">${closes}</div></div>
+                        <div><div class="ds-label">Close%</div><div class="ds-value dv-gold">${cRate}%</div></div>
+                        <div class="span2"><div class="ds-label">Cash Collected</div><div class="ds-value dv-red">${fmt(cash)}</div></div>
+                    </div>
+                </div>
+                <div class="dept-card">
+                    <div class="dept-title">WEBINAR</div>
+                    <div class="dept-stats">
+                        <div><div class="ds-label">Regs</div><div class="ds-value">${wRegs}</div></div>
+                        <div><div class="ds-label">Show%</div><div class="ds-value dv-gold">${wSRate}%</div></div>
+                        <div><div class="ds-label">Watch%</div><div class="ds-value">${wWatch}%</div></div>
+                        <div><div class="ds-label">Booked</div><div class="ds-value dv-red">${wBooked}</div></div>
+                        <div class="span2"><div class="ds-label">Rev/Webinar</div><div class="ds-value dv-green">${fmt(wRev)}</div></div>
+                    </div>
+                </div>
+                <div class="dept-card">
+                    <div class="dept-title">ADS</div>
+                    <div class="dept-stats">
+                        <div><div class="ds-label">Spend</div><div class="ds-value dv-red">${fmt(aSpend)}</div></div>
+                        <div><div class="ds-label">Leads</div><div class="ds-value">${aLeads}</div></div>
+                        <div><div class="ds-label">CPL</div><div class="ds-value dv-gold">${fmt(aCPL)}</div></div>
+                        <div><div class="ds-label">ROAS</div><div class="ds-value ${aROAS >= 2 ? 'dv-green' : aROAS >= 1 ? 'dv-gold' : 'dv-red'}">${aROAS > 0 ? aROAS.toFixed(1) + 'x' : '—'}</div></div>
+                    </div>
+                </div>
+                <div class="dept-card clickable" onclick="drillDown('credit')">
+                    <div class="dept-title">CREDIT</div>
+                    <div class="dept-stats">
+                        <div><div class="ds-label">Sweeps</div><div class="ds-value">${crSweep}</div></div>
+                        <div><div class="ds-label">Active</div><div class="ds-value dv-red">${crActive}</div></div>
+                        <div><div class="ds-label">Funding Ready</div><div class="ds-value dv-green">${crFund}</div></div>
+                        <div><div class="ds-label">Stalled</div><div class="ds-value dv-gold">${crStall}</div></div>
+                    </div>
+                </div>
+                <div class="dept-card clickable" onclick="drillDown('ea_ops')">
+                    <div class="dept-title">EA / OPS — Michelle Ingram</div>
+                    <div class="dept-stats">
+                        <div><div class="ds-label">New Clients Onboarded</div><div class="ds-value" id="ea-new-clients">--</div></div>
+                        <div><div class="ds-label">Cash Recovered (HAC)</div><div class="ds-value dv-green" id="ea-cash-hac">--</div></div>
+                        <div><div class="ds-label">HAC's Past Due</div><div class="ds-value dv-red" id="ea-hac-past-due">--</div></div>
+                        <div><div class="ds-label">30/60/90 FU Done</div><div class="ds-value dv-gold" id="ea-fu-conducted">--</div></div>
+                    </div>
+                </div>
+            `;
+
+            // -- EA KPI FETCH (Michelle's daily KPIs) --
+            try {
+                // Use s (start) and e (end) from getDateRange() already in scope
+                // dates already set by period selector
+                const eaLogs = await q('ea_logs', `select=new_clients_onboarded,cash_recovered_hac,hac_past_due,fu_30_60_90_conducted&team_member=eq.Michelle Ingram&date=gte.${s}&date=lte.${e}`);
+                const eaNewClients = eaLogs.reduce((a, r) => a + n(r.new_clients_onboarded), 0);
+                const eaCashHAC = eaLogs.reduce((a, r) => a + n(r.cash_recovered_hac), 0);
+                const eaHACPastDue = eaLogs.reduce((a, r) => a + n(r.hac_past_due), 0);
+                
+                _eaLogs = eaLogs;
+                const eaFUConducted = eaLogs.reduce((a, r) => a + n(r.fu_30_60_90_conducted), 0);
+                const eNC = document.getElementById('ea-new-clients');
+                const eCH = document.getElementById('ea-cash-hac');
+                const eHP = document.getElementById('ea-hac-past-due');
+                const eFC = document.getElementById('ea-fu-conducted');
+                if (eNC) eNC.textContent = eaNewClients;
+                if (eCH) eCH.textContent = '$' + eaCashHAC.toLocaleString();
+                if (eHP) eHP.textContent = eaHACPastDue;
+                if (eFC) eFC.textContent = eaFUConducted;
+            } catch(e) { console.warn('EA KPI fetch error:', e); }
+
+            // -- FINANCIAL HEALTH --
+            const nowD = new Date();
+            const mStart = new Date(nowD.getFullYear(), nowD.getMonth(), 1).toISOString().split('T')[0];
+            const [monthDeals, monthCloserLogs] = await Promise.all([
+                q('closed_deals', `select=amount,cash_collected&closed_at=gte.${mStart}`),
+                q('closer_logs', `select=revenue_collected&week_of=gte.${mStart}`),
+            ]);
+            const monthRev = monthDeals.reduce((a, d) => a + n(d.cash_collected || d.amount), 0) + monthCloserLogs.reduce((a, r) => a + n(r.revenue_collected), 0);
+            const periodLabel = { today: 'Today', week: 'This Week', last_week: 'Last Week', month: 'This Month' }[period] || 'Period';
+            const margin = cash > 0 && aSpend > 0 ? Math.round((cash - aSpend) / cash * 100) : (cash > 0 ? 100 : 0);
+
+            document.getElementById('fin-grid').innerHTML = `
+                <div class="fin-card"><div class="fc-label">Period Rev</div><div class="fc-value">${fmt(cash)}</div><div class="fc-sub">${periodLabel}</div></div>
+                <div class="fin-card"><div class="fc-label">Monthly Rev</div><div class="fc-value">${fmt(monthRev)}</div><div class="fc-sub">Current month</div></div>
+                <div class="fin-card"><div class="fc-label">Ad Spend</div><div class="fc-value" style="color:var(--red)">${fmt(aSpend)}</div><div class="fc-sub">Period spend</div></div>
+                <div class="fin-card"><div class="fc-label">ROAS</div><div class="fc-value" style="color:${aROAS >= 2 ? 'var(--green)' : aROAS >= 1 ? 'var(--gold)' : 'var(--red)'}">${aROAS > 0 ? aROAS.toFixed(1) + 'x' : '—'}</div><div class="fc-sub">${fbRevenue > 0 ? fmt(fbRevenue) + ' from ' + fbDeals.length + ' FB deal' + (fbDeals.length!==1?'s':'') : 'No FB-attributed deals'}</div></div>
+            `;
+
+            // -- REVENUE BY SOURCE --
+            const srcMap = {};
+            const srcColors = {facebook:'#1877F2',skool:'#6366f1',webinar:'#f59e0b','7_eagle':'#10b981',event:'#ec4899',direct_booking:'#8b5cf6',referral:'#06b6d4',organic:'rgba(255,255,255,0.3)',podcast:'#22c55e'};
+            const srcLabels = {facebook:'Facebook Ads',skool:'Skool','7_eagle':'7 Eagle',direct_booking:'Direct Booking',webinar:'Webinar',event:'Event',organic:'Organic',referral:'Referral',podcast:'Podcast'};
+            for (const d of closedDeals) {
+                const src = d.lead_source || 'organic';
+                if (!srcMap[src]) srcMap[src] = { count: 0, revenue: 0 };
+                srcMap[src].count++;
+                srcMap[src].revenue += n(d.cash_collected || d.amount);
+            }
+            const srcEntries = Object.entries(srcMap).sort((a, b) => b[1].revenue - a[1].revenue);
+            const totalSrcRev = srcEntries.reduce((a, [, v]) => a + v.revenue, 0);
+            if (srcEntries.length > 0) {
+                document.getElementById('source-grid').innerHTML = srcEntries.map(([src, v]) => {
+                    const pct = totalSrcRev > 0 ? Math.round(v.revenue / totalSrcRev * 100) : 0;
+                    const color = srcColors[src] || 'rgba(255,255,255,0.3)';
+                    const label = srcLabels[src] || src.replace(/_/g, ' ');
+                    return `<div class="fin-card" style="border-left:3px solid ${color}">
+                        <div class="fc-label">${label}</div>
+                        <div class="fc-value" style="color:${color}">${fmt(v.revenue)}</div>
+                        <div class="fc-sub">${v.count} deal${v.count!==1?'s':''} · ${pct}%</div>
+                    </div>`;
+                }).join('');
+                // Stacked bar
+                document.getElementById('source-bar').innerHTML = srcEntries.map(([src, v]) => {
+                    const pct = totalSrcRev > 0 ? (v.revenue / totalSrcRev * 100) : 0;
+                    const color = srcColors[src] || 'rgba(255,255,255,0.3)';
+                    const label = srcLabels[src] || src;
+                    return `<div style="width:${pct}%;background:${color};display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;padding:0 4px" title="${label}: ${fmt(v.revenue)} (${Math.round(pct)}%)">${pct >= 8 ? label : ''}</div>`;
+                }).join('');
+            } else {
+                document.getElementById('source-grid').innerHTML = '<div class="empty">No deal data for this period</div>';
+                document.getElementById('source-bar').innerHTML = '';
+            }
+
+                        // -- ADS REPORT (Campaign Breakdown) --
+            // Separate aggregate rows from per-campaign rows
+            const adCampaignRows = adMetrics.filter(r => r.campaign_name && r.campaign_name !== 'All Campaigns');
+            const campaignMap = { 'All Campaigns': adAgg };
+            for (const r of adCampaignRows) {
+                const cName = r.campaign_name;
+                if (!campaignMap[cName]) campaignMap[cName] = [];
+                campaignMap[cName].push(r);
+            }
+            const campaignNames = Object.keys(campaignMap).sort((a, b) => {
+                if (a === 'All Campaigns') return -1;
+                if (b === 'All Campaigns') return 1;
+                const aSpd = campaignMap[a].reduce((s, r) => s + n(r.spend), 0);
+                const bSpd = campaignMap[b].reduce((s, r) => s + n(r.spend), 0);
+                return bSpd - aSpd;
+            });
+
+            // Render campaign tabs
+            let activeCampaign = campaignNames.length > 1 && campaignNames[0] === 'All Campaigns' ? 'All Campaigns' : (campaignNames[0] || 'All Campaigns');
+            window.renderAdsCampaign = function renderAdsCampaign(campName) {
+                activeCampaign = campName;
+                const metrics = campaignMap[campName] || adMetrics;
+                const cSpend = metrics.reduce((a,r) => a + n(r.spend), 0);
+                const cLeads = metrics.reduce((a,r) => a + n(r.leads), 0);
+                const cCPL = cLeads > 0 ? Math.round(cSpend / cLeads) : 0;
+                const convRate = cLeads > 0 && sets > 0 ? Math.round(sets / cLeads * 100) : 0;
+                const profitLoss = fbRevenue - cSpend;
+                const sorted = [...metrics].sort((a, b) => a.date.localeCompare(b.date));
+                const maxSpend = Math.max(...sorted.map(r => n(r.spend)), 1);
+                const isAll = campName === 'All Campaigns';
+
+                // Update tab active state
+                document.querySelectorAll('.ads-tab').forEach(t => {
+                    t.style.background = t.dataset.camp === campName ? 'var(--red)' : 'var(--card-bg)';
+                    t.style.color = t.dataset.camp === campName ? '#fff' : 'var(--muted)';
+                });
+
+                // Summary cards
+                document.getElementById('ads-summary').innerHTML = `
+                    <div class="fin-card"><div class="fc-label">Total Spend</div><div class="fc-value" style="color:var(--red)">${fmt(cSpend)}</div><div class="fc-sub">${sorted.length} day${sorted.length!==1?'s':''}</div></div>
+                    <div class="fin-card"><div class="fc-label">Total Leads</div><div class="fc-value">${cLeads}</div><div class="fc-sub">From ads</div></div>
+                    <div class="fin-card"><div class="fc-label">CPL</div><div class="fc-value" style="color:var(--gold)">${fmt(cCPL)}</div><div class="fc-sub">Cost per lead</div></div>
+                    <div class="fin-card"><div class="fc-label">ROAS</div><div class="fc-value" style="color:${aROAS >= 2 ? 'var(--green)' : aROAS >= 1 ? 'var(--gold)' : 'var(--red)'}">${isAll && aROAS > 0 ? aROAS.toFixed(1) + 'x' : '\u2014'}</div><div class="fc-sub">${isAll ? fbDeals.length + ' FB deal' + (fbDeals.length!==1?'s':'') : campName}</div></div>
+                    <div class="fin-card"><div class="fc-label">Lead\u2192Set</div><div class="fc-value" style="color:var(--gold)">${isAll ? convRate + '%' : '\u2014'}</div><div class="fc-sub">${isAll ? cLeads + ' leads \u2192 ' + sets + ' sets' : 'See All'}</div></div>
+                    <div class="fin-card"><div class="fc-label">P&L</div><div class="fc-value" style="color:${profitLoss >= 0 ? 'var(--green)' : 'var(--red)'}">${isAll ? (profitLoss >= 0 ? '+' : '') + fmt(profitLoss) : '\u2014'}</div><div class="fc-sub">${isAll ? 'FB rev \u2212 spend' : ''}</div></div>
+                `;
+
+                // Bar chart
+                document.getElementById('ads-chart').innerHTML = sorted.map(r => {
+                    const h = Math.max(4, Math.round(n(r.spend) / maxSpend * 100));
+                    const dayLabel = new Date(r.date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short' });
+                    const dayNum = new Date(r.date + 'T12:00:00').getDate();
+                    return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+                        <span style="font-size:0.65rem;color:var(--muted)">${fmt(n(r.spend))}</span>
+                        <div style="width:100%;height:${h}px;background:linear-gradient(to top,var(--red),var(--red-dark));border-radius:4px 4px 0 0;min-width:20px"></div>
+                        <span style="font-size:0.6rem;color:var(--muted)">${dayLabel}<br>${dayNum}</span>
+                    </div>`;
+                }).join('');
+
+                // Table
+                document.getElementById('ads-thead').innerHTML = '<th style="padding:6px 8px">Date</th><th style="padding:6px 8px">Spend</th><th style="padding:6px 8px">Leads</th><th style="padding:6px 8px">CPL</th>';
+                document.getElementById('ads-tbody').innerHTML = sorted.map(r => {
+                    const dCPL = n(r.leads) > 0 ? Math.round(n(r.spend) / n(r.leads)) : 0;
+                    const dateStr = new Date(r.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', weekday: 'short' });
+                    return `<tr style="border-bottom:1px solid var(--card-border)">
+                        <td style="padding:6px 8px;color:var(--muted)">${dateStr}</td>
+                        <td style="padding:6px 8px;color:var(--red)">${fmt(n(r.spend))}</td>
+                        <td style="padding:6px 8px">${n(r.leads)}</td>
+                        <td style="padding:6px 8px;color:var(--gold)">${dCPL > 0 ? fmt(dCPL) : '\u2014'}</td>
+                    </tr>`;
+                }).join('');
+            }
+
+            if (adMetrics.length > 0) {
+                // Build campaign tabs
+                if (campaignNames.length > 1) {
+                    document.getElementById('ads-campaign-tabs').innerHTML = campaignNames.map(name => {
+                        const campMetrics = campaignMap[name];
+                        const campSpend = campMetrics.reduce((a,r) => a + n(r.spend), 0);
+                        return `<button class="ads-tab" data-camp="${name}" onclick="renderAdsCampaign('${name.replace(/'/g, "\\'")}')" style="padding:6px 14px;border:1px solid var(--card-border);border-radius:20px;background:var(--card-bg);color:var(--muted);font-size:0.75rem;cursor:pointer;transition:all 0.2s">
+                            ${name === 'All Campaigns' ? '\ud83d\udcca All' : name} <span style="opacity:0.6;margin-left:4px">${fmt(campSpend)}</span>
+                        </button>`;
+                    }).join('');
+                } else {
+                    document.getElementById('ads-campaign-tabs').innerHTML = '';
+                }
+                renderAdsCampaign(activeCampaign);
+            } else {
+                document.getElementById('ads-campaign-tabs').innerHTML = '';
+                document.getElementById('ads-summary').innerHTML = '<div class="empty">No ad data for this period</div>';
+                document.getElementById('ads-chart').innerHTML = '';
+                document.getElementById('ads-tbody').innerHTML = '';
+                document.getElementById('ads-thead').innerHTML = '';
+            }
+
+
+            // -- AI DIALER --
+            const dialsByType = { lead_magnet: 0, post_registration: 0, post_webinar: 0 };
+            const bookedByType = { lead_magnet: 0, post_registration: 0, post_webinar: 0 };
+            let totalConnected = 0;
+            for (const c of dialerCalls) {
+                const ct = c.call_type || 'unknown';
+                if (dialsByType[ct] !== undefined) {
+                    dialsByType[ct]++;
+                    if (c.booked) bookedByType[ct]++;
+                }
+                if (c.call_status && c.call_status !== 'no_answer' && c.call_status !== 'voicemail') totalConnected++;
+            }
+            const totalDials = dialerCalls.length;
+            const connectRate = totalDials > 0 ? Math.round(totalConnected / totalDials * 100) : 0;
+            const lmRegistered = dialerCalls.filter(c => c.call_type === 'lead_magnet' && c.registered).length;
+            const lmRegRate = dialsByType.lead_magnet > 0 ? Math.round(lmRegistered / dialsByType.lead_magnet * 100) : 0;
+            const prBookRate = dialsByType.post_registration > 0 ? Math.round(bookedByType.post_registration / dialsByType.post_registration * 100) : 0;
+            const pwBookRate = dialsByType.post_webinar > 0 ? Math.round(bookedByType.post_webinar / dialsByType.post_webinar * 100) : 0;
+
+            document.getElementById('dialer-grid').innerHTML = `
+                <div class="fin-card clickable" onclick="drillDown('dialer_lead_magnet')" style="cursor:pointer">
+                    <div class="fc-label">Lead Magnet Dials</div>
+                    <div class="fc-value">${dialsByType.lead_magnet}</div>
+                    <div class="fc-sub">${lmRegistered} registered (${lmRegRate}%)</div>
+                </div>
+                <div class="fin-card clickable" onclick="drillDown('dialer_post_registration')" style="cursor:pointer">
+                    <div class="fc-label">Post-Registration</div>
+                    <div class="fc-value">${dialsByType.post_registration}</div>
+                    <div class="fc-sub">Book rate: ${prBookRate}%</div>
+                </div>
+                <div class="fin-card clickable" onclick="drillDown('dialer_post_webinar')" style="cursor:pointer">
+                    <div class="fc-label">Post-Webinar</div>
+                    <div class="fc-value">${dialsByType.post_webinar}</div>
+                    <div class="fc-sub">Book rate: ${pwBookRate}%</div>
+                </div>
+                <div class="fin-card clickable" onclick="drillDown('dialer_overall')" style="cursor:pointer">
+                    <div class="fc-label">Connect Rate</div>
+                    <div class="fc-value" style="color:var(--gold)">${connectRate}%</div>
+                    <div class="fc-sub">${totalConnected}/${totalDials} dials</div>
+                </div>
+            `;
+
+            if (dialerCalls.length > 0) {
+                document.getElementById('dialer-empty').style.display = 'none';
+                const typeLabel = { lead_magnet: 'Lead Magnet', post_registration: 'Post-Reg', post_webinar: 'Post-Webinar', unknown: 'Unknown' };
+                const statusColor = { completed: 'var(--green)', no_answer: 'var(--muted)', voicemail: 'var(--gold)', short_call: 'var(--muted)' };
+                function buildDialerRow(c) {
+                    const ts = c.created_at ? new Date(c.created_at).toLocaleString('en-US', { month:'short', day:'numeric', hour:'numeric', minute:'2-digit' }) : '\u2014';
+                    const dur = c.call_duration_seconds ? c.call_duration_seconds + 's' : '\u2014';
+                    const isLM = c.call_type === 'lead_magnet';
+                    const bookedBadge = isLM ? (c.registered ? '<span style="color:var(--green);font-weight:700">\u2713 Registered</span>' : '<span style="color:var(--muted)">\u2014</span>') : (c.booked ? '<span style="color:var(--green);font-weight:700">\u2713 Booked</span>' : '<span style="color:var(--muted)">\u2014</span>');
+                    const sc = statusColor[c.call_status] || 'var(--muted)';
+                    return '<tr style="border-bottom:1px solid var(--card-border)">' +
+                        '<td style="padding:6px 8px;color:var(--muted);white-space:nowrap">' + ts + '</td>' +
+                        '<td style="padding:6px 8px">' + (c.contact_name || c.phone || '\u2014') + '</td>' +
+                        '<td style="padding:6px 8px;color:var(--gold)">' + (typeLabel[c.call_type] || c.call_type || '\u2014') + '</td>' +
+                        '<td style="padding:6px 8px;color:var(--muted);font-size:0.75rem">' + (c.agent_name || '\u2014') + '</td>' +
+                        '<td style="padding:6px 8px;color:' + sc + '">' + (c.call_status || '\u2014') + '</td>' +
+                        '<td style="padding:6px 8px;color:var(--muted)">' + dur + '</td>' +
+                        '<td style="padding:6px 8px">' + bookedBadge + '</td>' +
+                        '</tr>';
+                }
+                const DIALER_PREVIEW = 5;
+                document.getElementById('dialer-tbody').innerHTML = dialerCalls.slice(0, DIALER_PREVIEW).map(buildDialerRow).join('');
+                // Expand row
+                const remaining = dialerCalls.length - DIALER_PREVIEW;
+                const expandRow = remaining > 0
+                    ? '<tr id="dialer-expand-row"><td colspan="7" style="padding:8px;text-align:center">' +
+                      '<button onclick="toggleDialerTable()" style="background:rgba(255,255,255,.06);border:1px solid var(--card-border);border-radius:8px;padding:5px 18px;color:var(--muted);font-size:.78rem;cursor:pointer" id="dialer-expand-btn">\u25bc Show ' + remaining + ' more calls</button>' +
+                      '</td></tr>'
+                    : '';
+                document.getElementById('dialer-tbody').innerHTML += expandRow;
+                window._dialerAllRows = dialerCalls.map(buildDialerRow).join('');
+                window._dialerPreviewRows = dialerCalls.slice(0, DIALER_PREVIEW).map(buildDialerRow).join('') + expandRow;
+                window._dialerExpanded = false;
+            } else {
+                document.getElementById('dialer-empty').style.display = 'block';
+                document.getElementById('dialer-tbody').innerHTML = '';
+            }
+
+            // -- CONSTRAINTS --
+            if (constraints.length > 0) {
+                const c = constraints[0].constraint_area;
+                showConstraint(c);
+            }
+
+            // Live constraint data
+            const leadToSet = leads > 0 ? Math.round(sets / leads * 100) : 0;
+            const showRate = sets > 0 ? Math.round(shows / sets * 100) : 0;
+            const closeRate = shows > 0 ? Math.round(closes / shows * 100) : 0;
+
+            const stages = [
+                { name: 'Lead \u2192 Set', value: leadToSet, target: 20, unit: '%' },
+                { name: 'Show Rate', value: showRate, target: 60, unit: '%' },
+                { name: 'Close Rate', value: closeRate, target: 25, unit: '%' },
+                { name: 'CPL', value: aCPL, target: 50, unit: '$', invert: true },
+            ];
+
+            const weakest = stages.reduce((w, s) => {
+                const ratio = s.invert ? (s.target / Math.max(s.value, 1)) : (s.value / s.target);
+                return ratio < w.ratio ? { ...s, ratio } : w;
+            }, { ratio: Infinity });
+
+            document.getElementById('con-data').innerHTML = `
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:0.75rem;margin-top:1rem">
+                    ${stages.map(s => {
+                        const isWeakest = s.name === weakest.name;
+                        const atTarget = s.invert ? s.value <= s.target : s.value >= s.target;
+                        const color = isWeakest ? 'var(--red)' : atTarget ? 'var(--green)' : 'var(--gold)';
+                        return `<div style="background:var(--card-bg);border:1px solid ${isWeakest ? 'var(--red)' : 'var(--card-border)'};border-radius:10px;padding:0.75rem;text-align:center${isWeakest ? ';box-shadow:0 0 12px var(--red-glow)' : ''}">
+                            <div style="font-size:0.7rem;color:var(--muted);text-transform:uppercase">${s.name}</div>
+                            <div style="font-size:1.4rem;font-weight:700;color:${color}">${s.unit === '$' ? '$' + s.value : s.value + '%'}</div>
+                            <div style="font-size:0.65rem;color:var(--muted)">Target: ${s.unit === '$' ? '$' + s.target : s.target + '%'}</div>
+                        </div>`;
+                    }).join('')}
+                </div>
+                ${weakest.name ? `<div style="margin-top:0.75rem;padding:0.6rem 1rem;background:rgba(227,24,55,0.1);border:1px solid rgba(227,24,55,0.3);border-radius:8px;font-size:0.8rem">
+                    <span style="color:var(--red);font-weight:700">\u26a0\ufe0f PRIMARY CONSTRAINT:</span> ${weakest.name} at ${weakest.unit === '$' ? '$' + weakest.value : weakest.value + '%'} (target: ${weakest.unit === '$' ? '$' + weakest.target : weakest.target + '%'})
+                </div>` : ''}
+            `;
+
+            // -- TEAM ROSTER --
+            if (!team.length) {
+                document.getElementById('team-grid').innerHTML = '<div class="empty">No team members found</div>';
+            } else {
+                document.getElementById('team-grid').innerHTML = team.map(m => `
+                    <div class="team-card" onclick="openMemberDetail('${esc(m.name)}', '${esc(m.role)}', '${esc(m.phone || '')}')">
+                        <button class="delete-btn" onclick="event.stopPropagation(); promptDeleteMember('${m.id}', '${esc(m.name)}')" title="Delete member">&#10005;</button>
+                        <div class="avatar">${ini(m.name)}</div>
+                        <div class="t-name"><span class="sdot${m.is_active ? '' : ' off'}"></span>${m.name.split(' ')[0]}</div>
+                        <div class="t-role">${esc(m.role)}</div>
+                        ${m.phone ? `<div class="t-contact">${esc(m.phone)}</div>` : ''}
+                    </div>
+                `).join('');
+            }
+
+            // -- TASKS --
+            renderTasks(tasks);
+
+            document.getElementById('last-upd').textContent = 'Updated ' + new Date().toLocaleTimeString();
+        }
+
+        // --- Constraint ---
+        function showConstraint(area) {
+            document.querySelectorAll('.cbtn').forEach(b => b.classList.toggle('active', b.dataset.c === area));
+            const el = document.getElementById('con-active');
+            if (area) {
+                el.style.display = 'flex';
+                document.getElementById('con-val').textContent = area.toUpperCase();
+            } else {
+                el.style.display = 'none';
+            }
+        }
+
+        async function setConstraint(area) {
+            showConstraint(area);
+            const note = document.getElementById('con-note');
+            note.textContent = 'Saving...';
+            note.className = 'constraint-note';
+            try {
+                const r = await ins('constraints_tracker', {
+                    week_of: getWeekOf(),
+                    constraint_area: area
+                });
+                if (r.ok) {
+                    note.textContent = area + ' saved as this week\'s constraint';
+                    note.style.color = 'var(--green)';
+                } else {
+                    const err = await r.json().catch(() => ({}));
+                    note.textContent = err.code === 'PGRST205' ? 'Run setup SQL in Supabase to enable saving.' : 'Not saved: ' + (err.message || 'Error');
+                    note.style.color = 'var(--gold)';
+                }
+            } catch {
+                note.textContent = 'Connection error';
+                note.style.color = 'var(--red)';
+            }
+        }
+
+        // --- Tasks ---
+        function renderTasks(tasks) {
+            const el = document.getElementById('task-list');
+            if (!tasks || !tasks.length) {
+                el.innerHTML = '<div class="empty">No tasks yet -- click "+ Add Task" to create one.</div>';
+                return;
+            }
+            el.innerHTML = tasks.map(t => {
+                const st = t.status || 'pending';
+                const pr = t.priority || 'medium';
+                return `<div class="task-row">
+                    <div class="task-bar tb-${pr}"></div>
+                    <span class="task-status ts-${st}" onclick="cycleTask('${t.id}','${st}')">${st.replace('_',' ')}</span>
+                    <div class="task-title">${esc(t.title)}</div>
+                    <div class="task-who">${t.assigned_to ? esc(t.assigned_to) : '\u2014'}</div>
+                    <div class="task-due">${t.due_date || '\u2014'}</div>
+                </div>`;
+            }).join('');
+        }
+
+        async function cycleTask(id, cur) {
+            const next = { pending: 'in_progress', in_progress: 'done', done: 'pending' }[cur] || 'pending';
+            const r = await upd('dashboard_tasks', id, { status: next });
+            if (r.ok) {
+                const tasks = await q('dashboard_tasks', 'select=*&order=priority.asc,due_date.asc');
+                renderTasks(tasks);
+            }
+        }
+
+        function openTask() {
+            document.getElementById('task-overlay').classList.add('open');
+            document.getElementById('t-due').value = new Date().toISOString().split('T')[0];
+        }
+
+        function closeTask() {
+            document.getElementById('task-overlay').classList.remove('open');
+            document.getElementById('t-msg').textContent = '';
+        }
+
+        async function notifyTaskAssigned(title, assignedTo, priority, dueDate) {
+            if (!DISCORD_TASK_WEBHOOK) return;
+            const priorityEmoji = {high:'\ud83d\udd34', medium:'\ud83d\udfe1', low:'\u26aa'}[priority] || '\u26aa';
+            const msg = `${priorityEmoji} **NEW TASK ASSIGNED**\n\n**${title}**\nAssigned to: **${assignedTo || 'Unassigned'}**\nPriority: ${priority.toUpperCase()}\nDue: ${dueDate || 'No date'}\n\n_Assigned from Command Center_`;
+            try {
+                await fetch(DISCORD_TASK_WEBHOOK, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: msg })
+                });
+            } catch(e) { console.error('Discord notify failed:', e); }
+        }
+
+        async function submitTask() {
+            const title = document.getElementById('t-title').value.trim();
+            const msg = document.getElementById('t-msg');
+            if (!title) {
+                msg.textContent = 'Please enter a title';
+                msg.className = 'form-msg msg-err';
+                return;
+            }
+            const r = await ins('dashboard_tasks', {
+                title,
+                assigned_to: document.getElementById('t-assigned').value || null,
+                priority: document.getElementById('t-priority').value,
+                due_date: document.getElementById('t-due').value || null,
+                category: document.getElementById('t-cat').value,
+                status: 'pending',
+            });
+            if (r.ok) {
+                notifyTaskAssigned(
+                    title,
+                    document.getElementById('t-assigned').value,
+                    document.getElementById('t-priority').value,
+                    document.getElementById('t-due').value
+                );
+                msg.textContent = 'Task added!';
+                msg.className = 'form-msg msg-ok';
+                document.getElementById('t-title').value = '';
+                setTimeout(() => {
+                    closeTask();
+                    load();
+                }, 1200);
+            } else {
+                const err = await r.json().catch(() => ({}));
+                msg.textContent = err.code === 'PGRST205' ? 'Run setup SQL to enable tasks.' : 'Error: ' + (err.message || 'Unknown');
+                msg.className = 'form-msg msg-err';
+            }
+        }
+
+        // --- Report modal ---
+        const ROLE_FIELDS = {
+            setter: [
+                { id:'webbi_leads_contacted',label:'Dials / Leads Contacted',type:'number' },
+                { id:'calls_booked', label:'Calls Booked (Sets)', type:'number' },
+                { id:'calls_showed', label:'Calls Showed', type:'number' },
+                { id:'webbi_reroutes', label:'Webbi Reroutes', type:'number' },
+                { id:'notes', label:'Notes', type:'text', span:true },
+            ],
+            closer: [
+                { id:'calls_taken', label:'Calls Taken', type:'number' },
+                { id:'calls_booked', label:'Follow-Up Booked', type:'number' },
+                { id:'no_shows', label:'No-Shows', type:'number' },
+                { id:'deals_closed', label:'Deals Closed', type:'number' },
+                { id:'revenue_collected', label:'Revenue Collected ($)', type:'number' },
+                { id:'notes', label:'Notes', type:'text', span:true },
+            ],
+            credit: [
+                { id:'new_clients', label:'New Clients', type:'number' },
+                { id:'sweeps_started', label:'Sweeps Started', type:'number' },
+                { id:'active_clients', label:'Active Clients', type:'number' },
+                { id:'funding_ready', label:'Funding Ready', type:'number' },
+                { id:'stalled_clients', label:'Stalled Clients', type:'number' },
+                { id:'notes', label:'Notes', type:'text', span:true },
+            ],
+            fulfillment: [
+                { id:'new_clients_onboarded', label:'New Clients Onboarded', type:'number' },
+                { id:'sweeps_started', label:'Sweeps Started', type:'number' },
+                { id:'active_credit_clients', label:'Active Credit Clients', type:'number' },
+                { id:'clients_with_weekly_action', label:'Clients w/ Weekly Action', type:'number' },
+                { id:'funding_ready_clients', label:'Funding-Ready Clients', type:'number' },
+                { id:'stalled_clients', label:'Stalled Clients (>30 Days)', type:'number' },
+                { id:'accurate_confirmations', label:'Accurate Confirmations', type:'number' },
+                { id:'total_confirmations', label:'Total Confirmations', type:'number' },
+                { id:'notes', label:'Notes', type:'text', span:true },
+            ],
+            ea: [
+                { id:'new_clients_onboarded', label:'New Clients Onboarded', type:'number' },
+                { id:'cash_recovered_hac', label:'Cash Recovered (HAC) $', type:'number' },
+                { id:'hac_past_due', label:"HAC's Past Due", type:'number' },
+                { id:'fu_30_60_90_conducted', label:'30/60/90 Day FU Conducted', type:'number' },
+                { id:'tasks_completed', label:'Tasks Completed', type:'number' },
+                { id:'emails_managed', label:'Emails Managed', type:'number' },
+                { id:'appointments_scheduled', label:'Appointments Scheduled', type:'number' },
+                { id:'follow_ups_sent', label:'Follow-Ups Sent', type:'number' },
+                { id:'notes', label:'Notes', type:'text', span:true },
+            ],
+        };
+
+        const ROLE_TABLE = {
+            setter:'setter_logs',
+            closer:'closer_logs',
+            credit:'credit_repair',
+            fulfillment:'fulfillment_logs',
+            ea:'ea_logs'
+        };
+
+        function getRoleType(role) {
+            const r = (role || '').toLowerCase();
+            if (r.includes('setter') || r.includes('book calls')) return 'setter';
+            if (r.includes('closer') || r.includes('sales advisor')) return 'closer';
+            if (r.includes('credit')) return 'credit';
+            if (r.includes('fulfil') || r.includes('fulfill') || r.includes('fullfi')) return 'fulfillment';
+            if (r.includes('ea') || r.includes('executive') || r.includes('assistant') || r.includes('ops')) return 'ea';
+            if (r.includes('ai') || r.includes('system')) return 'ai';
+            return null;
+        }
+
+        function openReport() {
+            document.getElementById('report-overlay').classList.add('open');
+        }
+
+        function closeReport() {
+            document.getElementById('report-overlay').classList.remove('open');
+            document.getElementById('r-name').value = '';
+            document.getElementById('r-role').value = '';
+            document.getElementById('r-fields').innerHTML = '';
+            document.getElementById('r-submit').disabled = true;
+            document.getElementById('r-msg').textContent = '';
+        }
+
+        function onNameChange() {
+            const name = document.getElementById('r-name').value;
+            const m = teamData.find(x => x.name === name);
+            const roleEl = document.getElementById('r-role');
+            if (!m) {
+                roleEl.value = '';
+                document.getElementById('r-fields').innerHTML = '';
+                document.getElementById('r-submit').disabled = true;
+                return;
+            }
+            roleEl.value = m.role;
+            const rt = getRoleType(m.role);
+            const fields = rt ? ROLE_FIELDS[rt] : null;
+            if (!fields) {
+                document.getElementById('r-fields').innerHTML = '<div style="color:var(--muted);font-size:.82rem;margin:.5rem 0">No form configured for this role yet.</div>';
+                document.getElementById('r-submit').disabled = true;
+                return;
+            }
+            document.getElementById('r-fields').innerHTML = '<div class="fg2" style="margin-top:.5rem">' + fields.map(f => `<div class="fg"${f.span ? ' style="grid-column:1/-1"' : ''}>
+                <label class="fl">${f.label}</label>
+                <input class="fc" id="rf-${f.id}" type="${f.type}" placeholder="${f.ph || (f.type === 'number' ? '0' : '')}">
+            </div>`).join('') + '</div>';
+            document.getElementById('r-submit').disabled = false;
+        }
+
+        async function submitReport() {
+            const name = document.getElementById('r-name').value;
+            const m = teamData.find(x => x.name === name);
+            if (!m) return;
+            const rt = getRoleType(m.role);
+            const fields = rt ? ROLE_FIELDS[rt] : null;
+            if (!fields) return;
+            const today = new Date().toISOString().split('T')[0];
+            const wof = getWeekOf();
+            const data = { team_member: name };
+            if (rt === 'closer' || rt === 'credit') data.week_of = wof;
+            else data.date = today;
+            for (const f of fields) {
+                const el = document.getElementById('rf-' + f.id);
+                if (!el) continue;
+                data[f.id] = f.type === 'number' ? (el.value === '' ? 0 : Number(el.value)) : (el.value || null);
+            }
+            if (rt === 'closer') {
+                const c = n(data.calls_taken), d = n(data.deals_closed);
+                data.close_rate_pct = c > 0 ? Math.round(d / c * 100) : 0;
+            }
+            const btn = document.getElementById('r-submit');
+            const msg = document.getElementById('r-msg');
+            btn.disabled = true;
+            btn.textContent = 'Submitting...';
+            const r = await ins(ROLE_TABLE[rt], data);
+            if (r.ok) {
+                msg.textContent = 'Report submitted!';
+                msg.className = 'form-msg msg-ok';
+                setTimeout(() => {
+                    closeReport();
+                    load();
+                }, 1400);
+            } else {
+                const err = await r.json().catch(() => ({}));
+                msg.textContent = err.code === 'PGRST205' ? 'Table "' + ROLE_TABLE[rt] + '" not created yet. Run setup SQL.' : 'Error: ' + (err.message || JSON.stringify(err));
+                msg.className = 'form-msg msg-err';
+                btn.disabled = false;
+                btn.textContent = 'Submit Report';
+            }
+        }
+
+        // --- Populate dropdowns ---
+        function populateDropdowns(team) {
+            const opts = team.map(m => `<option value="${esc(m.name)}">${esc(m.name)} (${esc(m.role)})</option>`).join('');
+            document.getElementById('r-name').innerHTML = '<option value="">Select your name...</option>' + opts;
+            const taskOpts = team.map(m => `<option value="${esc(m.name)}">${esc(m.name)}</option>`).join('');
+            document.getElementById('t-assigned').innerHTML = '<option value="">Unassigned</option>' + taskOpts;
+        }
+
+        // --- Add Member Modal ---
+        function openAddMember() {
+            document.getElementById('addmember-overlay').classList.add('open');
+            document.getElementById('am-first').value = '';
+            document.getElementById('am-last').value = '';
+            document.getElementById('am-role').value = '';
+            document.getElementById('am-phone').value = '';
+            document.getElementById('am-msg').textContent = '';
+        }
+
+        function closeAddMember() {
+            document.getElementById('addmember-overlay').classList.remove('open');
+        }
+
+        // --- GHL Sync ---
+        const GHL_API = 'https://services.leadconnectorhq.com';
+        const GHL_KEY = 'pit-d0414741-8d24-43a5-977b-8e6cf2ec43b2';
+        const GHL_LOC = 'I4UCxgBVksYMkvTqUnmy';
+
+        async function syncToGHL(name, phone, role) {
+            try {
+                const [firstName, ...rest] = name.split(' ');
+                const lastName = rest.join(' ');
+                const res = await fetch(GHL_API + '/contacts/', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + GHL_KEY,
+                        'Content-Type': 'application/json',
+                        'Version': '2021-07-28'
+                    },
+                    body: JSON.stringify({
+                        locationId: GHL_LOC,
+                        firstName,
+                        lastName,
+                        phone: phone || undefined,
+                        tags: ['team-member', 'role-' + role.toLowerCase().replace(/[^a-z]/g, '-')]
+                    })
+                });
+                const data = await res.json();
+                return data.contact?.id || null;
+            } catch(e) {
+                console.error('GHL sync failed:', e);
+                return null;
+            }
+        }
+
+        async function deleteFromGHL(contactId) {
+            try {
+                await fetch(GHL_API + '/contacts/' + contactId, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + GHL_KEY,
+                        'Version': '2021-07-28'
+                    }
+                });
+                return true;
+            } catch(e) {
+                console.error('GHL delete failed:', e);
+                return false;
+            }
+        }
+
+        async function submitAddMember() {
+            const first = document.getElementById('am-first').value.trim();
+            const last = document.getElementById('am-last').value.trim();
+            const role = document.getElementById('am-role').value;
+            const phone = document.getElementById('am-phone').value.trim();
+            const msg = document.getElementById('am-msg');
+
+            if (!first || !last) {
+                msg.textContent = 'First and last name are required';
+                msg.className = 'form-msg msg-err';
+                return;
+            }
+            if (!role) {
+                msg.textContent = 'Please select a role';
+                msg.className = 'form-msg msg-err';
+                return;
+            }
+
+            const fullName = first + ' ' + last;
+            const data = {
+                name: fullName,
+                first_name: first,
+                last_name: last,
+                role: role,
+                is_active: true
+            };
+            if (phone) data.phone = phone;
+
+            msg.textContent = 'Adding...';
+            msg.className = 'form-msg';
+            const r = await ins('team_members', data);
+            if (r.ok) {
+                const inserted = await r.json().catch(() => []);
+                const memberId = inserted[0]?.id;
+
+                // Sync to GHL
+                msg.textContent = 'Syncing to GHL...';
+                const ghlId = await syncToGHL(fullName, phone, role);
+                if (ghlId && memberId) {
+                    await upd('team_members', memberId, { ghl_contact_id: ghlId });
+                }
+
+                msg.innerHTML = fullName + ' added! ' + (ghlId
+                    ? '<span style="color:var(--green);font-size:.72rem">Synced to GHL &#10003;</span>'
+                    : '<span style="color:var(--gold);font-size:.72rem">GHL sync failed</span>');
+                msg.className = 'form-msg msg-ok';
+                setTimeout(() => {
+                    closeAddMember();
+                    load();
+                }, 1800);
+            } else {
+                const err = await r.json().catch(() => ({}));
+                msg.textContent = 'Error: ' + (err.message || 'Unknown');
+                msg.className = 'form-msg msg-err';
+            }
+        }
+
+        // --- Delete Member (PIN protected) ---
+        function promptDeleteMember(id, name) {
+            pendingDeleteId = id;
+            document.getElementById('pin-input').value = '';
+            document.getElementById('pin-msg').textContent = 'Deleting: ' + name;
+            document.getElementById('pin-msg').className = 'form-msg';
+            document.getElementById('pin-msg').style.color = 'var(--muted)';
+            document.getElementById('pin-overlay').classList.add('open');
+            setTimeout(() => document.getElementById('pin-input').focus(), 100);
+        }
+
+        function closePin() {
+            document.getElementById('pin-overlay').classList.remove('open');
+            pendingDeleteId = null;
+        }
+
+        async function confirmPin() {
+            const pin = document.getElementById('pin-input').value;
+            const msg = document.getElementById('pin-msg');
+            if (pin !== '0225') {
+                msg.textContent = 'Incorrect PIN';
+                msg.className = 'form-msg msg-err';
+                msg.style.color = '';
+                document.getElementById('pin-input').value = '';
+                return;
+            }
+            if (!pendingDeleteId) return;
+            msg.textContent = 'Deleting...';
+            msg.className = 'form-msg';
+            msg.style.color = 'var(--muted)';
+
+            // Fetch member to get GHL contact ID before deleting
+            const memberRows = await q('team_members', 'select=ghl_contact_id&id=eq.' + pendingDeleteId);
+            const ghlContactId = memberRows[0]?.ghl_contact_id;
+
+            // Delete from GHL first if synced
+            let ghlDeleted = false;
+            if (ghlContactId) {
+                msg.textContent = 'Removing from GHL...';
+                ghlDeleted = await deleteFromGHL(ghlContactId);
+            }
+
+            const r = await del('team_members', pendingDeleteId);
+            if (r.ok) {
+                msg.innerHTML = 'Member deleted' + (ghlContactId
+                    ? (ghlDeleted
+                        ? ' <span style="color:var(--green);font-size:.72rem">Removed from GHL &#10003;</span>'
+                        : ' <span style="color:var(--gold);font-size:.72rem">GHL removal failed</span>')
+                    : '');
+                msg.className = 'form-msg msg-ok';
+                msg.style.color = '';
+                setTimeout(() => {
+                    closePin();
+                    load();
+                }, 1000);
+            } else {
+                msg.textContent = 'Error deleting member';
+                msg.className = 'form-msg msg-err';
+                msg.style.color = '';
+            }
+        }
+
+        // Handle Enter key on PIN input
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('pin-input').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') confirmPin();
+            });
+        });
+
+        // --- Drill-Down Modal ---
+        function toggleDialerTable() {
+            const tbody = document.getElementById('dialer-tbody');
+            const btn = document.getElementById('dialer-expand-btn');
+            if (!tbody || !btn) return;
+            window._dialerExpanded = !window._dialerExpanded;
+            if (window._dialerExpanded) {
+                tbody.innerHTML = window._dialerAllRows;
+                btn && (btn.textContent = '\u25b2 Show less');
+                // Re-add collapse row at end
+                tbody.innerHTML += '<tr><td colspan="7" style="padding:8px;text-align:center"><button onclick="toggleDialerTable()" style="background:rgba(255,255,255,.06);border:1px solid var(--card-border);border-radius:8px;padding:5px 18px;color:var(--muted);font-size:.78rem;cursor:pointer">\u25b2 Show less</button></td></tr>';
+            } else {
+                tbody.innerHTML = window._dialerPreviewRows;
+            }
+        }
+
+        function toggleDialerExpand(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const isOpen = el.style.display !== 'none';
+            el.style.display = isOpen ? 'none' : 'block';
+            const btn = el.previousElementSibling ? el.previousElementSibling.querySelector('button[onclick*="toggleDialerExpand"]') : null;
+            if (btn) btn.textContent = isOpen ? '\u25bc Details' : '\u25b2 Hide';
+        }
+
+        function closeDrill() {
+            document.getElementById('drill-overlay').classList.remove('open');
+        }
+
+        function groupBy(arr, field, sumField) {
+            const map = {};
+            for (const row of arr) {
+                const key = row[field] || 'Unknown';
+                if (!map[key]) map[key] = 0;
+                map[key] += n(row[sumField]);
+            }
+            return Object.entries(map).sort((a,b) => b[1] - a[1]);
+        }
+
+        function groupByMulti(arr, field, sumFields) {
+            const map = {};
+            for (const row of arr) {
+                const key = row[field] || 'Unknown';
+                if (!map[key]) { map[key] = {}; for (const f of sumFields) map[key][f] = 0; }
+                for (const f of sumFields) map[key][f] += n(row[f]);
+            }
+            return Object.entries(map).sort((a,b) => {
+                const aTotal = Object.values(a[1]).reduce((s,v)=>s+v,0);
+                const bTotal = Object.values(b[1]).reduce((s,v)=>s+v,0);
+                return bTotal - aTotal;
+            });
+        }
+
+        function renderDrillRows(entries, isCash) {
+            if (!entries.length) return '<div class="drill-empty">No data for this period yet.</div>';
+            return '<div class="drill-list">' + entries.map(([name, val]) => `
+                <div class="drill-row">
+                    <div class="drill-name"><div class="drill-avatar">${ini(name)}</div>${esc(name)}</div>
+                    <div class="drill-val${isCash ? ' cash' : ''}">${isCash ? fmt(val) : val}</div>
+                </div>
+            `).join('') + '</div>';
+        }
+
+        function renderDrillMulti(entries, labels) {
+            if (!entries.length) return '<div class="drill-empty">No data for this period yet.</div>';
+            return '<div class="drill-list">' + entries.map(([name, vals]) => `
+                <div class="drill-row" style="flex-wrap:wrap;gap:.4rem">
+                    <div class="drill-name" style="flex-basis:100%"><div class="drill-avatar">${ini(name)}</div>${esc(name)}</div>
+                    <div style="display:flex;gap:1.2rem;padding-left:2.6rem;flex-wrap:wrap">
+                        ${Object.entries(vals).map(([k,v]) => `<span style="font-size:.78rem"><strong style="color:var(--muted)">${labels[k] || k}:</strong> <span style="color:var(--white);font-weight:700">${k.includes('revenue') || k.includes('collected') ? fmt(v) : k.includes('pct') ? v + '%' : v}</span></span>`).join('')}
+                    </div>
+                </div>
+            `).join('') + '</div>';
+        }
+
+        function drillDown(metric) {
+            const overlay = document.getElementById('drill-overlay');
+            const title = document.getElementById('drill-title');
+            const content = document.getElementById('drill-content');
+            overlay.classList.add('open');
+
+            if (metric === 'leads') {
+                title.textContent = 'Leads Breakdown';
+                if (!_qualLeads.length) { content.innerHTML = '<div class="drill-empty">No leads this period.</div>'; return; }
+                content.innerHTML = '<div class="drill-list">' + _qualLeads.map(l => `
+                    <div class="drill-row">
+                        <div class="drill-name" style="font-weight:400;font-size:.8rem">Lead #${l.id || '—'}</div>
+                        <div style="font-size:.78rem;color:var(--muted)">${l.created_at ? new Date(l.created_at).toLocaleDateString() : ''}</div>
+                    </div>
+                `).join('') + '</div>';
+            } else if (metric === 'sets') {
+                title.textContent = 'Sets — By Team Member';
+                content.innerHTML = renderDrillRows(groupBy(_setterLogs, 'team_member', 'calls_booked'), false);
+            } else if (metric === 'shows') {
+                title.textContent = 'Shows — By Team Member';
+                content.innerHTML = renderDrillRows(groupBy(_setterLogs, 'team_member', 'calls_showed'), false);
+            } else if (metric === 'closes') {
+                title.textContent = 'Closes — By Team Member';
+                // Use closed_deals as source of truth, group by closer
+                const closeMap = {};
+                for (const d of _closedDeals) {
+                    const who = d.closer || 'Unknown';
+                    closeMap[who] = (closeMap[who] || 0) + 1;
+                }
+                const closeEntries = Object.entries(closeMap).sort((a,b) => b[1] - a[1]);
+                content.innerHTML = closeEntries.length ? renderDrillRows(closeEntries, false) :
+                    renderDrillRows(groupBy(_closerLogs, 'team_member', 'deals_closed'), false);
+            } else if (metric === 'cash') {
+                title.textContent = 'Cash Collected — By Team Member';
+                // Merge cash from closed_deals (by closer) and closer_logs (by team_member)
+                const cashMap = {};
+                for (const d of _closedDeals) {
+                    const who = d.closer || 'Unknown';
+                    cashMap[who] = (cashMap[who] || 0) + n(d.cash_collected || d.amount);
+                }
+                for (const r of _closerLogs) {
+                    const who = r.team_member || 'Unknown';
+                    if (!cashMap[who]) cashMap[who] = 0;
+                    // Only add closer_logs revenue if it's NOT already counted in closed_deals
+                    // (to avoid double-counting)
+                }
+                const cashEntries = Object.entries(cashMap).sort((a,b) => b[1] - a[1]);
+                content.innerHTML = renderDrillRows(cashEntries, true);
+            } else if (metric === 'setters') {
+                title.textContent = 'Setters — Individual Breakdown';
+                const labels = { webbi_leads_contacted:'Dials', calls_booked:'Sets', calls_showed:'Shows', webbi_reroutes:'Reroutes' };
+                content.innerHTML = renderDrillMulti(
+                    groupByMulti(_setterLogs, 'team_member', ['webbi_leads_contacted','calls_booked','calls_showed','webbi_reroutes']),
+                    labels
+                );
+            } else if (metric === 'closers') {
+                title.textContent = 'Closers — Individual Breakdown';
+                const labels = { calls_taken:'Calls', no_shows:'No-Shows', deals_closed:'Closes', revenue_collected:'Cash' };
+                content.innerHTML = renderDrillMulti(
+                    groupByMulti(_closerLogs, 'team_member', ['calls_taken','no_shows','deals_closed','revenue_collected']),
+                    labels
+                );
+            } else if (metric === 'credit') {
+                title.textContent = 'Credit \u2014 Weekly Breakdown';
+                if (!_creditLogs.length) { content.textContent = 'No credit data this period.'; return; }
+                content.textContent = '';
+                _creditLogs.forEach(r => {
+                    const d = r.week_of ? new Date(r.week_of).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '\u2014';
+                    const row = document.createElement('div');
+                    row.className = 'drill-row';
+                    row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06)';
+                    const left = document.createElement('span');
+                    left.style.fontWeight = '600';
+                    left.textContent = 'Week of ' + d;
+                    const right = document.createElement('span');
+                    right.style.cssText = 'font-size:.82rem;color:rgba(255,255,255,0.7)';
+                    right.textContent = 'Sweeps: '+n(r.sweeps_started)+' | Active: '+n(r.active_clients)+' | Funding: '+n(r.funding_ready)+' | Stalled: '+n(r.stalled_clients);
+                    row.appendChild(left);
+                    row.appendChild(right);
+                    content.appendChild(row);
+                });
+            } else if (metric === 'ea_ops') {
+                title.textContent = 'EA / OPS \u2014 Michelle Ingram';
+                if (!_eaLogs.length) { content.textContent = 'No EA data this period.'; return; }
+                content.textContent = '';
+                _eaLogs.forEach(r => {
+                    const d = r.date ? new Date(r.date).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '\u2014';
+                    const row = document.createElement('div');
+                    row.className = 'drill-row';
+                    row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06)';
+                    const left = document.createElement('span');
+                    left.style.fontWeight = '600';
+                    left.textContent = d;
+                    const right = document.createElement('span');
+                    right.style.cssText = 'font-size:.82rem;color:rgba(255,255,255,0.7)';
+                    right.textContent = 'Onboarded: '+n(r.new_clients_onboarded)+' | Cash HAC: $'+n(r.cash_recovered_hac)+' | Past Due: '+n(r.hac_past_due)+' | FU Done: '+n(r.fu_30_60_90_conducted);
+                    row.appendChild(left);
+                    row.appendChild(right);
+                    content.appendChild(row);
+                });
+            } else if (metric === 'dialer_lead_magnet' || metric === 'dialer_post_registration' || metric === 'dialer_post_webinar' || metric === 'dialer_overall') {
+                const typeMap = { dialer_lead_magnet: 'lead_magnet', dialer_post_registration: 'post_registration', dialer_post_webinar: 'post_webinar', dialer_overall: null };
+                const titleMap = { dialer_lead_magnet: 'Lead Magnet Calls', dialer_post_registration: 'Post-Registration Calls', dialer_post_webinar: 'Post-Webinar Calls', dialer_overall: 'All AI Dialer Calls' };
+                title.textContent = titleMap[metric];
+                const filterType = typeMap[metric];
+                const calls = filterType ? _dialerCalls.filter(c => c.call_type === filterType) : _dialerCalls;
+                if (!calls.length) { content.innerHTML = '<div class="drill-empty">No calls for this period.</div>'; return; }
+                const dials = calls.length;
+                const answered = calls.filter(c => c.call_status && c.call_status !== 'no_answer' && c.call_status !== 'voicemail').length;
+                const noAnswer = calls.filter(c => c.call_status === 'no_answer').length;
+                const voicemail = calls.filter(c => c.call_status === 'voicemail').length;
+                const isLeadMagnet = metric === 'dialer_lead_magnet';
+                const booked = calls.filter(c => c.booked).length;
+                const registered = calls.filter(c => c.registered).length;
+                const conversionCount = isLeadMagnet ? registered : booked;
+                const conversionLabel = isLeadMagnet ? 'Registered' : 'Booked';
+                const connectPct = dials > 0 ? Math.round(answered / dials * 100) : 0;
+                const bookPct = dials > 0 ? Math.round(conversionCount / dials * 100) : 0;
+                const scMap = { completed: 'var(--green)', no_answer: 'var(--muted)', voicemail: 'var(--gold)', short_call: '#aaa' };
+                const tlMap = { lead_magnet: 'Lead Magnet', post_registration: 'Post-Reg', post_webinar: 'Post-Webinar', unknown: '?' };
+                function dialerCardStat(label, val, sub, color) {
+                    return '<div style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:10px;padding:.85rem;text-align:center">' +
+                        '<div style="font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">' + label + '</div>' +
+                        '<div style="font-size:1.6rem;font-weight:700;' + (color ? 'color:' + color + ';' : '') + 'margin:.25rem 0">' + val + '</div>' +
+                        (sub ? '<div style="font-size:.72rem;color:var(--muted)">' + sub + '</div>' : '') +
+                        '</div>';
+                }
+                function dialerCallRow(c) {
+                    const ts = c.created_at ? new Date(c.created_at).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) : '\u2014';
+                    const dur = c.call_duration_seconds ? c.call_duration_seconds + 's' : '\u2014';
+                    const sc = scMap[c.call_status] || 'var(--muted)';
+                    const typeBadge = filterType ? '' : '<span style="font-size:.7rem;color:var(--gold);background:rgba(249,207,37,.1);padding:2px 8px;border-radius:12px">' + (tlMap[c.call_type] || '?') + '</span>';
+                    const bookedBadge = c.booked ? '<span style="font-size:.75rem;color:var(--green);font-weight:700">\u2713 Booked</span>' : '';
+                    const statusBadge = '<span style="font-size:.75rem;color:' + sc + ';background:rgba(255,255,255,.05);padding:2px 8px;border-radius:12px">' + (c.call_status || '\u2014') + '</span>';
+                    const rowId = 'dcr-' + (c.id || Math.random().toString(36).slice(2));
+                    const hasRecording = !!c.recording_url;
+                    const hasTranscript = !!(c.transcript && c.transcript.length > 0);
+                    const expandBtn = (hasRecording || hasTranscript) ?
+                        '<button onclick="toggleDialerExpand(\'' + rowId + '\')" style="font-size:.7rem;color:var(--muted);background:rgba(255,255,255,.06);border:1px solid var(--card-border);border-radius:8px;padding:2px 10px;cursor:pointer">\u25bc Details</button>' : '';
+                    const audioHtml = hasRecording ?
+                        '<div style="margin-bottom:.5rem"><div style="font-size:.7rem;color:var(--muted);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.04em">Recording</div><audio controls style="width:100%;height:32px;filter:invert(0.85) sepia(0.2)" src="' + c.recording_url + '"></audio></div>' : '';
+                    const transcriptHtml = hasTranscript ?
+                        '<div><div style="font-size:.7rem;color:var(--muted);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.04em">Transcript</div><div style="font-size:.78rem;line-height:1.5;color:rgba(255,255,255,.75);max-height:180px;overflow-y:auto;background:rgba(255,255,255,.03);border-radius:6px;padding:.5rem .7rem;white-space:pre-wrap">' + (c.transcript || '') + '</div></div>' : '';
+                    const expandContent = (hasRecording || hasTranscript) ?
+                        '<div id="' + rowId + '" style="display:none;padding:.6rem .8rem;border-top:1px solid var(--card-border)">' + audioHtml + transcriptHtml + '</div>' : '';
+                    return '<div style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:8px;overflow:hidden">' +
+                        '<div style="padding:.6rem .8rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap">' +
+                        '<div><div style="font-weight:600;font-size:.85rem">' + (c.contact_name || c.phone || '\u2014') + '</div>' +
+                        '<div style="font-size:.72rem;color:var(--muted)">' + ts + ' &middot; ' + dur + '</div></div>' +
+                        '<div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">' + typeBadge + statusBadge + bookedBadge + expandBtn + '</div>' +
+                        '</div>' + expandContent + '</div>';
+                }
+                    dialerCardStat('Total Dials', dials, '', '') +
+                    dialerCardStat('Answered', answered, connectPct + '% connect rate', 'var(--green)') +
+                    dialerCardStat(conversionLabel, conversionCount, bookPct + '% rate', 'var(--red)') +
+                    dialerCardStat('No Answer', noAnswer + voicemail, noAnswer + ' missed &middot; ' + voicemail + ' vm', '') +
+                    '</div>' +
+                    '<div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.5rem">Call Log</div>' +
+                    '<div style="display:flex;flex-direction:column;gap:.4rem">' +
+                    calls.slice(0, 40).map(dialerCallRow).join('') +
+                    '</div>';
+            }
+        }
+
+        // --- Member Detail Modal ---
+        function closeMemberDetail() {
+            document.getElementById('member-overlay').classList.remove('open');
+        }
+
+        function formatDateNice(dateStr) {
+            if (!dateStr || dateStr === 'N/A') return 'N/A';
+            const d = new Date(dateStr + 'T12:00:00');
+            return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function buildMiniTrendChart(logs, orderCol, metricField, label) {
+            const recent = [...logs].sort((a, b) => (a[orderCol] || '').localeCompare(b[orderCol] || '')).slice(-7);
+            if (recent.length < 2) return '';
+            const vals = recent.map(r => n(r[metricField]));
+            const max = Math.max(...vals, 1);
+            const isCash = metricField.includes('revenue') || metricField.includes('collected');
+            return `
+                <div style="margin-bottom:1.5rem">
+                    <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.5rem">Trend: ${label} (last ${recent.length} entries)</div>
+                    <div style="display:flex;align-items:flex-end;gap:3px;height:80px;padding:0 2px">
+                        ${recent.map((r, i) => {
+                            const h = Math.max(4, Math.round(vals[i] / max * 70));
+                            const dateLabel = (r[orderCol] || '').slice(5);
+                            return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">
+                                <span style="font-size:.6rem;color:rgba(255,255,255,.6)">${isCash ? fmt(vals[i]) : vals[i]}</span>
+                                <div style="width:100%;height:${h}px;background:linear-gradient(to top,var(--red),var(--red-dark));border-radius:3px 3px 0 0;min-width:16px"></div>
+                                <span style="font-size:.55rem;color:var(--muted)">${dateLabel}</span>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                </div>`;
+        }
+
+        async function openMemberDetail(name, role, phone) {
+            const overlay = document.getElementById('member-overlay');
+            const content = document.getElementById('member-detail-content');
+            overlay.classList.add('open');
+            content.innerHTML = '<div class="spinning">Loading reports...</div>';
+
+            const rt = getRoleType(role);
+            const table = rt ? ROLE_TABLE[rt] : null;
+            const fields = rt ? ROLE_FIELDS[rt] : null;
+
+            // Build header
+            let html = `<div class="member-detail-header">
+                <div class="avatar" style="width:56px;height:56px;font-size:1.1rem">${ini(name)}</div>
+                <div class="member-detail-info">
+                    <div class="md-name">${esc(name)}</div>
+                    <div class="md-role">${esc(role)}</div>
+                    ${phone ? '<div class="md-phone">' + esc(phone) + '</div>' : ''}
+                </div>
+            </div>`;
+
+            if (!table || !fields) {
+                html += '<div class="empty">No report form configured for this role yet.</div>';
+                content.innerHTML = html;
+                return;
+            }
+
+            // Fetch reports for this member
+            let orderCol = (rt === 'closer' || rt === 'credit') ? 'week_of' : 'date';
+            const logs = await q(table, `select=*&team_member=eq.${encodeURIComponent(name)}&order=${orderCol}.desc&limit=50`);
+
+            if (!logs.length) {
+                html += '<div class="empty">No reports submitted yet for ' + esc(name.split(' ')[0]) + '.</div>';
+                content.innerHTML = html;
+                return;
+            }
+
+            // Role-specific summary stats for the period
+            const numDays = Math.max(1, logs.length);
+            html += '<div class="kpi-summary">';
+
+            if (rt === 'closer') {
+                const totalCalls = logs.reduce((a, r) => a + n(r.calls_taken), 0);
+                const totalCloses = logs.reduce((a, r) => a + n(r.deals_closed), 0);
+                const totalCash = logs.reduce((a, r) => a + n(r.revenue_collected), 0);
+                const closeRate = totalCalls > 0 ? Math.round(totalCloses / totalCalls * 100) : 0;
+                const avgDeal = totalCloses > 0 ? Math.round(totalCash / totalCloses) : 0;
+                const callsPerDay = (totalCalls / numDays).toFixed(1);
+                html += `
+                    <div class="kpi-item"><div class="kpi-val">${closeRate}%</div><div class="kpi-lbl">Close Rate</div></div>
+                    <div class="kpi-item"><div class="kpi-val">${fmt(avgDeal)}</div><div class="kpi-lbl">Avg Deal Size</div></div>
+                    <div class="kpi-item"><div class="kpi-val" style="color:var(--green)">${fmt(totalCash)}</div><div class="kpi-lbl">Total Cash</div></div>
+                    <div class="kpi-item"><div class="kpi-val">${callsPerDay}</div><div class="kpi-lbl">Calls/Day</div></div>
+                    <div class="kpi-item"><div class="kpi-val">${totalCloses}</div><div class="kpi-lbl">Deals Closed</div></div>
+                    <div class="kpi-item"><div class="kpi-val">${totalCalls}</div><div class="kpi-lbl">Total Calls</div></div>`;
+            } else if (rt === 'setter') {
+                const totalDials = logs.reduce((a, r) => a + n(r.webbi_leads_contacted), 0);
+                const totalSets = logs.reduce((a, r) => a + n(r.calls_booked), 0);
+                const totalShows = logs.reduce((a, r) => a + n(r.calls_showed), 0);
+                const bookRate = totalDials > 0 ? Math.round(totalSets / totalDials * 100) : 0;
+                const showRate = totalSets > 0 ? Math.round(totalShows / totalSets * 100) : 0;
+                const dialsPerDay = (totalDials / numDays).toFixed(1);
+                html += `
+                    <div class="kpi-item"><div class="kpi-val">${bookRate}%</div><div class="kpi-lbl">Book Rate</div></div>
+                    <div class="kpi-item"><div class="kpi-val">${showRate}%</div><div class="kpi-lbl">Show Rate</div></div>
+                    <div class="kpi-item"><div class="kpi-val">${dialsPerDay}</div><div class="kpi-lbl">Leads/Day</div></div>
+                    <div class="kpi-item"><div class="kpi-val">${totalSets}</div><div class="kpi-lbl">Total Sets</div></div>
+                    <div class="kpi-item"><div class="kpi-val">${totalShows}</div><div class="kpi-lbl">Total Shows</div></div>
+                    <div class="kpi-item"><div class="kpi-val">${totalDials}</div><div class="kpi-lbl">Total Dials</div></div>`;
+            } else if (rt === 'fulfillment') {
+                const totalOnboarded = logs.reduce((a, r) => a + n(r.new_clients_onboarded), 0);
+                const totalSweeps = logs.reduce((a, r) => a + n(r.sweeps_started), 0);
+                const activeNow = logs.length > 0 ? n(logs[0].active_credit_clients) : 0;
+                const weeklyAction = logs.length > 0 ? n(logs[0].clients_with_weekly_action) : 0;
+                const fundingReady = logs.length > 0 ? n(logs[0].funding_ready_clients) : 0;
+                const stalled = logs.length > 0 ? n(logs[0].stalled_clients) : 0;
+                const accurateConf = logs.reduce((a, r) => a + n(r.accurate_confirmations), 0);
+                const totalConf = logs.reduce((a, r) => a + n(r.total_confirmations), 0);
+                // Calculated KPIs
+                const sweepSLA = totalOnboarded > 0 ? Math.round(totalSweeps / totalOnboarded * 100) : 0;
+                const activityRate = activeNow > 0 ? Math.round(weeklyAction / activeNow * 100) : 0;
+                const fundingRate = activeNow > 0 ? Math.round(fundingReady / activeNow * 100) : 0;
+                const stallRate = activeNow > 0 ? Math.round(stalled / activeNow * 100) : 0;
+                const accuracyRate = totalConf > 0 ? Math.round(accurateConf / totalConf * 100) : 0;
+                const sweepColor = sweepSLA >= 95 ? 'var(--green)' : sweepSLA >= 80 ? 'var(--yellow,orange)' : 'var(--red,#ff4444)';
+                const actColor = activityRate >= 85 ? 'var(--green)' : activityRate >= 70 ? 'var(--yellow,orange)' : 'var(--red,#ff4444)';
+                const fundColor = fundingRate >= 30 ? 'var(--green)' : fundingRate >= 20 ? 'var(--yellow,orange)' : 'var(--red,#ff4444)';
+                const stallColor = stallRate <= 10 ? 'var(--green)' : stallRate <= 20 ? 'var(--yellow,orange)' : 'var(--red,#ff4444)';
+                const accColor = accuracyRate >= 95 ? 'var(--green)' : accuracyRate >= 85 ? 'var(--yellow,orange)' : 'var(--red,#ff4444)';
+                html += `
+                    <div class="kpi-item"><div class="kpi-val" style="color:${sweepColor}">${sweepSLA}%</div><div class="kpi-lbl">Sweep Start SLA</div></div>
+                    <div class="kpi-item"><div class="kpi-val" style="color:${actColor}">${activityRate}%</div><div class="kpi-lbl">Weekly Activity</div></div>
+                    <div class="kpi-item"><div class="kpi-val" style="color:${fundColor}">${fundingRate}%</div><div class="kpi-lbl">Funding Ready</div></div>
+                    <div class="kpi-item"><div class="kpi-val" style="color:${stallColor}">${stallRate}%</div><div class="kpi-lbl">Stall Rate</div></div>
+                    <div class="kpi-item"><div class="kpi-val" style="color:${accColor}">${accuracyRate}%</div><div class="kpi-lbl">Status Accuracy</div></div>
+                    <div class="kpi-item"><div class="kpi-val">${activeNow}</div><div class="kpi-lbl">Active Clients</div></div>`;
+            } else if (rt === 'ea') {
+                const totalTasks = logs.reduce((a, r) => a + n(r.tasks_completed), 0);
+                const totalEmails = logs.reduce((a, r) => a + n(r.emails_managed), 0);
+                const totalNewClients = logs.reduce((a, r) => a + n(r.new_clients_onboarded), 0);
+                const totalCashHAC = logs.reduce((a, r) => a + n(r.cash_recovered_hac), 0);
+                const totalHACPastDue = logs.reduce((a, r) => a + n(r.hac_past_due), 0);
+                const totalFU = logs.reduce((a, r) => a + n(r.fu_30_60_90_conducted), 0);
+                const totalAppts = logs.reduce((a, r) => a + n(r.appointments_scheduled), 0);
+                const totalFollowUps = logs.reduce((a, r) => a + n(r.follow_ups_sent), 0);
+                const tasksPerDay = (totalTasks / numDays).toFixed(1);
+                html += `
+                    <div class="kpi-item"><div class="kpi-val">${totalTasks}</div><div class="kpi-lbl">Tasks Done</div></div>
+                    <div class="kpi-item"><div class="kpi-val">${totalEmails}</div><div class="kpi-lbl">Emails</div></div>
+                    <div class="kpi-item"><div class="kpi-val">${totalAppts}</div><div class="kpi-lbl">Appts Scheduled</div></div>
+                    <div class="kpi-item"><div class="kpi-val">${totalFollowUps}</div><div class="kpi-lbl">Follow-Ups</div></div>
+                    <div class="kpi-item"><div class="kpi-val">${tasksPerDay}</div><div class="kpi-lbl">Tasks/Day</div></div>`;
+            } else {
+                // credit or other — show raw totals
+                const numericFields = fields.filter(f => f.type === 'number');
+                for (const f of numericFields) {
+                    const val = logs.reduce((a, row) => a + n(row[f.id]), 0);
+                    const displayVal = f.id.includes('revenue') || f.id.includes('collected') ? fmt(val) :
+                                       f.id.includes('pct') || f.id.includes('accuracy') ? (logs.length > 0 ? Math.round(val / logs.length) : 0) + '%' :
+                                       val;
+                    html += `<div class="kpi-item"><div class="kpi-val">${displayVal}</div><div class="kpi-lbl">${f.label}</div></div>`;
+                }
+            }
+            html += '</div>';
+
+            // Mini trend chart — primary metric by role
+            const trendMetric = rt === 'closer' ? 'revenue_collected' :
+                                rt === 'setter' ? 'calls_booked' :
+                                rt === 'credit' ? 'active_clients' :
+                                rt === 'fulfillment' ? 'funding_ready_clients' :
+                                rt === 'ea' ? 'tasks_completed' : null;
+            const trendLabel = rt === 'closer' ? 'Revenue' :
+                               rt === 'setter' ? 'Sets' :
+                               rt === 'credit' ? 'Active Clients' :
+                               rt === 'fulfillment' ? 'Funding Ready' :
+                               rt === 'ea' ? 'Tasks' : '';
+            if (trendMetric) {
+                html += buildMiniTrendChart(logs, orderCol, trendMetric, trendLabel);
+            }
+
+            // Individual reports list
+            html += `<div class="report-list-title">Individual Reports (${logs.length})</div>`;
+            for (const log of logs) {
+                const dateVal = log[orderCol] || 'N/A';
+                const dateFormatted = formatDateNice(dateVal);
+                html += `<div class="report-entry">
+                    <div class="report-entry-date">${dateFormatted}</div>
+                    <div class="report-entry-stats">`;
+                for (const f of fields) {
+                    if (f.type === 'text') {
+                        if (log[f.id]) {
+                            html += `<span style="flex-basis:100%"><strong>${f.label}:</strong> ${esc(log[f.id])}</span>`;
+                        }
+                    } else {
+                        const v = log[f.id];
+                        const displayV = f.id.includes('revenue') || f.id.includes('collected') ? fmt(v) :
+                                         f.id.includes('pct') || f.id.includes('accuracy') ? n(v) + '%' :
+                                         n(v);
+                        html += `<span><strong>${f.label}:</strong> ${displayV}</span>`;
+                    }
+                }
+                html += '</div></div>';
+            }
+
+            content.innerHTML = html;
+        }
+
+        // --- Close overlays on bg click ---
+        ['report-overlay','task-overlay','addmember-overlay','member-overlay','drill-overlay','pin-overlay'].forEach(id => {
+            document.getElementById(id).addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('open');
+                    if (id === 'pin-overlay') pendingDeleteId = null;
+                }
+            });
+        });
+
+        // --- Init ---
+        load();
+        setInterval(load, 300000);
+    </script>
+</body>
+</html>
