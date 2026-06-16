@@ -9,6 +9,12 @@ import { fromView, TeamMember } from "@/lib/supabase";
 export const revalidate = 60;
 export const dynamic = "force-dynamic";
 
+const fallbackTeam: TeamMember[] = [
+  { id: "fallback-xavier-marrero", name: "Xavier Marrero", role: "Credit Repair" },
+  { id: "fallback-xavier-ortiz", name: "Xavier Ortiz", role: "Funding" },
+  { id: "fallback-michelle-ingram", name: "Michelle Ingram", role: "Executive Assistant" },
+];
+
 function Skeleton({ height = "h-64" }: { height?: string }) {
   return <div className={`animate-pulse rounded-lg border border-white/10 bg-white/5 ${height}`} />;
 }
@@ -24,6 +30,7 @@ export default async function ReportsPage({
     query: { order: "name.asc" },
     revalidate: 0,
   });
+  const reportTeam = team.length ? team : fallbackTeam;
 
   return (
     <CommandShell
@@ -36,12 +43,12 @@ export default async function ReportsPage({
         <DateRangeControls range={range} basePath="/reports" compact />
 
         <PageSection label="Team reports" title="Add or update numbers">
-          <ReportForm team={team} />
+          <ReportForm team={reportTeam} />
         </PageSection>
 
         <PageSection label="Overview" title="Submitted reports">
           <Suspense fallback={<Skeleton height="h-96" />}>
-            <ReportSubmissionsOverview range={range} team={team} />
+            <ReportSubmissionsOverview range={range} team={reportTeam} />
           </Suspense>
         </PageSection>
       </div>
