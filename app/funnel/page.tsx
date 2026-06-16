@@ -37,7 +37,7 @@ export default async function FunnelPage({
 
       <PageSection label="Daily numbers" title="Ads, leads, calls, and sales">
         <Suspense fallback={<Skeleton />}>
-          <KpiTrend />
+          <KpiTrend range={range} />
         </Suspense>
       </PageSection>
     </CommandShell>

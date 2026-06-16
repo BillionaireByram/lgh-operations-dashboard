@@ -75,7 +75,7 @@ export default async function DashboardPage({
 
         <PageSection label="Trend" title="Last 14 days">
           <Suspense fallback={<Skeleton height="h-96" />}>
-            <KpiTrend />
+            <KpiTrend range={range} />
           </Suspense>
         </PageSection>
       </div>

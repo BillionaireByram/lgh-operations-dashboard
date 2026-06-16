@@ -17,18 +17,18 @@ function last14Range(): DateRange {
   return { period: "custom", start: isoDate(start), end: isoDate(end), label: "Last 14 days" };
 }
 
-export async function KpiTrend() {
-  const range = last14Range();
+export async function KpiTrend({ range }: { range?: DateRange }) {
+  const selectedRange = range || last14Range();
   const [rows, hybrid] = await Promise.all([
     fromView<KpiDay>("v_kpi_daily", {
-      query: { day: `gte.${range.start}`, and: `(day.lte.${range.end})`, order: "day.desc", limit: "14" },
+      query: { day: `gte.${selectedRange.start}`, and: `(day.lte.${selectedRange.end})`, order: "day.desc", limit: "100" },
     }),
-    getHybridMetrics(range),
+    getHybridMetrics(selectedRange),
   ]);
   const hybridByDay = new Map(hybrid.daily.map((row) => [row.day, row]));
 
   return (
-    <Card title="Last 14 Days" subtitle="Hybrid VSL opt-ins/VCC/booked from GHL; calls and legacy daily rows from the ledger">
+    <Card title={`${selectedRange.label} Daily Proof`} subtitle="Hybrid VSL opt-ins/VCC/booked from GHL; calls and legacy daily rows from the ledger">
       <div className="overflow-x-auto -mx-2">
         <table className="min-w-full text-sm">
           <thead>

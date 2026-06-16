@@ -121,8 +121,8 @@ export async function RevenueOpsOverview({ range }: { range: DateRange }) {
     fromView<RetellCall>("retell_call_log", {
       query: {
         select: "call_status,call_outcome,call_type,booked,registered,call_duration_seconds",
-        call_date: `gte.${range.start}`,
-        and: `(call_date.lte.${range.end})`,
+        created_at: `gte.${startIso}`,
+        and: `(created_at.lte.${endIso})`,
         limit: "1000",
       },
     }),

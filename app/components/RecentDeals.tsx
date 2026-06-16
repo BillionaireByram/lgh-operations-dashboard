@@ -1,5 +1,7 @@
 import { Card } from "./Card";
-import { getGhlRevenueMetrics, type GhlWonDeal } from "@/lib/hybrid-metrics";
+import { DateRange } from "@/lib/date-range";
+import { centralRangeQuery, getGhlRevenueMetrics, type GhlWonDeal } from "@/lib/hybrid-metrics";
+import { supabaseRestEnv } from "@/lib/supabase";
 
 const fmtMoney = (n: number | null) => (n == null ? "—" : `$${Number(n).toLocaleString(undefined, { maximumFractionDigits: 0 })}`);
 
@@ -43,16 +45,25 @@ function fromGhlDeal(deal: GhlWonDeal): Deal {
   };
 }
 
-export async function RecentDeals() {
+export async function RecentDeals({ range }: { range?: DateRange }) {
   // Direct query of closed_deals — most recent 10
-  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_KEY;
+  const { url, key } = supabaseRestEnv();
+  const rangeQuery = range ? centralRangeQuery(range) : null;
 
   let rows: Deal[] = [];
   if (url && key) {
     try {
+      const params = new URLSearchParams({
+        select: "id,amount,cash_collected,total_value,prospect_name,package,closer,closed_at,utm_source,contact_id",
+        order: "closed_at.desc.nullslast",
+        limit: "25",
+      });
+      if (rangeQuery) {
+        params.set("closed_at", `gte.${rangeQuery.startIso}`);
+        params.set("and", `(closed_at.lte.${rangeQuery.endIso})`);
+      }
       const res = await fetch(
-        `${url}/rest/v1/closed_deals?select=id,amount,cash_collected,total_value,prospect_name,package,closer,closed_at,utm_source,contact_id&order=closed_at.desc.nullslast&limit=10`,
+        `${url}/rest/v1/closed_deals?${params.toString()}`,
         {
           headers: { apikey: key, Authorization: `Bearer ${key}` },
           next: { revalidate: 60 },
@@ -66,7 +77,7 @@ export async function RecentDeals() {
 
   let source = "Last 10 deals";
   if (rows.length === 0) {
-    const ghlRevenue = await getGhlRevenueMetrics(undefined, 25);
+    const ghlRevenue = await getGhlRevenueMetrics(range, 25);
     if (ghlRevenue.available && ghlRevenue.deals.length) {
       rows = ghlRevenue.deals.slice(0, 10).map(fromGhlDeal);
       source = "Live GHL won opportunities";
@@ -78,7 +89,7 @@ export async function RecentDeals() {
   return (
     <Card
       title="Recent Deals"
-      subtitle={orphans > 0 ? `${orphans}/${rows.length} deals need source cleanup` : source}
+      subtitle={orphans > 0 ? `${orphans}/${rows.length} deals need source cleanup` : range ? `${source} for ${range.label.toLowerCase()}` : source}
     >
       <div className="overflow-x-auto -mx-2">
         <table className="min-w-full text-sm">

@@ -1,8 +1,20 @@
 // Server-only Supabase REST helper. Reads service-role key from env.
 // All queries hit PostgREST views (read-only). No client SDK to avoid bundling.
 
-const SUPABASE_URL = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_KEY;
+const LGH_SUPABASE_URL = "https://wrrfrhuocbftgqqfpaoz.supabase.co";
+
+function firstNonEmpty(...values: Array<string | undefined>) {
+  return values.map((value) => value?.trim()).find(Boolean) || "";
+}
+
+export function supabaseRestEnv() {
+  return {
+    url: firstNonEmpty(process.env.SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.LGH_SUPABASE_URL, LGH_SUPABASE_URL),
+    key: firstNonEmpty(process.env.SUPABASE_SERVICE_KEY, process.env.SUPABASE_KEY, process.env.LGH_SUPABASE_KEY),
+  };
+}
+
+const { url: SUPABASE_URL, key: SUPABASE_KEY } = supabaseRestEnv();
 
 if (!SUPABASE_URL || !SUPABASE_KEY) {
   console.warn("[supabase] missing SUPABASE_URL / SUPABASE_SERVICE_KEY — dashboard will render empty state");

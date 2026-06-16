@@ -44,7 +44,7 @@ export default async function IntelligencePage({
 
       <PageSection label="Trend" title="Daily proof">
         <Suspense fallback={<Skeleton height="h-96" />}>
-          <KpiTrend />
+          <KpiTrend range={range} />
         </Suspense>
       </PageSection>
     </CommandShell>

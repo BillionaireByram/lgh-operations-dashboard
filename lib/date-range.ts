@@ -62,3 +62,16 @@ export function resolveDateRange(params: Record<string, string | string[] | unde
 export function weekOf(date: string) {
   return isoDate(mondayOf(new Date(`${date}T12:00:00`)));
 }
+
+export function dateRangeSearch(range: DateRange) {
+  const params = new URLSearchParams({ period: range.period });
+  if (range.period === "custom") {
+    params.set("start", range.start);
+    params.set("end", range.end);
+  }
+  return params.toString();
+}
+
+export function dateRangeHref(basePath: string, range: DateRange) {
+  return `${basePath}?${dateRangeSearch(range)}`;
+}

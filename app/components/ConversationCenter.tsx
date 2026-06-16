@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { Card, Pill } from "./Card";
+import { DateRange, dateRangeHref } from "@/lib/date-range";
+import { centralRangeQuery } from "@/lib/hybrid-metrics";
 import { fromView } from "@/lib/supabase";
 
 type RetellCall = {
@@ -141,6 +143,51 @@ function isCalendarConfirmedEvent(row: AppointmentEvent) {
   return eventType === "booking_made" && (source.includes("calendar") || source.includes("ghl"));
 }
 
+function timestampRange(column: string, range: DateRange) {
+  const { startIso, endIso } = centralRangeQuery(range);
+  return {
+    [column]: `gte.${startIso}`,
+    and: `(${column}.lte.${endIso})`,
+  };
+}
+
+function voiceConversationToCall(row: LeadConversation): RetellCall {
+  const at = row.sent_at || row.created_at;
+  const metadata = row.message_metadata || {};
+  const callId = String(metadata.call_id || metadata.retell_call_id || row.id);
+  const status = String(metadata.call_status || metadata.status || row.sentiment || "voice_event");
+  const outcome = String(metadata.call_outcome || metadata.outcome || row.sentiment || row.direction || "voice");
+  const duration = Number(metadata.duration_seconds || metadata.call_duration_seconds || 0) || null;
+
+  return {
+    id: `conversation-${row.id}`,
+    contact_id: row.ghl_contact_id,
+    contact_name: row.sender,
+    phone: null,
+    retell_call_id: callId,
+    call_status: status,
+    call_duration_seconds: duration,
+    call_outcome: outcome,
+    transcript: row.message_content,
+    registered: null,
+    retry_count: null,
+    created_at: at,
+    call_type: row.sequence_name || row.channel || "voice",
+    agent_name: row.sender || "Retell",
+    booked: Boolean(metadata.booked || metadata.appointment_booked || outcome.toLowerCase().includes("book")),
+    call_date: at ? at.slice(0, 10) : null,
+    recording_url: null,
+  };
+}
+
+function mergeVoiceCalls(retellRows: RetellCall[], voiceConversationRows: LeadConversation[]) {
+  if (retellRows.length) return retellRows;
+  return voiceConversationRows
+    .filter((row) => toMessageChannel(row.channel) === "voice")
+    .map(voiceConversationToCall)
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+}
+
 function StatBox({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
   return (
     <div className="rounded-lg border border-white/10 bg-black/20 p-4">
@@ -151,10 +198,10 @@ function StatBox({ label, value, sub }: { label: string; value: string | number;
   );
 }
 
-function ConversationTabs({ active }: { active: "voice" | "messages" }) {
+function ConversationTabs({ active, range }: { active: "voice" | "messages"; range: DateRange }) {
   const tabs = [
-    { key: "voice", href: "/conversations/voice", label: "Voice calls", sub: "Retell + calendar truth" },
-    { key: "messages", href: "/conversations/messages", label: "Messages", sub: "SMS + DM threads" },
+    { key: "voice", href: dateRangeHref("/conversations/voice", range), label: "Voice calls", sub: "Retell + calendar truth" },
+    { key: "messages", href: dateRangeHref("/conversations/messages", range), label: "Messages", sub: "SMS + DM threads" },
   ] as const;
 
   return (
@@ -181,7 +228,7 @@ function ConversationTabs({ active }: { active: "voice" | "messages" }) {
 
 function VoiceCalls({ rows, confirmedContactIds }: { rows: RetellCall[]; confirmedContactIds: Set<string> }) {
   return (
-    <Card title="Retell voice calls" subtitle={`${rows.length} most recent calls. Calendar confirmation only comes from non-Retell appointment events.`}>
+    <Card title="Retell voice calls" subtitle={`${rows.length} calls in the selected range. Calendar confirmation only comes from non-Retell appointment events.`}>
       <div className="-mx-2 overflow-x-auto">
         <table className="min-w-full text-sm">
           <thead>
@@ -197,6 +244,13 @@ function VoiceCalls({ rows, confirmedContactIds }: { rows: RetellCall[]; confirm
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5">
+            {rows.length === 0 ? (
+              <tr>
+                <td colSpan={8} className="px-2 py-6 text-center text-white/40">
+                  No voice calls found for this time frame.
+                </td>
+              </tr>
+            ) : null}
             {rows.map((row) => {
               const calendarConfirmed = Boolean(row.contact_id && confirmedContactIds.has(row.contact_id));
               return (
@@ -369,26 +423,38 @@ function MessageThreads({ threads }: { threads: MessageThread[] }) {
   );
 }
 
-export async function VoiceConversationCenter() {
-  const [voiceCalls, appointmentEvents] = await Promise.all([
+export async function VoiceConversationCenter({ range }: { range: DateRange }) {
+  const [retellCalls, voiceConversationRows, appointmentEvents] = await Promise.all([
     fromView<RetellCall>("retell_call_log", {
       query: {
         select:
           "id,contact_id,contact_name,phone,retell_call_id,call_status,call_duration_seconds,call_outcome,transcript,registered,retry_count,created_at,call_type,agent_name,booked,call_date,recording_url",
+        ...timestampRange("created_at", range),
         order: "created_at.desc",
-        limit: "150",
+        limit: "500",
+      },
+    }),
+    fromView<LeadConversation>("lead_conversations", {
+      query: {
+        select: "id,ghl_contact_id,channel,direction,sender,message_content,sequence_name,sentiment,sent_at,message_metadata,created_at",
+        channel: "eq.voice",
+        ...timestampRange("created_at", range),
+        order: "created_at.desc",
+        limit: "500",
       },
     }),
     fromView<AppointmentEvent>("lead_events", {
       query: {
         select: "id,ghl_contact_id,event_type,event_source,event_data,event_timestamp",
         event_type: "in.(appointment_booked,call_booked,booking_made)",
+        ...timestampRange("event_timestamp", range),
         order: "event_timestamp.desc",
         limit: "500",
       },
     }),
   ]);
 
+  const voiceCalls = mergeVoiceCalls(retellCalls, voiceConversationRows);
   const confirmedAppointmentEvents = appointmentEvents.filter(isCalendarConfirmedEvent);
   const confirmedContactIds = new Set(confirmedAppointmentEvents.map((row) => row.ghl_contact_id).filter(Boolean) as string[]);
   const retellBookedFlags = voiceCalls.filter((row) => row.booked).length;
@@ -397,7 +463,7 @@ export async function VoiceConversationCenter() {
 
   return (
     <div className="space-y-5">
-      <ConversationTabs active="voice" />
+      <ConversationTabs active="voice" range={range} />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatBox label="Voice calls" value={voiceCalls.length} sub={`${answered} answered/connected`} />
@@ -411,11 +477,12 @@ export async function VoiceConversationCenter() {
   );
 }
 
-export async function MessageConversationCenter() {
+export async function MessageConversationCenter({ range }: { range: DateRange }) {
   const [strategyTouches, leadConversations] = await Promise.all([
     fromView<StrategyTouch>("lgh_strategy_touch_log", {
       query: {
         select: "id,ghl_contact_id,email,phone,stage,touch_index,channel,message,status,error,sent_at,created_at,metadata",
+        ...timestampRange("created_at", range),
         order: "created_at.desc",
         limit: "600",
       },
@@ -424,6 +491,7 @@ export async function MessageConversationCenter() {
       query: {
         select: "id,ghl_contact_id,channel,direction,sender,message_content,sequence_name,sentiment,sent_at,message_metadata,created_at",
         channel: "neq.voice",
+        ...timestampRange("created_at", range),
         order: "sent_at.desc.nullslast",
         limit: "1000",
       },
@@ -438,7 +506,7 @@ export async function MessageConversationCenter() {
 
   return (
     <div className="space-y-5">
-      <ConversationTabs active="messages" />
+      <ConversationTabs active="messages" range={range} />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatBox label="Threads" value={threads.length} sub="contact + channel" />

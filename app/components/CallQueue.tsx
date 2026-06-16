@@ -1,4 +1,6 @@
 import { Card, Pill } from "./Card";
+import { DateRange } from "@/lib/date-range";
+import { centralRangeQuery } from "@/lib/hybrid-metrics";
 import { fromView, CallQueueRow } from "@/lib/supabase";
 
 function ago(iso: string | null) {
@@ -98,9 +100,14 @@ function sourceLabel(source: string) {
   return simpleLabel(source);
 }
 
-export async function CallQueue() {
+export async function CallQueue({ range }: { range?: DateRange }) {
+  const rangeQuery = range ? centralRangeQuery(range) : null;
   const rows = await fromView<CallQueueRow>("v_call_queue", {
-    query: { order: "priority.asc,intent_score.desc.nullslast,registered_at.desc", limit: "100" },
+    query: {
+      ...(rangeQuery ? { registered_at: `gte.${rangeQuery.startIso}`, and: `(registered_at.lte.${rangeQuery.endIso})` } : {}),
+      order: "priority.asc,intent_score.desc.nullslast,registered_at.desc",
+      limit: "100",
+    },
   });
 
   const cleanRows = rows.filter((row) => !isInternal(row));
@@ -112,7 +119,7 @@ export async function CallQueue() {
 
   return (
     <div className="grid gap-4">
-      <Card title="Human Follow-Up Queue" subtitle={`${activeRows.length} active call handoffs. Lower-priority nurture is separated below.`}>
+      <Card title="Human Follow-Up Queue" subtitle={`${activeRows.length} active call handoffs${range ? ` for ${range.label.toLowerCase()}` : ""}. Lower-priority nurture is separated below.`}>
       <div className="overflow-x-auto -mx-2">
         <table className="min-w-full text-sm">
           <thead>

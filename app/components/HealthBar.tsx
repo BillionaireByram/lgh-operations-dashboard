@@ -1,6 +1,7 @@
 import { Card, Pill } from "./Card";
 import { DateRange } from "@/lib/date-range";
 import { getGhlRevenueMetrics, getHybridMetrics } from "@/lib/hybrid-metrics";
+import { supabaseRestEnv } from "@/lib/supabase";
 
 type HealthCheck = {
   name: string;
@@ -18,8 +19,7 @@ async function ping(url: string) {
 }
 
 async function lastRow(view: string, dateCol: string): Promise<Date | null> {
-  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_KEY;
+  const { url, key } = supabaseRestEnv();
   if (!url || !key) return null;
   try {
     const res = await fetch(
@@ -35,8 +35,7 @@ async function lastRow(view: string, dateCol: string): Promise<Date | null> {
 }
 
 async function lastReportSubmission(): Promise<Date | null> {
-  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_KEY;
+  const { url, key } = supabaseRestEnv();
   if (!url || !key) return null;
   try {
     const params = new URLSearchParams({

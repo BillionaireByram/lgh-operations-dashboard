@@ -1,5 +1,8 @@
 import { Card, Pill } from "../components/Card";
+import { DateRangeControls } from "../components/DateRangeControls";
 import { Nav } from "../components/Nav";
+import { resolveDateRange } from "@/lib/date-range";
+import { centralRangeQuery } from "@/lib/hybrid-metrics";
 import { fromView, CallQueueRow } from "@/lib/supabase";
 
 export const revalidate = 60;
@@ -18,9 +21,21 @@ function ago(iso: string | null) {
   return `${Math.round(hr / 24)}d`;
 }
 
-export default async function HotLeadsPage() {
+export default async function HotLeadsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const params = searchParams ? await searchParams : {};
+  const range = resolveDateRange(params);
+  const { startIso, endIso } = centralRangeQuery(range);
   const rows = await fromView<CallQueueRow>("v_call_queue", {
-    query: { order: "priority.asc,registered_at.desc", limit: "100" },
+    query: {
+      registered_at: `gte.${startIso}`,
+      and: `(registered_at.lte.${endIso})`,
+      order: "priority.asc,registered_at.desc",
+      limit: "100",
+    },
   });
 
   const fireNow = rows.filter((r) => r.next_action === "fire_hot_closer");
@@ -33,11 +48,12 @@ export default async function HotLeadsPage() {
       <header className="mb-6">
         <h1 className="text-2xl font-semibold tracking-tight">Hot Leads</h1>
         <p className="text-sm text-white/50">
-          {fireNow.length} fire now · {fireSoon.length} fire soon · {monitor.length} monitor
+          {fireNow.length} fire now · {fireSoon.length} fire soon · {monitor.length} monitor · {range.start} to {range.end}
         </p>
       </header>
 
       <div className="grid grid-cols-1 gap-6">
+        <DateRangeControls range={range} basePath="/hot-leads" compact />
         <Section title="Fire now (attended training, no call yet)" tone="bad" rows={fireNow} />
         <Section title="Fire soon (high intent or attended)" tone="warn" rows={fireSoon} />
         <Section title="Monitor" tone="neutral" rows={monitor} />

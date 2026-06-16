@@ -1,5 +1,8 @@
 import { Card, Pill } from "../components/Card";
+import { DateRangeControls } from "../components/DateRangeControls";
 import { Nav } from "../components/Nav";
+import { resolveDateRange } from "@/lib/date-range";
+import { centralRangeQuery } from "@/lib/hybrid-metrics";
 import { fromView, FunnelJourneyRow } from "@/lib/supabase";
 
 export const revalidate = 60;
@@ -16,9 +19,21 @@ const stageTone: Record<string, "good" | "warn" | "bad" | "info" | "neutral"> = 
   "2_registered": "neutral",
 };
 
-export default async function JourneyPage() {
+export default async function JourneyPage({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const params = searchParams ? await searchParams : {};
+  const range = resolveDateRange(params);
+  const { startIso, endIso } = centralRangeQuery(range);
   const rows = await fromView<FunnelJourneyRow>("v_funnel_journey", {
-    query: { order: "registered_at.desc", limit: "200" },
+    query: {
+      registered_at: `gte.${startIso}`,
+      and: `(registered_at.lte.${endIso})`,
+      order: "registered_at.desc",
+      limit: "200",
+    },
   });
 
   // Aggregate by stage
@@ -33,8 +48,12 @@ export default async function JourneyPage() {
       <Nav />
       <header className="mb-6">
         <h1 className="text-2xl font-semibold tracking-tight">Funnel Journey</h1>
-        <p className="text-sm text-white/50">Last 200 registrations · per-contact path</p>
+        <p className="text-sm text-white/50">Per-contact path · {range.start} to {range.end}</p>
       </header>
+
+      <div className="mb-6">
+        <DateRangeControls range={range} basePath="/journey" compact />
+      </div>
 
       <Card title="Stage breakdown" subtitle="Where leads are stuck">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">

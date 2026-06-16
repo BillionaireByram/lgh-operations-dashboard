@@ -1,4 +1,5 @@
 import { Card, Pill } from "./Card";
+import { DateRange } from "@/lib/date-range";
 import { fromView, AdMetricRow, AttributionRow } from "@/lib/supabase";
 
 const fmtMoney = (n: number) => `$${Number(n).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
@@ -35,13 +36,18 @@ function campaignLabel(campaign: string, campaignNames: Map<string, string>) {
   return { label: value, weak: false };
 }
 
-export async function Attribution() {
+export async function Attribution({ range }: { range?: DateRange }) {
   const [rows, adMetrics] = await Promise.all([
     fromView<AttributionRow>("v_attribution_source", {
       query: { order: "revenue.desc.nullslast,registrations.desc.nullslast", limit: "50" },
     }),
     fromView<AdMetricRow>("ad_metrics", {
-      query: { select: "campaign_name,campaign_id,spend,leads", order: "date.desc", limit: "500" },
+      query: {
+        select: "campaign_name,campaign_id,spend,leads",
+        ...(range ? { date: `gte.${range.start}`, and: `(date.lte.${range.end})` } : {}),
+        order: "date.desc",
+        limit: "500",
+      },
     }),
   ]);
 
@@ -75,7 +81,7 @@ export async function Attribution() {
       subtitle={
         cleanupRevenue > 0
           ? `${fmtMoney(cleanupRevenue)} in closed cash is missing source data and is excluded below`
-          : "Known ad source and campaign performance"
+          : range ? `Known ad source and campaign performance for ${range.label.toLowerCase()}` : "Known ad source and campaign performance"
       }
     >
       <div className="mb-4 grid gap-3 sm:grid-cols-3">
