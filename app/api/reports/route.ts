@@ -77,6 +77,73 @@ function reportDateColumn(roleType: string) {
   return roleType === "closer" || roleType === "credit" ? "week_of" : "date";
 }
 
+function reportKey(roleType: string, memberName: string, date: string) {
+  const period = roleType === "closer" || roleType === "credit" ? weekOf(date) : date;
+  const member = memberName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  return `lgh_report_${roleType}_${member}_${period}`;
+}
+
+function fallbackPayload(roleType: string, memberName: string, date: string, values: Record<string, unknown>) {
+  return {
+    roleType,
+    memberName,
+    date,
+    weekOf: weekOf(date),
+    values,
+    savedAt: new Date().toISOString(),
+    source: "lgh-command-center-fallback",
+  };
+}
+
+async function loadFallbackReport(roleType: string, memberName: string, date: string) {
+  const row = await fromViewOne<{ message?: string | null }>("infra_alerts", {
+    query: {
+      select: "message",
+      kind: "eq.lgh_report_submission",
+      fingerprint: `eq.${reportKey(roleType, memberName, date)}`,
+      order: "created_at.desc",
+      limit: "1",
+    },
+    revalidate: 0,
+  });
+
+  if (!row?.message) return null;
+
+  try {
+    const parsed = JSON.parse(row.message) as { values?: Record<string, unknown> };
+    return parsed.values && typeof parsed.values === "object" ? parsed.values : null;
+  } catch {
+    return null;
+  }
+}
+
+async function saveFallbackReport(roleType: string, memberName: string, date: string, values: Record<string, unknown>) {
+  const fingerprint = reportKey(roleType, memberName, date);
+  const alertRow = {
+    severity: "info",
+    kind: "lgh_report_submission",
+    vm_name: memberName,
+    message: JSON.stringify(fallbackPayload(roleType, memberName, date, values)),
+    resolved: false,
+    fingerprint,
+  };
+
+  const updated = await updateRows("infra_alerts", alertRow, {
+    kind: "eq.lgh_report_submission",
+    fingerprint: `eq.${fingerprint}`,
+  });
+
+  if (updated.ok && updated.rows.length > 0) {
+    return { ok: true, status: updated.status, error: null };
+  }
+
+  if (updated.ok) {
+    return insertRow("infra_alerts", alertRow);
+  }
+
+  return { ok: false, status: updated.status, error: updated.error };
+}
+
 export async function GET(req: NextRequest) {
   const params = req.nextUrl.searchParams;
   const memberName = params.get("memberName") || "";
@@ -99,6 +166,10 @@ export async function GET(req: NextRequest) {
   });
 
   if (!row) {
+    const fallbackValues = await loadFallbackReport(roleType, memberName, date);
+    if (fallbackValues) {
+      return NextResponse.json({ ok: true, report: { values: fallbackValues }, date, weekOf: weekOf(date), fallback: true });
+    }
     return NextResponse.json({ ok: true, report: null, date, weekOf: weekOf(date) });
   }
 
@@ -165,6 +236,10 @@ export async function POST(req: NextRequest) {
   }
 
   if (!result.ok) {
+    const fallback = await saveFallbackReport(roleType, memberName, date, row);
+    if (fallback.ok) {
+      return NextResponse.json({ ok: true, saved: "fallback" });
+    }
     return NextResponse.json({ error: result.error || "Could not save report." }, { status: result.status || 500 });
   }
 
